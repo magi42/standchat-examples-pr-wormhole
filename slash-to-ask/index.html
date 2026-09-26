@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+
+  <title>Type / to ask</title>
+  <meta name="description" content="A custom chat UI on Stand's Visitor API, inside an editable document: type / and pick Ask the team, or select any text and ask about it. The question becomes a block, the answer arrives as a callout right under it, and the visitor's own notes travel along as context.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, slash command, block editor, inline answers, page references, threads">
+  <meta property="og:title" content="Type / to ask">
+  <meta property="og:description" content="A custom chat UI on Stand's Visitor API, inside an editable document: type / and pick Ask the team, or select any text and ask about it. The question becomes a block, the answer arrives as a callout right under it, and the visitor's own notes travel along as context.">
+  <meta property="og:image" content="https://examples.stand.chat/slash-to-ask/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The document editor and its ask blocks, on Stand's Visitor API. No stand.js. -->
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <!-- Icons: UI glyphs (ui-*), block tiles for the slash menu (t-*), and emoji-like art (e-*). -->
+  <svg class="kn-sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <radialGradient id="g-bulb" cx="42%" cy="34%" r="70%"><stop offset="0" stop-color="#FFF7C9"/><stop offset=".55" stop-color="#FFD94F"/><stop offset="1" stop-color="#F0AE1D"/></radialGradient>
+      <linearGradient id="g-info" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5AAEF2"/><stop offset="1" stop-color="#2A78CF"/></linearGradient>
+      <linearGradient id="g-spark" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFE27A"/><stop offset="1" stop-color="#F6A623"/></linearGradient>
+      <linearGradient id="g-paper" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#EEF1F5"/></linearGradient>
+    </defs>
+    <symbol id="ui-plus" viewBox="0 0 16 16"><path d="M8 2.5v11M2.5 8h11" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="ui-drag" viewBox="0 0 10 16"><g fill="currentColor"><circle cx="2.6" cy="3.5" r="1.3"/><circle cx="7.4" cy="3.5" r="1.3"/><circle cx="2.6" cy="8" r="1.3"/><circle cx="7.4" cy="8" r="1.3"/><circle cx="2.6" cy="12.5" r="1.3"/><circle cx="7.4" cy="12.5" r="1.3"/></g></symbol>
+    <symbol id="ui-dots" viewBox="0 0 16 16"><g fill="currentColor"><circle cx="3" cy="8" r="1.4"/><circle cx="8" cy="8" r="1.4"/><circle cx="13" cy="8" r="1.4"/></g></symbol>
+    <symbol id="ui-tri" viewBox="0 0 16 16"><path d="M5.6 3.6c0-.7.8-1.1 1.3-.6l4.6 4.4c.3.3.3.9 0 1.2L6.9 13c-.5.5-1.3.1-1.3-.6Z" fill="currentColor"/></symbol>
+    <symbol id="ui-chev" viewBox="0 0 16 16"><path d="m4 6 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-check" viewBox="0 0 16 16"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-send" viewBox="0 0 16 16"><path d="M8 12.5v-9M4.2 7.2 8 3.4l3.8 3.8" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-ask" viewBox="0 0 20 20"><path d="M10 2.6c4.3 0 7.4 2.9 7.4 6.6s-3.1 6.6-7.4 6.6c-.8 0-1.6-.1-2.3-.3l-3.5 1.9c-.5.3-1-.1-.9-.6l.6-2.7C2.9 12.8 2.6 11 2.6 9.2c0-3.7 3.1-6.6 7.4-6.6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8.2 7.6c.1-1 .9-1.7 1.9-1.7 1.1 0 1.9.7 1.9 1.7 0 .8-.5 1.2-1.1 1.6-.5.3-.8.6-.8 1.2v.3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="10.1" cy="12.6" r=".95" fill="currentColor"/></symbol>
+    <symbol id="ui-reply" viewBox="0 0 16 16"><path d="M6.2 3.5 2.5 7.2l3.7 3.7M2.8 7.2h6.4c2.4 0 4.3 1.9 4.3 4.3v1" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-resolve" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="m5.3 8.2 1.9 1.9 3.6-4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-arrow" viewBox="0 0 16 16"><path d="M4.5 11.5 11.2 4.8M5.8 4.5h5.7v5.7" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-link" viewBox="0 0 16 16"><path d="M6.6 9.4a2.6 2.6 0 0 0 3.7 0l2.3-2.3a2.6 2.6 0 0 0-3.7-3.7l-.8.8M9.4 6.6a2.6 2.6 0 0 0-3.7 0L3.4 8.9a2.6 2.6 0 0 0 3.7 3.7l.8-.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="ui-table" viewBox="0 0 16 16"><rect x="2" y="3" width="12" height="10" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2 6.4h12M2 9.7h12M6.4 6.4V13" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="ui-board" viewBox="0 0 16 16"><rect x="2" y="3" width="3.2" height="10" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="6.4" y="3" width="3.2" height="7" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="10.8" y="3" width="3.2" height="8.6" rx="1" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="ui-aa" viewBox="0 0 16 16"><text x="1" y="12.5" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="currentColor">Aa</text></symbol>
+    <symbol id="ui-hash" viewBox="0 0 16 16"><path d="M6.3 2.5 5 13.5M11 2.5 9.7 13.5M2.8 5.8h11M2.2 10.2h11" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="ui-lines" viewBox="0 0 16 16"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h7" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="ui-select" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="m5.6 7 2.4 2.4L10.4 7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-multi" viewBox="0 0 16 16"><path d="M6 4.5h7.5M6 8h7.5M6 11.5h7.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><g fill="currentColor"><circle cx="3" cy="4.5" r="1.1"/><circle cx="3" cy="8" r="1.1"/><circle cx="3" cy="11.5" r="1.1"/></g></symbol>
+    <symbol id="ui-people" viewBox="0 0 16 16"><circle cx="6" cy="5.4" r="2.3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1.8 13c.3-2.4 2-3.9 4.2-3.9s3.9 1.5 4.2 3.9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M10.6 3.4a2.2 2.2 0 1 1 .4 4.3M12 9.4c1.3.4 2.1 1.7 2.3 3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="ui-calendar" viewBox="0 0 16 16"><rect x="2.2" y="3.2" width="11.6" height="10.3" rx="1.8" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M2.2 6.6h11.6M5.3 1.9v2.4M10.7 1.9v2.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="ui-alert" viewBox="0 0 16 16"><path d="M7.1 2.7c.4-.7 1.4-.7 1.8 0l5.3 9.5c.4.7-.1 1.6-.9 1.6H2.7c-.8 0-1.3-.9-.9-1.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M8 6.2v3.3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="11.6" r=".85" fill="currentColor"/></symbol>
+    <symbol id="ui-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 4.8V8l2.2 1.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="ui-key" viewBox="0 0 16 16"><circle cx="5.4" cy="10.6" r="2.9" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="m7.5 8.5 5.6-5.6M11 5l1.6 1.6M9.6 6.4l1.2 1.2" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+    <symbol id="ui-trash" viewBox="0 0 16 16"><path d="M3 4.5h10M6.4 4.5V3h3.2v1.5M4.4 4.5l.6 8.3c0 .7.6 1.2 1.3 1.2h3.4c.7 0 1.3-.5 1.3-1.2l.6-8.3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-copy" viewBox="0 0 16 16"><rect x="5.2" y="5.2" width="8.3" height="8.3" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.8 5.2V4c0-.8-.7-1.5-1.5-1.5H4c-.8 0-1.5.7-1.5 1.5v5.3c0 .8.7 1.5 1.5 1.5h1.2" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+    <symbol id="ui-turn" viewBox="0 0 16 16"><path d="M3 6.5A5 5 0 0 1 12.2 4.6M13 9.5a5 5 0 0 1-9.2 1.9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><path d="M12.6 2.2v2.7H9.9M3.4 13.8v-2.7h2.7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-up" viewBox="0 0 16 16"><path d="M8 13V3.5M4.5 7 8 3.5 11.5 7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-down" viewBox="0 0 16 16"><path d="M8 3v9.5M4.5 9 8 12.5 11.5 9" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ui-close" viewBox="0 0 16 16"><path d="m4 4 8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="ui-menu" viewBox="0 0 16 16"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="ui-keyboard" viewBox="0 0 16 16"><rect x="1.8" y="4" width="12.4" height="8" rx="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.3 6.6h.1M6.8 6.6h.1M9.2 6.6h.1M11.7 6.6h.1M5.3 9.4h5.4" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+
+    <symbol id="k-logo" viewBox="0 0 32 32"><rect x="4.2" y="5.2" width="25" height="25" rx="6.6" fill="#191918"/><rect x="2.2" y="2.2" width="25" height="25" rx="6.6" fill="#fff" stroke="#191918" stroke-width="2.2"/><path d="M9.6 8.4h4v12.8h-4Z" fill="#191918"/><path d="m13.6 15.2 6-6.8h4.7l-6.3 6.8 6.7 6h-4.9Z" fill="#191918"/></symbol>
+
+    <symbol id="t-text" viewBox="0 0 28 28"><text x="4.5" y="19.5" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="500" fill="currentColor">Aa</text></symbol>
+    <symbol id="t-h1" viewBox="0 0 28 28"><text x="3.5" y="19.5" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="currentColor">H1</text></symbol>
+    <symbol id="t-h2" viewBox="0 0 28 28"><text x="3.5" y="19.5" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="currentColor">H2</text></symbol>
+    <symbol id="t-h3" viewBox="0 0 28 28"><text x="3.5" y="19.5" font-family="system-ui, -apple-system, sans-serif" font-size="15" font-weight="700" fill="currentColor">H3</text></symbol>
+    <symbol id="t-todo" viewBox="0 0 28 28"><rect x="4" y="8" width="11" height="11" rx="2.4" fill="#2383E2"/><path d="m6.8 13.6 2.2 2.2 3.6-4.2" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 13.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".45"/></symbol>
+    <symbol id="t-bullet" viewBox="0 0 28 28"><g fill="currentColor"><circle cx="6.5" cy="8.5" r="1.8"/><circle cx="6.5" cy="14" r="1.8"/><circle cx="6.5" cy="19.5" r="1.8"/></g><path d="M11 8.5h12M11 14h9M11 19.5h11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".45"/></symbol>
+    <symbol id="t-number" viewBox="0 0 28 28"><g font-family="system-ui, sans-serif" font-size="7.5" font-weight="700" fill="currentColor"><text x="3.5" y="11">1.</text><text x="3.5" y="17.5">2.</text><text x="3.5" y="24">3.</text></g><path d="M12 8.6h11M12 15h8M12 21.4h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".45"/></symbol>
+    <symbol id="t-toggle" viewBox="0 0 28 28"><path d="M4.8 7.6c0-.6.7-.9 1.1-.5l3.6 3.4c.3.3.3.7 0 1L5.9 15c-.4.4-1.1.1-1.1-.5Z" fill="currentColor"/><path d="M13 11h11M13 18h8M13 22.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".45"/></symbol>
+    <symbol id="t-quote" viewBox="0 0 28 28"><rect x="5" y="6" width="2.6" height="16" rx="1.3" fill="currentColor"/><path d="M11.5 10h11.5M11.5 14.5h9M11.5 19h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".45"/></symbol>
+    <symbol id="t-divider" viewBox="0 0 28 28"><path d="M4 8h14M4 21h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".3"/><path d="M3.5 14.5h21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="t-callout" viewBox="0 0 28 28"><rect x="2.5" y="6" width="23" height="16" rx="3" fill="#FBF3DB"/><circle cx="8" cy="12" r="2.6" fill="#F2B01E"/><path d="M13 11.5h9M13 16.5h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" opacity=".5"/></symbol>
+
+    <symbol id="e-bulb" viewBox="0 0 24 24"><path d="M12 2.4a7.1 7.1 0 0 0-4.3 12.8c.8.6 1.3 1.5 1.3 2.4v.5h6v-.5c0-.9.5-1.8 1.3-2.4A7.1 7.1 0 0 0 12 2.4Z" fill="url(#g-bulb)"/><path d="M10.1 13.4 12 10.9l1.9 2.5" fill="none" stroke="#DB8500" stroke-width=".9" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="9.4" cy="7.2" rx="1.5" ry="2.4" transform="rotate(28 9.4 7.2)" fill="#fff" opacity=".65"/><rect x="8.7" y="18.1" width="6.6" height="2.2" rx=".9" fill="#AAB3BD"/><rect x="9.4" y="20" width="5.2" height="1.9" rx=".95" fill="#88929C"/></symbol>
+    <symbol id="e-info" viewBox="0 0 24 24"><rect x="2.5" y="2.5" width="19" height="19" rx="4.6" fill="url(#g-info)"/><circle cx="12" cy="7.5" r="1.65" fill="#fff"/><rect x="10.45" y="10.3" width="3.1" height="8.2" rx="1.55" fill="#fff"/></symbol>
+    <symbol id="e-sparkles" viewBox="0 0 24 24"><path d="M9.6 3.2Q10.5 11.1 18 12 10.5 12.9 9.6 20.8 8.7 12.9 1.2 12 8.7 11.1 9.6 3.2Z" fill="url(#g-spark)"/><path d="M18.4 1.8Q18.8 5.1 22 5.5 18.8 5.9 18.4 9.2 18 5.9 14.8 5.5 18 5.1 18.4 1.8Z" fill="#FFC72E"/><path d="M18.6 14.6Q18.9 17.1 21.4 17.4 18.9 17.7 18.6 20.2 18.3 17.7 15.8 17.4 18.3 17.1 18.6 14.6Z" fill="#FFDB66"/></symbol>
+    <symbol id="e-memo" viewBox="0 0 24 24"><rect x="3.2" y="3" width="14.2" height="18.4" rx="2.2" fill="url(#g-paper)" stroke="#CBD3DC" stroke-width=".8"/><path d="M3.2 5.2c0-1.2 1-2.2 2.2-2.2h9.8c1.2 0 2.2 1 2.2 2.2v1.4H3.2Z" fill="#E6705B"/><path d="M6.2 10.2h8.2M6.2 13.2h8.2M6.2 16.2h5" stroke="#9EB2C6" stroke-width="1.1" stroke-linecap="round"/><g transform="rotate(38 17.6 14.5)"><rect x="16.2" y="7.2" width="2.9" height="11.2" rx=".7" fill="#F4B63B"/><rect x="16.2" y="6.2" width="2.9" height="1.6" rx=".5" fill="#EC8E93"/><path d="M16.2 18.4h2.9l-1.45 2.9Z" fill="#F2D6AE"/><path d="M17.2 20.4h.9l-.45.9Z" fill="#3B3B3B"/></g></symbol>
+  </svg>
+
+  <div class="kn" id="top">
+    <!-- Kenning's marketing bar. Kenning is a fictional company. -->
+    <header class="kn-nav">
+      <a class="kn-brand" href="#top" aria-label="Kenning home">
+        <svg class="kn-logo" aria-hidden="true"><use href="#k-logo"/></svg>
+        <span>Kenning</span>
+      </a>
+      <nav class="kn-links" aria-label="Kenning">
+        <a href="#h-apps">Product</a>
+        <a href="#h-team">Templates</a>
+        <a href="#h-plans">Pricing</a>
+      </nav>
+      <span class="kn-grow"></span>
+      <a class="kn-login" href="#how-it-works">Log in</a>
+      <a class="kn-cta" href="#how-it-works">Get Kenning free</a>
+    </header>
+
+    <div class="kn-page">
+      <!-- The document's own top bar: breadcrumbs, the conversation, the page menu. Sticks while you read. -->
+      <div class="kn-topbar" id="topbar">
+        <nav class="kn-crumbs" aria-label="Breadcrumb">
+          <span class="kn-crumb"><svg class="kn-crumb-ico" aria-hidden="true"><use href="#e-memo"/></svg>Guides</span>
+          <span class="kn-crumb-sep" aria-hidden="true">/</span>
+          <span class="kn-crumb" aria-current="page"><img class="kn-crumb-ico" src="icon.svg" alt="" width="18" height="18"><span id="crumb-title">Moving your team to Kenning</span></span>
+        </nav>
+        <span class="kn-grow"></span>
+        <span class="kn-edited" id="edited" hidden>Edited just now</span>
+        <button class="kn-ask-btn" id="ask-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="convo">
+          <span class="kn-av kn-av-sm" aria-hidden="true" data-host-avatar></span>
+          <span class="kn-ask-label">Ask the team</span>
+          <span class="kn-ask-count" id="ask-count" hidden></span>
+        </button>
+        <button class="kn-icon-btn" id="page-menu-btn" type="button" aria-label="Page options" aria-haspopup="menu" aria-expanded="false" aria-controls="page-menu"><svg aria-hidden="true"><use href="#ui-dots"/></svg></button>
+      </div>
+
+      <div class="kn-cover"><img src="cover.svg" alt="" width="1600" height="300" decoding="async"></div>
+
+      <main class="kn-doc" id="doc" data-style="default">
+        <div class="kn-icon"><img src="icon.svg" alt="" width="78" height="78"></div>
+        <h1 class="kn-title" id="doc-title">Moving your team to Kenning</h1>
+
+        <div class="kn-body" id="doc-body">
+          <div class="blk" data-block="text" id="p-lede"><div class="blk-row"><p class="blk-text">Everything you need to switch from an old wiki or a pile of shared docs. This is a real, editable page: change anything, and ask about anything right where the question comes up.</p></div></div>
+
+          <div class="blk" data-block="toggle" id="t-example" data-open="true">
+            <div class="blk-row">
+              <button class="tgl" type="button" aria-expanded="true" aria-controls="t-example-c"><svg aria-hidden="true"><use href="#ui-tri"/></svg><span class="sr-only">Hide details</span></button>
+              <div class="blk-text"><b>Example:</b> how asking works here</div>
+            </div>
+            <div class="blk-children" id="t-example-c">
+              <!-- An illustration, not a conversation: what the slash menu and an answered question look like. -->
+              <div class="blk" data-block="static" data-kind="example" id="x-example">
+                <div class="x-cols">
+                  <div class="x-col">
+                    <p class="x-cap"><span class="x-step">1</span>Type <kbd>/</kbd> on any line, pick <b>Ask the team</b></p>
+                    <div class="x-line" aria-hidden="true">/ask<span class="x-caret"></span></div>
+                    <div class="slash is-static" aria-hidden="true" inert>
+                      <div class="slash-scroll">
+                        <p class="slash-sec">Ask</p>
+                        <div class="slash-item is-active">
+                          <span class="slash-tile tile-ask"><span class="kn-av" data-host-avatar>S</span><span class="tile-ai" data-host-badge>AI</span></span>
+                          <span class="slash-txt"><b>Ask the team</b><small data-host-line>The team answers here</small></span>
+                        </div>
+                        <p class="slash-sec">Basic blocks</p>
+                        <div class="slash-item"><span class="slash-tile"><svg><use href="#t-text"/></svg></span><span class="slash-txt"><b>Text</b><small>Plain words, nothing fancy.</small></span></div>
+                        <div class="slash-item x-extra"><span class="slash-tile"><svg><use href="#t-todo"/></svg></span><span class="slash-txt"><b>To-do list</b><small>Things to tick off.</small></span></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="x-col">
+                    <p class="x-cap"><span class="x-step">2</span>The answer lands right under it</p>
+                    <div class="ask is-example" role="group" aria-label="Example of an answered question">
+                      <div class="ask-head">
+                        <svg class="ask-ico" aria-hidden="true"><use href="#ui-ask"/></svg>
+                        <span class="ask-label">Ask the team</span>
+                        <span class="ask-where">under <b>Importing your wiki</b></span>
+                      </div>
+                      <div class="ask-thread">
+                        <div class="ask-q"><p class="ask-q-text">Does our page history come along?</p></div>
+                        <!-- Written for the illustration, so it speaks for the made-up company, not for whoever answers live. -->
+                        <div class="ask-a">
+                          <span class="kn-av kn-av-team" aria-hidden="true"><svg><use href="#k-logo"/></svg></span>
+                          <div class="ask-a-body">
+                            <p class="ask-a-who"><b>Kenning team</b><span class="chip chip-example">Example</span></p>
+                            <div class="ask-a-text"><p>Yes, up to your plan's limit: 30 days on Plus, a full year on Business. <a class="mention" href="#h-import" data-ref="h-import"><svg aria-hidden="true"><use href="#ui-arrow"/></svg><span>Importing your wiki</span></a></p></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="ask-foot" aria-hidden="true"><span class="ask-fbtn"><svg><use href="#ui-reply"/></svg>Reply</span><span class="ask-fbtn"><svg><use href="#ui-resolve"/></svg>Resolve</span></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="blk" data-block="text" id="p-try" data-invite><div class="blk-row"><p class="blk-text"></p></div></div>
+
+          <div class="blk" data-block="h2" id="h-team"><div class="blk-row"><h2 class="blk-text">About your team</h2></div></div>
+          <div class="blk" data-block="callout" id="c-notes" data-color="gray" data-icon="e-memo"><div class="blk-row callout"><svg class="callout-icon" aria-hidden="true"><use href="#e-memo"/></svg><div class="blk-text">Jot down what you know. These notes stay on this page and travel with your questions, so the answers fit your team instead of everyone's.</div></div></div>
+          <div class="blk" data-block="static" data-kind="props" id="props-team">
+            <div class="props" role="group" aria-label="Notes about your team">
+              <div class="prop" data-prop="size" data-type="select" data-label="Team size">
+                <span class="prop-name" id="prop-size-l"><svg aria-hidden="true"><use href="#ui-people"/></svg><span>Team size</span></span>
+                <div class="prop-value">
+                  <button class="prop-btn" type="button" aria-haspopup="listbox" aria-labelledby="prop-size-l prop-size-v" id="prop-size-v"><span class="prop-empty">Empty</span></button>
+                  <script type="application/json" class="prop-options">[["Just me","gray"],["2–10","blue"],["11–50","green"],["51–200","yellow"],["201–1,000","orange"],["1,000+","purple"]]</script>
+                </div>
+              </div>
+              <div class="prop" data-prop="tools" data-type="multi" data-label="Tools today">
+                <span class="prop-name" id="prop-tools-l"><svg aria-hidden="true"><use href="#ui-multi"/></svg><span>Tools today</span></span>
+                <div class="prop-value">
+                  <button class="prop-btn" type="button" aria-haspopup="listbox" aria-labelledby="prop-tools-l prop-tools-v" id="prop-tools-v"><span class="prop-empty">Empty</span></button>
+                  <script type="application/json" class="prop-options">[["Hosted wiki","brown"],["Docs suite","blue"],["Shared drive","yellow"],["Spreadsheets","green"],["Task tracker","purple"],["Chat app","pink"],["Markdown files","gray"]]</script>
+                </div>
+              </div>
+              <div class="prop" data-prop="moving" data-type="select" data-label="Moving by">
+                <span class="prop-name" id="prop-moving-l"><svg aria-hidden="true"><use href="#ui-calendar"/></svg><span>Moving by</span></span>
+                <div class="prop-value">
+                  <button class="prop-btn" type="button" aria-haspopup="listbox" aria-labelledby="prop-moving-l prop-moving-v" id="prop-moving-v"><span class="prop-empty">Empty</span></button>
+                  <script type="application/json" class="prop-options">[["This month","red"],["This quarter","orange"],["This year","blue"],["Just looking","gray"]]</script>
+                </div>
+              </div>
+              <div class="prop" data-prop="mustNot" data-type="text" data-label="Must not break">
+                <span class="prop-name" id="prop-mustnot-l"><svg aria-hidden="true"><use href="#ui-alert"/></svg><span>Must not break</span></span>
+                <div class="prop-value">
+                  <div class="prop-text" role="textbox" aria-labelledby="prop-mustnot-l" data-ph="Empty"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="blk" data-block="h3" id="h-musts"><div class="blk-row"><h3 class="blk-text">Must-haves</h3></div></div>
+          <div class="blk" data-block="text" id="p-musts"><div class="blk-row"><p class="blk-text">Tick what your team can't do without.</p></div></div>
+          <div class="blk" data-block="todo" id="todo-sso" data-short="single sign-on"><div class="blk-row"><input class="todo-box" type="checkbox" aria-labelledby="todo-sso-t"><div class="blk-text" id="todo-sso-t">Single sign-on for everyone</div></div></div>
+          <div class="blk" data-block="todo" id="todo-wiki" data-short="old wiki with history"><div class="blk-row"><input class="todo-box" type="checkbox" aria-labelledby="todo-wiki-t"><div class="blk-text" id="todo-wiki-t">Our old wiki comes with us, history and all</div></div></div>
+          <div class="blk" data-block="todo" id="todo-guests" data-short="guest access for clients"><div class="blk-row"><input class="todo-box" type="checkbox" aria-labelledby="todo-guests-t"><div class="blk-text" id="todo-guests-t">Clients and freelancers can see some pages</div></div></div>
+          <div class="blk" data-block="todo" id="todo-offline" data-short="works offline"><div class="blk-row"><input class="todo-box" type="checkbox" aria-labelledby="todo-offline-t"><div class="blk-text" id="todo-offline-t">It works on a plane</div></div></div>
+          <div class="blk" data-block="todo" id="todo-api" data-short="API"><div class="blk-row"><input class="todo-box" type="checkbox" aria-labelledby="todo-api-t"><div class="blk-text" id="todo-api-t">We can build on it with the API</div></div></div>
+
+          <div class="blk" data-block="h2" id="h-moves"><div class="blk-row"><h2 class="blk-text">What moves over</h2></div></div>
+          <div class="blk" data-block="text" id="p-moves"><div class="blk-row"><p class="blk-text">Nearly everything, and in the shape you left it.</p></div></div>
+          <div class="blk" data-block="bullet" id="b-moves-1"><div class="blk-row"><div class="blk-text">Pages and subpages, nested the way they were</div></div></div>
+          <div class="blk" data-block="bullet" id="b-moves-2"><div class="blk-row"><div class="blk-text">Tables and spreadsheets, as databases with real columns</div></div></div>
+          <div class="blk" data-block="bullet" id="b-moves-3"><div class="blk-row"><div class="blk-text">Comments and @mentions, matched to people by email</div></div></div>
+          <div class="blk" data-block="bullet" id="b-moves-4"><div class="blk-row"><div class="blk-text">Page history, as far back as your plan keeps it</div></div></div>
+          <div class="blk" data-block="bullet" id="b-moves-5"><div class="blk-row"><div class="blk-text">Files and images, embedded where they were</div></div></div>
+          <div class="blk" data-block="callout" id="c-links" data-color="blue" data-icon="e-info"><div class="blk-row callout"><svg class="callout-icon" aria-hidden="true"><use href="#e-info"/></svg><div class="blk-text">Links from outside, like the ones in your help center, still point at the old tool. On Business and Enterprise, Kenning keeps a list of redirects so old links land on the right page.</div></div></div>
+
+          <div class="blk" data-block="h2" id="h-import"><div class="blk-row"><h2 class="blk-text">Importing your wiki</h2></div></div>
+          <div class="blk" data-block="numbered" id="n-import-1"><div class="blk-row"><div class="blk-text">Export your old wiki as HTML or Markdown. A zip file is fine.</div></div></div>
+          <div class="blk" data-block="numbered" id="n-import-2"><div class="blk-row"><div class="blk-text">In Kenning, open <b>Settings</b>, choose <b>Import</b> and drop the file in. Big imports run in the background, and we email you when they're done.</div></div></div>
+          <div class="blk" data-block="numbered" id="n-import-3"><div class="blk-row"><div class="blk-text">Match old spaces to new ones, and old accounts to members. Anyone we can't match can join later as a guest.</div></div></div>
+          <div class="blk" data-block="numbered" id="n-import-4"><div class="blk-row"><div class="blk-text">Spot-check a handful of pages, then tell the team. Most teams switch within a week.</div></div></div>
+          <div class="blk" data-block="toggle" id="t-huge">
+            <div class="blk-row">
+              <button class="tgl" type="button" aria-expanded="false" aria-controls="t-huge-c"><svg aria-hidden="true"><use href="#ui-tri"/></svg><span class="sr-only">Show details</span></button>
+              <div class="blk-text">What if our export is huge?</div>
+            </div>
+            <div class="blk-children" id="t-huge-c" hidden>
+              <div class="blk" data-block="text" id="p-huge"><div class="blk-row"><p class="blk-text">Up to 50,000 pages import in the background while you keep working. Bigger than that? Ask us, and we'll plan the batches with you.</p></div></div>
+            </div>
+          </div>
+
+          <div class="blk" data-block="h2" id="h-plans"><div class="blk-row"><h2 class="blk-text">Plans and pricing</h2></div></div>
+          <div class="blk" data-block="text" id="p-plans"><div class="blk-row"><p class="blk-text">You pay per member, per month. Guests are free, and paying yearly saves 20%.</p></div></div>
+          <div class="blk" data-block="static" data-kind="database" id="db-plans">
+            <div class="db" data-view="table">
+              <h3 class="db-title">Plans</h3>
+              <div class="db-bar">
+                <div class="db-tabs" role="tablist" aria-label="Plans views">
+                  <button class="db-tab" type="button" role="tab" id="db-tab-table" aria-selected="true" aria-controls="db-table" data-view="table"><svg aria-hidden="true"><use href="#ui-table"/></svg>Table</button>
+                  <button class="db-tab" type="button" role="tab" id="db-tab-board" aria-selected="false" aria-controls="db-board" data-view="board" tabindex="-1"><svg aria-hidden="true"><use href="#ui-board"/></svg>Board</button>
+                </div>
+                <span class="db-note">Prices per member, per month, billed yearly</span>
+              </div>
+              <div class="db-panel db-scroll" id="db-table" role="tabpanel" aria-labelledby="db-tab-table" tabindex="0">
+                <table class="db-table">
+                  <thead>
+                    <tr>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-aa"/></svg>Plan</th>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-hash"/></svg>Price</th>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-people"/></svg>Guests</th>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-clock"/></svg>Page history</th>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-key"/></svg>Sign-in</th>
+                      <th scope="col"><svg aria-hidden="true"><use href="#ui-select"/></svg>Best for</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr><th scope="row">Free</th><td class="num">$0</td><td class="num">5</td><td>7 days</td><td>Two-factor</td><td><span class="tag" data-color="gray">Trying it out</span></td></tr>
+                    <tr><th scope="row">Plus</th><td class="num">$8</td><td class="num">50</td><td>30 days</td><td>Two-factor</td><td><span class="tag" data-color="blue">Small teams</span></td></tr>
+                    <tr><th scope="row">Business</th><td class="num">$16</td><td class="num">250</td><td>1 year</td><td>SAML SSO</td><td><span class="tag" data-color="green">Growing companies</span></td></tr>
+                    <tr><th scope="row">Enterprise</th><td class="num">Custom</td><td class="num">Unlimited</td><td>Unlimited</td><td>SSO + SCIM</td><td><span class="tag" data-color="purple">Large orgs</span></td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="db-panel db-scroll" id="db-board" role="tabpanel" aria-labelledby="db-tab-board" tabindex="0" hidden>
+                <div class="db-board">
+                  <section class="db-col" aria-label="Trying it out"><h4 class="db-col-head"><span class="tag" data-color="gray">Trying it out</span><span class="db-count">1</span></h4><article class="db-card"><h5>Free</h5><p>$0</p><p>7-day history · 5 guests</p></article></section>
+                  <section class="db-col" aria-label="Small teams"><h4 class="db-col-head"><span class="tag" data-color="blue">Small teams</span><span class="db-count">1</span></h4><article class="db-card"><h5>Plus</h5><p>$8 per member</p><p>30-day history · 50 guests</p></article></section>
+                  <section class="db-col" aria-label="Growing companies"><h4 class="db-col-head"><span class="tag" data-color="green">Growing companies</span><span class="db-count">1</span></h4><article class="db-card"><h5>Business</h5><p>$16 per member</p><p>1-year history · SAML SSO</p></article></section>
+                  <section class="db-col" aria-label="Large orgs"><h4 class="db-col-head"><span class="tag" data-color="purple">Large orgs</span><span class="db-count">1</span></h4><article class="db-card"><h5>Enterprise</h5><p>Custom price</p><p>Unlimited history · SCIM</p></article></section>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="blk" data-block="toggle" id="t-pricing">
+            <div class="blk-row">
+              <button class="tgl" type="button" aria-expanded="false" aria-controls="t-pricing-c"><svg aria-hidden="true"><use href="#ui-tri"/></svg><span class="sr-only">Show details</span></button>
+              <div class="blk-text">How pricing works</div>
+            </div>
+            <div class="blk-children" id="t-pricing-c" hidden>
+              <div class="blk" data-block="text" id="p-pricing"><div class="blk-row"><p class="blk-text">Members are the people on your team who write and edit. Guests, like clients and freelancers, are free up to your plan's guest limit. Monthly billing costs 25% more than yearly.</p></div></div>
+            </div>
+          </div>
+          <div class="blk" data-block="toggle" id="t-trial">
+            <div class="blk-row">
+              <button class="tgl" type="button" aria-expanded="false" aria-controls="t-trial-c"><svg aria-hidden="true"><use href="#ui-tri"/></svg><span class="sr-only">Show details</span></button>
+              <div class="blk-text">Can we try Business first?</div>
+            </div>
+            <div class="blk-children" id="t-trial-c" hidden>
+              <div class="blk" data-block="text" id="p-trial"><div class="blk-row"><p class="blk-text">Yes. Every workspace gets one 14-day Business trial, no card needed. When it ends you drop back to Free, and nothing gets deleted.</p></div></div>
+            </div>
+          </div>
+          <div class="blk" data-block="toggle" id="t-discounts">
+            <div class="blk-row">
+              <button class="tgl" type="button" aria-expanded="false" aria-controls="t-discounts-c"><svg aria-hidden="true"><use href="#ui-tri"/></svg><span class="sr-only">Show details</span></button>
+              <div class="blk-text">Discounts</div>
+            </div>
+            <div class="blk-children" id="t-discounts-c" hidden>
+              <div class="blk" data-block="text" id="p-discounts"><div class="blk-row"><p class="blk-text">Nonprofits and schools get 50% off Plus and Business.</p></div></div>
+            </div>
+          </div>
+
+          <div class="blk" data-block="h2" id="h-security"><div class="blk-row"><h2 class="blk-text">Security and admin</h2></div></div>
+          <div class="blk" data-block="bullet" id="b-sec-1"><div class="blk-row"><div class="blk-text">Two-factor sign-in on every plan</div></div></div>
+          <div class="blk" data-block="bullet" id="b-sec-2"><div class="blk-row"><div class="blk-text">SAML single sign-on on Business, plus SCIM provisioning on Enterprise</div></div></div>
+          <div class="blk" data-block="bullet" id="b-sec-3"><div class="blk-row"><div class="blk-text">Encrypted at rest and in transit, with a SOC 2 Type II report</div></div></div>
+          <div class="blk" data-block="bullet" id="b-sec-4"><div class="blk-row"><div class="blk-text">An audit log and EU hosting on Enterprise</div></div></div>
+
+          <div class="blk" data-block="h2" id="h-apps"><div class="blk-row"><h2 class="blk-text">Apps, offline and API</h2></div></div>
+          <div class="blk" data-block="bullet" id="b-apps-1"><div class="blk-row"><div class="blk-text">Apps for Mac, Windows, Linux, iOS and Android</div></div></div>
+          <div class="blk" data-block="bullet" id="b-apps-2"><div class="blk-row"><div class="blk-text">Pages you opened recently keep working offline, and sync when you're back</div></div></div>
+          <div class="blk" data-block="bullet" id="b-apps-3"><div class="blk-row"><div class="blk-text">A REST API on every plan, and webhooks on Business and Enterprise</div></div></div>
+
+          <div class="blk" data-block="h2" id="h-ai"><div class="blk-row"><h2 class="blk-text">AI in Kenning</h2></div></div>
+          <div class="blk" data-block="callout" id="c-ai" data-color="gray" data-icon="e-sparkles"><div class="blk-row callout"><svg class="callout-icon" aria-hidden="true"><use href="#e-sparkles"/></svg><div class="blk-text">Kenning's assistant summarizes long pages, drafts from your notes and answers questions from your workspace. It comes with Business and Enterprise, admins can switch it off, and your content never trains a model.</div></div></div>
+
+          <div class="blk" data-block="divider" id="d-end"><div class="blk-row"><hr></div></div>
+          <div class="blk" data-block="callout" id="c-still" data-color="yellow" data-icon="e-bulb"><div class="blk-row callout"><svg class="callout-icon" aria-hidden="true"><use href="#e-bulb"/></svg><div class="blk-text"><b>Still deciding?</b> Click at the end of any line, press Enter and type <b>/ask</b>. Or select a few words and choose <b>Ask about this</b>. Your question lands right there, with your notes attached.</div></div></div>
+          <div class="blk" data-block="text" id="p-end"><div class="blk-row"><p class="blk-text"></p></div></div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="kn-foot">
+      <p>Kenning is a fictional company. This page demonstrates a custom chat UI on Stand Chat's Visitor API: questions are real conversations with an AI Stand-in via Stand.</p>
+    </footer>
+  </div>
+
+  <!-- The conversation-wide panel: who answers, your questions, ending the chat. Filled in by app.js. -->
+  <div class="pop convo" id="convo" role="dialog" aria-label="Questions on this page" hidden></div>
+  <!-- The page menu: page styles and resetting your edits. -->
+  <div class="pop pagemenu" id="page-menu" role="menu" aria-label="Page options" hidden></div>
+  <div class="sr-only" id="announcer" aria-live="polite"></div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Put the question inside your content</h2>
+      <p class="sx-lead">Most chat widgets float over a page and know nothing about it. Here the chat is part of the page: a document whose slash menu has one extra block, <strong>Ask the team</strong>. The question becomes a block right where it came up, the answer arrives as a callout under it, and the notes the visitor fills in go along as context, so the team reads their requirements, not just their question.</p>
+      <p>It's a custom chat UI on Stand's Visitor API (beta), in plain JavaScript with no dependencies and no <code>stand.js</code>. Stand routes the conversation, runs the AI Stand-in and can bring in a person from the team; the page does everything you see.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Click the empty line under the example, type <kbd>/</kbd> and choose <strong>Ask the team</strong> (typing <code>/ask</code> filters the menu). Write a question and press Enter. The answer comes back in a few seconds, as a callout right under it.</li>
+        <li>Select a few words anywhere, a price in the Plans table for instance, and choose <strong>Ask about this</strong>. The new question lands right after them, quoting your selection.</li>
+        <li>Fill in <strong>About your team</strong>: team size, tools, what must not break, and the must-haves. They travel with your questions; watch the live code block below change as you do.</li>
+        <li>Click a reference in an answer. It scrolls there, opens the toggle if it has to, and lights the block up. <strong>Reply</strong> adds a follow-up in the same block, and <strong>Resolve</strong> folds it away.</li>
+        <li>Reload. Your edits, notes and questions come back where you left them. The <strong>Ask the team</strong> button in the page's top bar lists your questions and can end the conversation.</li>
+      </ol>
+
+      <div class="sx-note">This page uses <code>site: 'demo'</code>, Stand Chat's shared demo site, which works on any domain. Its demo Stand-in follows the page's private prompt and answers as Kenning's team, but Kenning is made up. With your own Site ID, your own Stand-ins and team answer.</div>
+
+      <h3>1. One more block in the slash menu</h3>
+      <p>The page is a small block editor. Each block is a <code>.blk</code> with its words in a <code>contenteditable</code> element; the DOM is the document, and saving walks it into JSON. A <kbd>/</kbd> at the start of a line (or after a space) opens the menu at the caret, typing filters it, and Enter turns the line into the chosen block. <em>Ask the team</em> is one more block type, whose content happens to be a conversation.</p>
+      <pre class="sx-code" data-file="doc.js, condensed"><code class="language-js">root.addEventListener('input', (e) =&gt; {
+  if (e.inputType === 'insertText' &amp;&amp; e.data === '/') {
+    const before = textBeforeCaret(text);
+    // A "/" at the start of a line or after a space opens the menu; "and/or" doesn't.
+    if (before === '/' || /\s\/$/.test(before)) startSlash(text);
+  }
+});
+
+function pickSlash(item) {
+  // …first, "/query" comes out of the line.
+  if (item.type === 'ask') return hooks.onAsk({ block, replace: lineIsEmpty });
+  if (lineIsEmpty) convert(block, item.type);
+  else insertAfter(block, createBlock(item.type));
+}</code></pre>
+      <p>The menu item shows who will answer before anyone asks: the name, the avatar and the AI marker come from Stand's discovery, and so does "Nobody can answer right now" when no one is around. Nothing reaches Stand until a question is sent; the first one creates the conversation.</p>
+
+      <h3>2. Or select the words that raised the question</h3>
+      <p>Selecting text anywhere on the page, even in a table cell or in an answer, brings up the formatting toolbar with <strong>Ask about this</strong> in front. The new ask block lands right after the paragraph and quotes the selection, and the quote goes along with the question. In an answer, it becomes a follow-up in that same block. On phones the toolbar sits below the selection, clear of the phone's own copy menu; from the keyboard, <kbd>Alt</kbd>+<kbd>F10</kbd> reaches it.</p>
+      <pre class="sx-code" data-wrap><code>/ask about “Guests are free” under “Plans and pricing”: Is there a limit?</code></pre>
+
+      <h3>3. Many ask blocks, one conversation</h3>
+      <p>Every ask block is a thread, but they all share one Stand session, so a visitor's questions count as one chat however many blocks they open. Each message starts with a short prefix that says where it was asked:</p>
+      <pre class="sx-code" data-wrap><code>/ask under “Importing your wiki”: Do comments come along when we import?
+/reply under “Importing your wiki”: And how far back does history go on Plus?
+/ask about “Guests are free” under “Plans and pricing”: Is there a limit?
+(Doc notes: Team: 11–50 · Tools: hosted wiki · Needs: single sign-on)</code></pre>
+      <p>The team sees where every question came from, and the page can read the prefix back. Each block keeps the exact messages it sent, and an answer belongs to the latest question before it. After a reload, <code>threads.js</code> puts every message back in its block; a question the page lost track of gets a new block under the heading its prefix names.</p>
+      <pre class="sx-code" data-file="threads.js, condensed"><code class="language-js">for (const m of messages) {
+  if (m.senderType === 'visitor') {
+    // The block that sent this exact text, or a new one under the heading it names.
+    current = blockThatSent(m.body) ?? newBlockUnder(parseQuestion(m.body).heading);
+    threads.get(current).push(question(m));
+  } else {
+    threads.get(current).push(answer(m)); // Answers follow the latest question.
+  }
+}</code></pre>
+      <p>While an answer is on its way, the other blocks wait ("Waiting for the answer under “Importing your wiki”…"), so no answer lands in the wrong place.</p>
+
+      <h3>4. The visitor's notes travel with the question</h3>
+      <p>The first question starts the conversation with a private prompt: who's speaking and the facts to answer from, how this page works, and the visitor's notes at that moment, all within 2,000 characters. Later questions add a <code>(Doc notes: …)</code> line only when the notes changed since the team last saw them, which the page works out from the transcript itself. This is what the team, and the AI Stand-in, will read with your next question, live from this page:</p>
+      <pre class="sx-code live-code" data-file="What the team reads next · live" data-wrap><code id="next-context">Loading…</code></pre>
+
+      <h3>5. Answers that point at the page</h3>
+      <p>The prompt names the parts of the page and asks the Stand-in to point at them in double brackets. The page turns <code>[[Toggle: How pricing works]]</code> into an inline mention that scrolls there, opens the toggle and lights the block up. The names are a closed list, matched without fuss over case, spaces or a trailing period. Anything unknown stays plain text, and a reference only ever moves you within the page.</p>
+      <pre class="sx-code" data-file="threads.js, the end of the prompt" data-wrap><code>Point to the page by exact name in double brackets, at most two per reply: [[Heading: About your team]] [[Heading: Importing your wiki]] [[Database: Plans]] [[Toggle: How pricing works]] [[Toggle: Can we try Business first?]] [[Heading: Security and admin]] …</code></pre>
+      <pre class="sx-code" data-file="ask.js, condensed"><code class="language-js">const target = resolve(name); // "Toggle: How pricing works" → { id, label }
+if (target) {
+  const a = document.createElement('a');
+  a.className = 'mention';
+  a.href = `#${target.id}`; // Works as a plain link, too.
+  a.dataset.ref = target.id;
+  a.textContent = target.label;
+  parent.append(a);
+} else {
+  parent.append(name.replace(/^(heading|toggle|database)\s*:\s*/i, ''));
+}</code></pre>
+
+      <h3>6. What your team sees in Stand</h3>
+      <p>A conversation arrives in Stand with the visitor's requirements doc attached: team size, tools, what must not break, the must-haves they ticked, and every question pinned to the part of the page that raised it. Selections show exactly which words gave them pause. That's the product learning: not only what people ask, but where on the page they hesitate, and what their team needs before they switch.</p>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> Every live answer shows the name Stand gives the responder (on this page, Stand Chat Demo) and an <em>AI</em> marker when it's the Stand-in. If a person from the team joins, the thread says so, and their answers say <em>Person</em>. The illustration at the top is written by Kenning and says <em>Example</em>, so it never speaks for the real responder.</li>
+        <li><strong>Closing isn't ending.</strong> Resolving folds a question away and the conversation carries on. Only <em>End conversation</em>, in the top bar's panel or a question's ⋯ menu, ends it in Stand. After that, earlier blocks stay as a read-only copy, and the next question starts a new conversation.</li>
+        <li><strong>A reload keeps everything.</strong> The conversation comes back from Stand, and your edits, notes, drafts and folded questions from <code>sessionStorage</code> (per tab, under keys starting with <code>slash-to-ask:</code>). Without storage, the page still works; it just forgets on reload.</li>
+        <li><strong>Nobody around.</strong> When discovery finds no one, the slash menu says so, and a question stays on the page as a note with a <em>Check again</em> button. A message that doesn't go through says <em>Not delivered</em> and keeps its words for a retry.</li>
+        <li><strong>Keyboard and screen readers.</strong> <kbd>/</kbd> anywhere starts a line where you're reading. Arrows and Enter pick from the menu, <kbd>Alt</kbd>+<kbd>F10</kbd> reaches the selection toolbar, <kbd>Ctrl</kbd>+<kbd>/</kbd> (<kbd>⌘</kbd>+<kbd>/</kbd> on a Mac) opens a block's menu, and adding <kbd>Shift</kbd> with <kbd>↑</kbd> or <kbd>↓</kbd> moves the block. Answers are announced whole in a live region. With reduced motion, nothing slides or shimmers.</li>
+        <li><strong>On phones</strong>, <kbd>/</kbd> works from the on-screen keyboard, and a bar above the keyboard adds <em>Block</em> and <em>Ask the team</em> buttons. The selection toolbar sits below the selection, clear of the phone's own menu.</li>
+        <li><strong>It's a beta.</strong> The Visitor API can grow new fields and events, and the client ignores what it doesn't know. Plan quotas still apply, and the <em>Powered by Stand</em> link stays.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>Built by <strong>Claude Opus 5.5 in Claude Code</strong>. A lead session turned a list of ideas into ten sharper ones, wrote this example's brief, and reviewed what came back. A separate agent built the page in its own git worktree: it studied the reference product's website and published pages to get the tone and the details right, tuned the prompt in real conversations with Stand's demo Stand-in, and checked every state in headless Chrome at desktop and phone sizes, reading its own screenshots.</p>
+          <p>Once AI writes the front end, a chat can take the shape of your product instead of a bubble in the corner. Stand's Visitor API keeps the conversation, the AI Stand-in and your team behind it.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example's brief</p>
+          <blockquote class="made-prompt">The reference: a connected, block-based workspace, where "/" opens a menu of blocks.
+
+The company's "is it right for your team?" page is a real, editable document. One block in the "/" menu is Ask the team: the question becomes a block, and the answer arrives as a callout right under it. Selecting text offers "Ask about this".
+
+Fill-in notes (team size, tools, what must not break, must-have to-dos) go into the first question's prompt, and later questions add a notes line when they change. Each ask block is a thread over one Stand session; replies can point at blocks with [[…]] references that scroll there and light them up.
+
+Show a seeded, clearly illustrative example (an answered question and the slash menu) in the first viewport.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Point your agent at the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>. It's written as a contract for coding agents, down to the recovery rules.</li>
+            <li>Start on the <code>demo</code> Site ID, so the agent can hold real conversations while it builds, then switch to yours.</li>
+            <li>For references, list the exact names in the prompt and match them loosely in the page. Probing the prompt against the real Stand-in first showed that it uses them readily, and that a prompt over 2,000 characters gets cut off, so the visitor's notes go last.</li>
+            <li>Have the agent test the states a demo never produces (a person joining, an email follow-up, a link card) by feeding the UI a fake client. Here a headless-Chrome script swapped the network module for a scripted one.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/slash-to-ask my-slash-to-ask</code></pre>
+      <p>Then change <code>site: 'demo'</code> in <code>app.js</code> to your own Site ID, and the facts in the prompt in <code>threads.js</code> to yours.</p>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/slash-to-ask/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>

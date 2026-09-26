@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Kenning's page icon: a moving box full of pages, drawn in an emoji-like style. -->
+  <defs>
+    <linearGradient id="front" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E4A767"/>
+      <stop offset="1" stop-color="#C17B3B"/>
+    </linearGradient>
+    <linearGradient id="flap" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#D9985A"/>
+      <stop offset="1" stop-color="#F0C083"/>
+    </linearGradient>
+    <linearGradient id="inside" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6E4120"/>
+      <stop offset="1" stop-color="#94592B"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#E9EDF2"/>
+    </linearGradient>
+  </defs>
+  <!-- The open back flaps. -->
+  <path d="M30 52 12 33c-1-1.1-.3-2.9 1.2-3l38.8-2.6c.8 0 1.5.4 1.8 1.1L62 49Z" fill="url(#flap)"/>
+  <path d="m98 52 18-19c1-1.1.3-2.9-1.2-3l-38.8-2.6c-.8 0-1.5.4-1.8 1.1L66 49Z" fill="url(#flap)"/>
+  <!-- The inside of the box. -->
+  <path d="M28 50h72l-3 14H31Z" fill="url(#inside)"/>
+  <!-- Pages on their way somewhere new. -->
+  <g transform="rotate(-10 50 42)">
+    <rect x="33" y="17" width="34" height="44" rx="3.5" fill="url(#paper)"/>
+    <rect x="39" y="25" width="17" height="3.4" rx="1.7" fill="#2F2D2A" opacity=".75"/>
+    <rect x="39" y="32" width="22" height="2.6" rx="1.3" fill="#9AA6B2"/>
+    <rect x="39" y="37.5" width="19" height="2.6" rx="1.3" fill="#9AA6B2"/>
+    <rect x="39" y="43" width="21" height="2.6" rx="1.3" fill="#9AA6B2"/>
+  </g>
+  <g transform="rotate(8 78 44)">
+    <rect x="61" y="21" width="33" height="42" rx="3.5" fill="url(#paper)"/>
+    <rect x="67" y="28" width="6" height="6" rx="1.5" fill="none" stroke="#5C9BD6" stroke-width="2"/>
+    <rect x="76" y="29.5" width="12" height="2.6" rx="1.3" fill="#9AA6B2"/>
+    <rect x="67" y="38" width="6" height="6" rx="1.5" fill="#5C9BD6"/>
+    <path d="m68.4 41 1.3 1.3 2.2-2.6" fill="none" stroke="#fff" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="76" y="39.5" width="10" height="2.6" rx="1.3" fill="#9AA6B2"/>
+  </g>
+  <!-- The front and its rim. -->
+  <path d="M24 60h80l-4.2 46.6a5 5 0 0 1-5 4.4H33.2a5 5 0 0 1-5-4.4Z" fill="url(#front)"/>
+  <path d="M24 60h80l-.9 9.6H24.9Z" fill="#D18F4E"/>
+  <path d="M24 60h80" stroke="#F3C88F" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Tape and a label. -->
+  <path d="M57 60h14l-.6 26H57.6Z" fill="#F1D3A2" opacity=".85"/>
+  <rect x="36" y="82" width="19" height="13" rx="2.5" fill="#FBEFD9"/>
+  <rect x="39.5" y="86" width="12" height="1.8" rx=".9" fill="#C9A77B"/>
+  <rect x="39.5" y="89.8" width="8" height="1.8" rx=".9" fill="#C9A77B"/>
+</svg>
