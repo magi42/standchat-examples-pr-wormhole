@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>A setup wizard you can talk to</title>
+  <meta name="description" content="A custom chat UI on Stand's Visitor API: a store setup wizard with a “Doesn’t fit? Ask us” field in every step. Answers appear inside the step, already know what you picked, and can move the wizard to the plan or checklist item they mention.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, onboarding, setup wizard, inline help, page references, threads">
+  <meta property="og:title" content="A setup wizard you can talk to">
+  <meta property="og:description" content="Ask at the step where you hesitate: every wizard step has its own question field, and the answer arrives inside the step, knowing your answers so far.">
+  <meta property="og:image" content="https://examples.stand.chat/ask-at-any-step/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <!-- Awning's canopy mark as the tab icon. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 19'%3E%3Crect x='5.5' y='2.4' width='21' height='2.6' rx='1.3' fill='%230A7F5D'/%3E%3Cpath d='M7 5.5L10.6 5.5L7.6 14.5A2.8 2.8 0 0 1 2 14.5Z' fill='%239AC54C'/%3E%3Cpath d='M10.6 5.5L14.2 5.5L13.2 14.5A2.8 2.8 0 0 1 7.6 14.5Z' fill='%230A7F5D'/%3E%3Cpath d='M14.2 5.5L17.8 5.5L18.8 14.5A2.8 2.8 0 0 1 13.2 14.5Z' fill='%239AC54C'/%3E%3Cpath d='M17.8 5.5L21.4 5.5L24.4 14.5A2.8 2.8 0 0 1 18.8 14.5Z' fill='%230A7F5D'/%3E%3Cpath d='M21.4 5.5L25 5.5L30 14.5A2.8 2.8 0 0 1 24.4 14.5Z' fill='%239AC54C'/%3E%3C/svg%3E">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@300..800&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="wizard.css">
+  <link rel="stylesheet" href="storefront.css">
+
+  <!-- The wizard, its live preview and the advisor: Stand's Visitor API, no stand.js. -->
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="aw">
+    <header class="aw-nav">
+      <!-- Awning's mark: a striped canopy with a scalloped edge. -->
+      <a class="aw-logo" href="#start" aria-label="Awning, home">
+        <svg class="mark" viewBox="0 0 32 19" width="30" height="18" aria-hidden="true"><rect x="5.5" y="2.4" width="21" height="2.6" rx="1.3" fill="#fff"/><path d="M7 5.5L10.6 5.5L7.6 14.5A2.8 2.8 0 0 1 2 14.5Z" fill="#9AC54C"/><path d="M10.6 5.5L14.2 5.5L13.2 14.5A2.8 2.8 0 0 1 7.6 14.5Z" fill="#fff"/><path d="M14.2 5.5L17.8 5.5L18.8 14.5A2.8 2.8 0 0 1 13.2 14.5Z" fill="#9AC54C"/><path d="M17.8 5.5L21.4 5.5L24.4 14.5A2.8 2.8 0 0 1 18.8 14.5Z" fill="#fff"/><path d="M21.4 5.5L25 5.5L30 14.5A2.8 2.8 0 0 1 24.4 14.5Z" fill="#9AC54C"/></svg>
+        <span>awning</span>
+      </a>
+      <nav class="aw-links" aria-label="Awning">
+        <a href="#sell">Sell</a>
+        <a href="#grow">Grow</a>
+        <a href="#stories">Stories</a>
+        <a href="#pricing">Pricing</a>
+      </nav>
+      <a class="aw-pill" href="#start" data-start>Start free trial</a>
+    </header>
+
+    <main>
+      <section class="aw-hero" id="start" aria-labelledby="hero-title">
+        <div class="aw-wrap aw-hero-head">
+          <h1 id="hero-title">Open your shop. <span>Keep your evenings.</span></h1>
+          <p class="aw-hero-sub">Six questions, and your store builds itself as you answer. Stuck on one? Ask right in the step.</p>
+        </div>
+
+        <!-- The product: a setup wizard, a live preview of the store, and the advisor. -->
+        <div class="aw-app" data-app>
+          <div class="aw-app-bar">
+            <span class="aw-app-title">
+              <svg class="mark" viewBox="0 0 32 19" width="22" height="13" aria-hidden="true"><rect x="5.5" y="2.4" width="21" height="2.6" rx="1.3" fill="#fff"/><path d="M7 5.5L10.6 5.5L7.6 14.5A2.8 2.8 0 0 1 2 14.5Z" fill="#9AC54C"/><path d="M10.6 5.5L14.2 5.5L13.2 14.5A2.8 2.8 0 0 1 7.6 14.5Z" fill="#fff"/><path d="M14.2 5.5L17.8 5.5L18.8 14.5A2.8 2.8 0 0 1 13.2 14.5Z" fill="#9AC54C"/><path d="M17.8 5.5L21.4 5.5L24.4 14.5A2.8 2.8 0 0 1 18.8 14.5Z" fill="#fff"/><path d="M21.4 5.5L25 5.5L30 14.5A2.8 2.8 0 0 1 24.4 14.5Z" fill="#9AC54C"/></svg>
+              <span>Start your store</span>
+            </span>
+            <span class="aw-app-save" aria-hidden="true">Saved in this tab</span>
+            <button class="aw-advisor-open" type="button" data-advisor-open aria-haspopup="dialog" aria-expanded="false">
+              <svg class="icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.8c.5 3.7 3.5 6.7 7.2 7.2-3.7.5-6.7 3.5-7.2 7.2-.5-3.7-3.5-6.7-7.2-7.2 3.7-.5 6.7-3.5 7.2-7.2z"/></svg>
+              <span>Store advisor</span>
+              <span class="aw-count" data-advisor-count hidden></span>
+            </button>
+          </div>
+          <div class="aw-app-body">
+            <div class="wz" data-wizard role="region" aria-label="Start your store"></div>
+            <div class="aw-preview" data-preview>
+              <button class="aw-preview-toggle" type="button" aria-expanded="false" aria-controls="storefront" data-preview-toggle>
+                <svg class="icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 10s2.8-5 7.5-5 7.5 5 7.5 5-2.8 5-7.5 5-7.5-5-7.5-5z M7.7 10a2.3 2.3 0 1 0 4.6 0a2.3 2.3 0 1 0-4.6 0"/></svg>
+                <span class="aw-preview-label">Preview your store</span>
+                <span class="aw-preview-summary" data-preview-summary></span>
+                <svg class="icon aw-chevron" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8l4 4 4-4"/></svg>
+              </button>
+              <div class="aw-stage">
+                <div class="sf-frame" id="storefront" data-storefront role="region" aria-label="Live preview of your store"></div>
+                <dialog class="adv" data-advisor aria-labelledby="advisor-title"></dialog>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="aw-section aw-sell" id="sell" aria-labelledby="sell-title">
+        <div class="aw-wrap">
+          <div class="aw-section-head">
+            <h2 id="sell-title">One shop. <span>Every counter.</span></h2>
+            <p>Online, at the market stall and in the feed. Orders, stock and customers stay in one place, wherever the sale happens.</p>
+          </div>
+          <div class="aw-sell-grid">
+            <article class="aw-card aw-card-wide">
+              <div class="aw-card-visual aw-window" data-showcase aria-hidden="true"></div>
+              <div class="aw-card-copy">
+                <h3>A storefront that looks like you</h3>
+                <p>Pick a look, drop in your photos, and you’re open. Every theme works on phones first, because that’s where your customers are.</p>
+              </div>
+            </article>
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <div class="aw-pos">
+                  <div class="aw-pos-screen">
+                    <p class="aw-pos-title">Craft fair · Stall 12</p>
+                    <ul>
+                      <li><span>Beeswax candle</span><span>€22.00</span></li>
+                      <li><span>Speckled mug × 2</span><span>€52.00</span></li>
+                    </ul>
+                    <p class="aw-pos-total"><span>Total</span><span>€74.00</span></p>
+                    <span class="aw-pos-charge">Charge €74.00</span>
+                  </div>
+                  <div class="aw-reader"><span class="aw-reader-wave"></span><span class="aw-reader-led"></span></div>
+                </div>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Sell in person</h3>
+                <p>Tap to pay at the counter or the craft fair with the free POS app and a $59 reader. Stock stays in sync with your store.</p>
+              </div>
+            </article>
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <div class="aw-phone">
+                  <div class="aw-post">
+                    <div class="aw-post-head"><span class="aw-post-avatar"></span><span>tallowandwick</span></div>
+                    <div class="aw-post-photo" data-art="candle"></div>
+                    <span class="aw-post-tag">Beeswax candle · €22</span>
+                    <div class="aw-post-lines"><span></span><span></span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Sell in the feed</h3>
+                <p>Tag products in your posts and stories. Customers check out without leaving the conversation they were having.</p>
+              </div>
+            </article>
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <div class="aw-globe" data-globe></div>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Sell across borders</h3>
+                <p>Prices in your customers’ currency, taxes worked out at checkout, and shipping zones for every country you pick.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="aw-section aw-grow" id="grow" aria-labelledby="grow-title">
+        <div class="aw-wrap">
+          <div class="aw-section-head">
+            <h2 id="grow-title">Grow like you have a marketing team. <span>You don’t, and that’s fine.</span></h2>
+            <p>Emails, reports and gentle nudges, built from the products and customers already in your store.</p>
+          </div>
+          <div class="aw-grow-grid">
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <div class="aw-mail">
+                  <p class="aw-mail-from"><b>Tallow &amp; Wick</b><span>Back in stock: the Linen candle</span></p>
+                  <div class="aw-mail-art" data-art="candle"></div>
+                  <p class="aw-mail-text">It sold out twice in October. This batch is a little bigger.</p>
+                  <span class="aw-mail-button">Shop the batch</span>
+                </div>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Emails that sound like you</h3>
+                <p>Back-in-stock notes, new drops and thank-yous, built from your products in a few clicks.</p>
+              </div>
+            </article>
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <div class="aw-stats">
+                  <p class="aw-stats-label">Sales this week</p>
+                  <p class="aw-stats-value">€1,284 <span>▲ 18%</span></p>
+                  <div class="aw-bars"><i style="--h:.38"></i><i style="--h:.52"></i><i style="--h:.44"></i><i style="--h:.61"></i><i style="--h:.57"></i><i style="--h:.86"></i><i style="--h:.74"></i></div>
+                  <p class="aw-stats-foot"><span>Returning customers</span><b>34%</b></p>
+                </div>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Numbers worth reading</h3>
+                <p>What sold, who came back and where they found you, on one page you’ll actually open on Monday.</p>
+              </div>
+            </article>
+            <article class="aw-card">
+              <div class="aw-card-visual" aria-hidden="true">
+                <ol class="aw-flow">
+                  <li><span class="aw-flow-dot"></span>Hasn’t ordered in 60 days</li>
+                  <li><span class="aw-flow-dot"></span>Send “We saved you a candle”, 10% off</li>
+                  <li class="aw-flow-result"><span class="aw-flow-dot"></span>12 regulars came back</li>
+                </ol>
+              </div>
+              <div class="aw-card-copy">
+                <h3>Regulars, remembered</h3>
+                <p>Set up a nudge once and it quietly brings people back, month after month.</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="aw-section aw-stories" id="stories" aria-labelledby="stories-title">
+        <div class="aw-wrap">
+          <div class="aw-section-head">
+            <h2 id="stories-title">Opened on a weeknight. <span>Still open.</span></h2>
+            <p>Three shops that started with the same six questions. One of them asked about VAT halfway through.</p>
+          </div>
+          <div class="aw-story-grid">
+            <figure class="aw-story">
+              <div class="aw-story-scene aw-scene-candles" aria-hidden="true"><span data-art="candle"></span><span data-art="tapers"></span></div>
+              <blockquote><p>The VAT question I’d been dreading took one message, right there in the setup. We opened the same night.</p></blockquote>
+              <figcaption><b>Tallow &amp; Wick</b> · Candles and pouring classes · Tampere</figcaption>
+              <dl><div><dt>Countries</dt><dd>4</dd></div><div><dt>Classes</dt><dd>Booked to May</dd></div></dl>
+            </figure>
+            <figure class="aw-story">
+              <div class="aw-story-scene aw-scene-mugs" data-look="moss" aria-hidden="true"><span data-art="mug"></span><span data-art="mug"></span></div>
+              <blockquote><p>We moved 400 listings over from a marketplace on a Sunday morning and still had the afternoon.</p></blockquote>
+              <figcaption><b>Kiln Street</b> · Ceramics studio · Leeds</figcaption>
+              <dl><div><dt>Products</dt><dd>400</dd></div><div><dt>Pickup</dt><dd>At the studio</dd></div></dl>
+            </figure>
+            <figure class="aw-story">
+              <div class="aw-story-scene aw-scene-prints" data-look="sunny" aria-hidden="true"><span data-art="print"></span><span data-art="box"></span></div>
+              <blockquote><p>Our print club pays the rent now. Turning on subscriptions was one switch.</p></blockquote>
+              <figcaption><b>Paper Moth Press</b> · Risograph prints · Portland</figcaption>
+              <dl><div><dt>Club members</dt><dd>600</dd></div><div><dt>Ships to</dt><dd>9 countries</dd></div></dl>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="aw-section aw-pricing" id="pricing" aria-labelledby="pricing-title">
+        <div class="aw-wrap">
+          <div class="aw-section-head aw-pricing-head">
+            <h2 id="pricing-title">Pick a size. <span>Change it any time.</span></h2>
+            <p>14 days free on every plan. No card needed to start.</p>
+          </div>
+          <div class="aw-pricing-bar">
+            <label class="aw-switch"><input type="checkbox" data-yearly><span class="aw-switch-track" aria-hidden="true"></span><span>Pay yearly, save 25%</span></label>
+            <span class="aw-pricing-note">Prices in USD</span>
+          </div>
+          <div class="aw-plans" data-plans>
+            <article class="aw-plan" data-plan="kiosk">
+              <header><h3>Kiosk</h3><p class="aw-price"><b data-monthly="9" data-yearly="7">$9</b>/mo</p></header>
+              <p class="aw-plan-for">For selling in chats and on social</p>
+              <a class="aw-pill aw-pill-outline" href="#start" data-start>Start free trial</a>
+              <ul><li>Checkout links for chats and posts</li><li>The POS app, free</li><li>No online store</li></ul>
+            </article>
+            <article class="aw-plan" data-plan="corner">
+              <header><h3>Corner</h3><p class="aw-price"><b data-monthly="32" data-yearly="24">$32</b>/mo</p></header>
+              <p class="aw-plan-for">For shops opening their doors</p>
+              <a class="aw-pill aw-pill-outline" href="#start" data-start>Start free trial</a>
+              <ul><li>Online store, unlimited products</li><li>2 staff accounts</li><li>Card rate 2.9% + 30¢</li><li>Free .awning.shop address</li></ul>
+            </article>
+            <article class="aw-plan" data-plan="mainstreet">
+              <header><h3>Main Street</h3><p class="aw-price"><b data-monthly="89" data-yearly="67">$89</b>/mo</p></header>
+              <p class="aw-plan-for">For shops with regulars</p>
+              <a class="aw-pill aw-pill-outline" href="#start" data-start>Start free trial</a>
+              <ul><li>Everything in Corner</li><li>5 staff accounts</li><li>Card rate 2.6% + 30¢</li><li>Subscriptions and Bookings apps</li></ul>
+            </article>
+            <article class="aw-plan" data-plan="flagship">
+              <header><h3>Flagship</h3><p class="aw-price"><b data-monthly="319" data-yearly="239">$319</b>/mo</p></header>
+              <p class="aw-plan-for">For shops selling abroad</p>
+              <a class="aw-pill aw-pill-outline" href="#start" data-start>Start free trial</a>
+              <ul><li>Everything in Main Street</li><li>15 staff accounts</li><li>Card rate 2.4% + 30¢</li><li>Local currency, language and domain per country</li><li>Duties at checkout</li></ul>
+            </article>
+            <article class="aw-plan" data-plan="landmark">
+              <header><h3>Landmark</h3><p class="aw-price"><small>from</small> <b data-monthly="2,100" data-yearly="2,100">$2,100</b>/mo</p></header>
+              <p class="aw-plan-for">For brands with many doors</p>
+              <a class="aw-pill aw-pill-outline" href="#start" data-start>Talk to us</a>
+              <ul><li>Everything in Flagship</li><li>Unlimited staff accounts</li><li>Card rate 2.1% + 30¢</li><li>B2B and wholesale</li></ul>
+            </article>
+          </div>
+          <p class="aw-fineprint">Other payment providers work too, for a small extra fee. The Downloads app is free on every plan; Subscriptions and Bookings are $10 a month each on Corner. Custom domains are $14 a year.</p>
+        </div>
+      </section>
+
+      <section class="aw-section aw-closing" aria-labelledby="closing-title">
+        <div class="aw-wrap aw-closing-grid">
+          <h2 id="closing-title">Put up your awning tonight.</h2>
+          <div>
+            <ol class="aw-numbered">
+              <li><span>01</span>Answer six questions</li>
+              <li><span>02</span>Ask whatever doesn’t fit</li>
+              <li><span>03</span>Open your doors</li>
+            </ol>
+            <a class="aw-pill" href="#start" data-start>Start your store</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="aw-footer">
+      <div class="aw-wrap">
+        <div class="aw-footer-top">
+          <a class="aw-logo" href="#start" aria-label="Awning, back to the top">
+            <svg class="mark" viewBox="0 0 32 19" width="30" height="18" aria-hidden="true"><rect x="5.5" y="2.4" width="21" height="2.6" rx="1.3" fill="#fff"/><path d="M7 5.5L10.6 5.5L7.6 14.5A2.8 2.8 0 0 1 2 14.5Z" fill="#9AC54C"/><path d="M10.6 5.5L14.2 5.5L13.2 14.5A2.8 2.8 0 0 1 7.6 14.5Z" fill="#fff"/><path d="M14.2 5.5L17.8 5.5L18.8 14.5A2.8 2.8 0 0 1 13.2 14.5Z" fill="#9AC54C"/><path d="M17.8 5.5L21.4 5.5L24.4 14.5A2.8 2.8 0 0 1 18.8 14.5Z" fill="#fff"/><path d="M21.4 5.5L25 5.5L30 14.5A2.8 2.8 0 0 1 24.4 14.5Z" fill="#9AC54C"/></svg>
+            <span>awning</span>
+          </a>
+          <nav aria-label="Footer">
+            <a href="#sell">Sell</a>
+            <a href="#grow">Grow</a>
+            <a href="#stories">Stories</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#how-it-works">How this page works</a>
+          </nav>
+        </div>
+        <p class="aw-footer-note">Awning is a fictional company, and so are its merchants. This page demonstrates a custom chat UI on Stand Chat’s Visitor API: the questions you ask in the wizard are real conversations.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="aw-sr" aria-live="polite" data-announcer></div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Let people ask at the step where they hesitate</h2>
+      <p class="sx-lead">Signups, onboarding and quote forms lose people at the one step where their situation doesn’t fit the options. Here, every step of a store setup wizard has its own “Doesn’t fit? Ask us” field. The question goes to Stand with the step and every answer given so far, the reply appears inside that step, and it can move the wizard to the plan or checklist item it mentions.</p>
+      <p>There’s no <code>stand.js</code> on this page. The wizard, the preview and the advisor are plain JavaScript modules in this folder, talking to Stand’s Visitor API (beta) over HTTP and a WebSocket.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Pick what you’d sell and click through a step or two. The store on the right builds itself: products, currency, a booking block, pickup badges.</li>
+        <li>At any step, type a question into <strong>Doesn’t fit? Ask us</strong>. Try “Do I need VAT in Germany?” on Markets, or “Which plan if we’re four people?” on Size.</li>
+        <li>The answer appears inside the step, from a real AI Stand-in. Chips in it, like <em>Checklist: Taxes</em> or <em>Plan: Main Street</em>, take you to that part of the wizard.</li>
+        <li>Move on and ask again. <strong>Store advisor</strong>, top right, keeps the whole conversation with a badge for each step. Reload: your answers and the conversation come back.</li>
+      </ol>
+
+      <div class="sx-note">This example uses <code>site: 'demo'</code>, Stand Chat’s shared demo site, which works on any domain. Its demo Stand-in follows the prompt below and answers as Awning’s team, but Awning is made up. With your own Site ID, your own Stand-ins answer, and your team can step in.</div>
+
+      <h3>1. A field in every step, not a bubble in the corner</h3>
+      <p>The ask field sits at the foot of each step card, where the hesitation happens. It creates nothing until the visitor sends a question, and the wizard works exactly the same for people who never use it.</p>
+      <pre class="sx-code" data-file="ask.js, rendered at the foot of each step"><code class="language-html">&lt;form class="ask-form"&gt;
+  &lt;label for="ask-3"&gt;Doesn’t fit? Ask us&lt;/label&gt;
+  &lt;textarea id="ask-3" rows="1"
+    placeholder="Do I need to register for VAT in Germany?"&gt;&lt;/textarea&gt;
+  &lt;button type="submit" aria-label="Send your question"&gt;…&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+
+      <h3>2. Every question carries its step and the answers so far</h3>
+      <p>There’s one Stand conversation per visitor, however many steps they ask on. Each message starts with a short, readable prefix: the step, then the answers given so far. The Stand-in answers for that situation, your team reads the same line in Stand, and after a reload the page parses the prefix to put each question back in its step. The UI strips it and shows the answers as chips.</p>
+      <pre class="sx-code" data-file="advisor.js"><code class="language-js">export function composeQuestion(stepN, answers, text) {
+  const step = STEPS[stepN - 1];
+  const fields = answerFields(answers).map((f) =&gt; ` · ${f}`).join('');
+  return `[Step ${step.n} · ${step.name}${fields}] ${text.trim()}`;
+}
+
+// Replies belong to the latest question before them, so they land in its step.
+for (const m of state.messages) {
+  if (m.senderType === 'visitor') {
+    current = { ...parseQuestion(m.body), replies: [] };
+    exchanges.push(current);
+  } else if (isConversation(m)) {
+    current?.replies.push(m);
+  }
+}</code></pre>
+      <p>The next question from this page, with your answers right now:</p>
+      <pre class="aw-live" data-live-prefix aria-live="off"></pre>
+      <p>While a reply is due, the other steps’ fields wait for it (“Waiting for the answer on Step 3”), so replies never land in the wrong step.</p>
+
+      <h3>3. The first question brings a summary</h3>
+      <p>The first send creates the conversation, with a private prompt for whoever answers: who Awning is, the facts the Stand-in may use (plans, fees, taxes, shipping), the message format, the names it can point at, and the answers at the moment of the first question. It’s at most 2,000 characters. Here’s the one your first question would send:</p>
+      <pre class="aw-live aw-live-prompt" data-live-prompt aria-live="off"></pre>
+      <pre class="sx-code" data-file="ask.js"><code class="language-js">const body = composeQuestion(step, wizard.answers, text);
+const first = state.phase === 'available'; // No conversation yet: this creates it.
+await client.send(body, first
+  ? { prompt: buildPrompt(wizard.answers, step), analyticsId: 'setup-wizard' }
+  : {});</code></pre>
+
+      <h3>4. Answers that move the wizard</h3>
+      <p>The prompt lists the wizard’s parts by name and asks the Stand-in to point at one in double square brackets when it helps. The page turns a name it knows into a chip: a step jumps there and keeps your answers, a plan opens the Plan step with that plan, a checklist item or an app opens in the checklist, added if your answers hadn’t called for it. Unknown names render as plain text, and a reply can only ever navigate.</p>
+      <pre class="sx-code" data-file="steps.js and ask.js"><code class="language-js">export const REFERENCES = [
+  { name: 'Step: Markets', kind: 'step', target: 3, aliases: ['markets'] },
+  { name: 'Plan: Main Street', kind: 'plan', target: 'mainstreet' },
+  { name: 'Checklist: Taxes', kind: 'checklist', target: 'taxes', aliases: ['vat'] },
+  { name: 'App: Subscriptions', kind: 'app', target: 'subscriptions' },
+  // …
+];
+
+// In a reply, [[Checklist: Taxes]] becomes a chip. It can only navigate.
+const ref = findReference(name); // null for names it doesn't know: plain text
+chip.addEventListener('click', () =&gt; wizard.reveal(ref));</code></pre>
+
+      <h3>5. What your team learns</h3>
+      <p>In Stand, each conversation reads like a record of hesitation: which step, with which answers, prompted which question, and what answered it. Patterns show up fast. If people with customers in three countries keep asking about VAT on the Markets step, that step needs a sentence about VAT.</p>
+      <pre class="sx-code" data-file="the conversation, as your team sees it in Stand" data-wrap><code>Visitor   [Step 3 · Markets · sells: physical, subscriptions · customers: FI (home), DE, US] Do I need to register for VAT in Germany?
+AI        Not at first. Under €10,000 a year of sales to other EU countries you charge Finnish VAT; above that, German VAT through the One-Stop Shop. [[Checklist: Taxes]]
+Visitor   [Step 4 · Size · … · size: €1k–10k/mo, 11–100 products, just me] Is Corner enough if I add a candle club later?</code></pre>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>stand-visitor.js</code></strong> is the network side, shared with Stand Inline: discovery, one-time creation, sends with retries, the WebSocket, recovery and handoffs. No DOM.</li>
+        <li><strong><code>advisor.js</code></strong> is the conversation model: the prefix, the prompt, exchanges per step and the reference names. No DOM either.</li>
+        <li><strong><code>ask.js</code></strong> renders it: the field and helper notes in each step, the Store advisor panel, and every state from “Sending…” to an ended conversation.</li>
+        <li><strong><code>steps.js</code></strong>, <strong><code>wizard.js</code></strong> and <strong><code>storefront.js</code></strong> are the made-up product: the questions, the admin-style wizard and the live store preview. <strong><code>art.js</code></strong> draws the icons, flags, products and map.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about who answers.</strong> Every answer shows the responder’s name as Stand gives it, with an <em>AI</em> chip for a Stand-in. If someone from your team takes over, the chip changes and the step says so.</li>
+        <li><strong>Asking is optional, creating is deliberate.</strong> Opening the page, focusing a field or opening the advisor starts nothing. The first question starts the conversation, once.</li>
+        <li><strong>Closing isn’t ending.</strong> Moving between steps or closing the advisor leaves the conversation running. <em>End conversation</em> in the advisor ends it, and <em>Start a new conversation</em> begins the next.</li>
+        <li><strong>A reload keeps everything.</strong> The client restores the conversation from <code>sessionStorage</code> and Stand; the wizard keeps its answers and step there too. Questions find their steps again by their prefix.</li>
+        <li><strong>Nobody around?</strong> If discovery finds no one to answer, each ask field says so and offers a retry. The wizard keeps working.</li>
+        <li><strong>Keyboard and screen readers.</strong> Options are real checkboxes and radios, each step moves focus to its question, <kbd>Esc</kbd> closes the advisor, and whole answers are announced with the step they belong to. With reduced motion, steps and the preview change without animating.</li>
+        <li><strong>It’s a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn’t know, and the wizard never depends on the chat.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>This page was built by <strong>Claude Opus 5.5 in Claude Code</strong>. A lead session turned a list of ideas into ten briefs, wrote this one, and reviewed the result. A separate agent built the page in its own git worktree: it studied the reference commerce platform’s site for tone without borrowing a word or a pixel, tuned the prompt in real conversations with Stand’s demo Stand-in until the answers used the visitor’s context and pointed at the right parts of the wizard, and checked every state in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example’s brief</p>
+          <blockquote class="made-prompt">A setup wizard you can talk to, for a made-up commerce platform in the style of the market leader for independent merchants: a bold black-and-white marketing site around an admin-style, card-based “Start your store” wizard.
+
+Six steps: what you sell, where you sell today, where your customers are (flags and a small map), how big you are, a store name with a domain check, and a recommended plan with a setup checklist tailored to the answers. A live storefront preview builds itself beside it.
+
+Every step has an inline “Doesn’t fit? Ask us” field. The answer appears inside the step, and the whole conversation stays in a slim advisor panel with a step badge on each question. Each message carries its step and the answers so far in a compact prefix; the first message’s prompt summarizes all answers. Replies can point at steps, plans, checklist items and apps, and those references act. The wizard never depends on the chat.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Give your agent the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>. It’s written as a contract for coding agents, recovery rules included.</li>
+            <li>Start on the <code>demo</code> Site ID, and have the agent probe the prompt in real conversations before it builds any UI. Here, three rounds settled the facts, the prefix and the reference names, and fit them all in 2,000 characters.</li>
+            <li>Keep the context in the messages, not only the prompt. The prompt is fixed at the first question; a prefix on every message keeps later answers current, and makes the transcript readable for your team.</li>
+            <li>Make references a closed list with a few aliases. The Stand-in sometimes writes <code>[[Tap reader]]</code> instead of <code>[[Checklist: Point of sale]]</code>; an alias turns the near miss into a working chip.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/ask-at-any-step my-setup-wizard</code></pre>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Feature reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/ask-at-any-step/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
