@@ -13,6 +13,7 @@ const ORDER = [
   'chat-mascot',
   'adventure-game-chat',
   'demoscene-chat',
+  'raster-harbour',
   'vintage-terminal',
   'stand-inline',
   'stand-card',

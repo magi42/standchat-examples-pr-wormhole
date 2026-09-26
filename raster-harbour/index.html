@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Raster Harbour</title>
+  <meta name="description" content="A fully custom chat UI on Stand's Visitor API: a 90s demo sine scroller along the bottom of the page. Click it, and its letters burst into pixels and land as a full-screen chat in copper-bar colours.">
+  <meta name="author" content="Joonas Lehtinen">
+  <link rel="author" href="https://jole.fi/">
+  <meta name="keywords" content="Visitor API, custom chat UI, WebSocket, WebGL, demoscene">
+  <meta property="og:title" content="Raster Harbour">
+  <meta property="og:description" content="A fully custom chat UI on Stand's Visitor API: a 90s demo sine scroller along the bottom of the page. Click it, and its letters burst into pixels and land as a full-screen chat in copper-bar colours.">
+  <meta property="og:image" content="https://examples.stand.chat/raster-harbour/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Stencil:wght@800;900&family=Big+Shoulders:wght@700;800;900&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The chat: no stand.js. The scroller talks to Stand's Visitor API directly. -->
+  <link rel="stylesheet" href="scroller-chat.css">
+  <script type="module" src="scroller-chat.js"></script>
+  <!-- The hero's invitation intro, made of the same effects, and the party tune. -->
+  <script type="module" src="intro.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="rh">
+    <header class="rh-nav">
+      <a class="rh-logo" href="#top" aria-label="Raster Harbour">
+        <span class="rh-logo-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span>Raster Harbour</span>
+      </a>
+      <nav aria-label="Raster Harbour">
+        <a href="#compos">Compos</a>
+        <a href="#timetable">Timetable</a>
+        <a href="#harbour">The harbour</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <button class="rh-music" type="button" data-music-toggle aria-pressed="true">
+        <span class="rh-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+        <span class="rh-music-label">Music</span>
+      </button>
+      <a class="rh-button rh-button-small" href="#tickets">Get a ticket</a>
+    </header>
+
+    <main id="top">
+      <section class="rh-hero" data-scroller-hero>
+        <canvas class="rh-intro" aria-hidden="true"></canvas>
+        <div class="rh-hero-copy">
+          <p class="rh-eyebrow">Demoparty · 27–29 November 2026</p>
+          <h1><span class="rh-title">Raster Harbour</span></h1>
+          <p class="rh-lede">Three days of real-time art at the dark end of the year. Demos, intros, tracked music and pixels on a 14-metre bigscreen, a sauna on the pier, and coffee that never stops.</p>
+          <p class="rh-where"><span>The old ferry terminal, Pier 4</span><span>Doors open Friday at 16:00</span></p>
+          <div class="rh-cta">
+            <a class="rh-button" href="#tickets">Get a ticket · €40</a>
+            <button class="rh-button rh-button-ghost" type="button" data-chat-open>Ask the info desk</button>
+          </div>
+          <dl class="rh-stats">
+            <div><dt>Seats</dt><dd>600</dd></div>
+            <div><dt>Compos</dt><dd>9</dd></div>
+            <div><dt>Bigscreen</dt><dd>14 m</dd></div>
+            <div><dt>Sea sauna</dt><dd>1</dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <div class="rh-raster" aria-hidden="true"></div>
+
+      <section class="rh-section" id="compos">
+        <div class="rh-head">
+          <p class="rh-eyebrow">The competitions</p>
+          <h2>Nine compos. One bigscreen.</h2>
+          <p>Bring a prod or make one on the spot. Deadlines are Saturday at 18:00 unless a card says otherwise, and remote entries are welcome through the party system.</p>
+        </div>
+        <ul class="rh-compos">
+          <li>
+            <span class="rh-when">Sat 22:30</span>
+            <h3>PC demo</h3>
+            <p>Up to eight minutes, any graphics API, one compo machine with a very loud GPU. The main event.</p>
+            <span class="rh-prize">€1,500 prize pool</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 22:30</span>
+            <h3>64k intro</h3>
+            <p>Everything in one 65,536-byte executable: the music, the meshes, the story.</p>
+            <span class="rh-prize">€600</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 22:30</span>
+            <h3>4k intro</h3>
+            <p>4,096 bytes. Shaders welcome, sanity optional.</p>
+            <span class="rh-prize">€600</span>
+          </li>
+          <li>
+            <span class="rh-when">Deadline Sat 14:00</span>
+            <h3>Oldskool demo</h3>
+            <p>Amiga, C64, Atari ST and friends, shown on the real hardware. Copper bars mandatory. Not really. Mostly.</p>
+            <span class="rh-prize">€600</span>
+          </li>
+          <li>
+            <span class="rh-when">Live, Fri and Sat</span>
+            <h3>Shader showdown</h3>
+            <p>Two coders, two screens, twenty-five minutes of live coding while a DJ plays. The hall votes.</p>
+            <span class="rh-prize">A golden keyboard</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 21:00</span>
+            <h3>Tracked music</h3>
+            <p>Patterns and samples: MOD, XM or IT, up to four minutes. Channel count is between you and your tracker.</p>
+            <span class="rh-prize">€400</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 21:00</span>
+            <h3>Streaming music</h3>
+            <p>Anything that plays, up to four minutes. Headphones in the hall on request.</p>
+            <span class="rh-prize">€400</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 16:00</span>
+            <h3>Pixel graphics</h3>
+            <p>Hand-placed pixels only. Bring your work stages; the jury loves a timelapse.</p>
+            <span class="rh-prize">€400</span>
+          </li>
+          <li>
+            <span class="rh-when">Sat 16:00</span>
+            <h3>Wild</h3>
+            <p>Plotters, oscilloscopes, knitting machines, a demo on a fridge. If it runs, it competes.</p>
+            <span class="rh-prize">€400</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="rh-section" id="timetable">
+        <div class="rh-head">
+          <p class="rh-eyebrow">Timetable</p>
+          <h2>From doors to prizegiving.</h2>
+        </div>
+        <div class="rh-days">
+          <article>
+            <h3><span>Friday</span> 27 Nov</h3>
+            <ol>
+              <li><time>16:00</time> Doors open, registration</li>
+              <li><time>18:00</time> Harbour kitchen opens</li>
+              <li><time>19:30</time> Opening ceremony</li>
+              <li><time>20:00</time> Seminar: a city in 4 kilobytes</li>
+              <li><time>21:00</time> Shader showdown heats</li>
+              <li><time>23:00</time> Live act on the bigscreen</li>
+            </ol>
+          </article>
+          <article>
+            <h3><span>Saturday</span> 28 Nov</h3>
+            <ol>
+              <li><time>10:00</time> Breakfast, more coffee</li>
+              <li><time>13:00</time> Seminar: trackers in 2026</li>
+              <li><time>14:00</time> Oldskool deadline</li>
+              <li><time>16:00</time> Pixel graphics and wild</li>
+              <li class="rh-hot"><time>18:00</time> Deadline for everything else</li>
+              <li><time>20:00</time> Sea sauna opens, until 02:00</li>
+              <li><time>21:00</time> Music compos</li>
+              <li><time>22:30</time> Intro and demo compos</li>
+              <li><time>01:00</time> Shader showdown final</li>
+            </ol>
+          </article>
+          <article>
+            <h3><span>Sunday</span> 29 Nov</h3>
+            <ol>
+              <li><time>10:00</time> Voting closes</li>
+              <li><time>11:00</time> Brunch in the kitchen</li>
+              <li><time>13:00</time> Everybody tidies the harbour</li>
+              <li class="rh-hot"><time>14:00</time> Prizegiving</li>
+              <li><time>15:00</time> Doors close. See you in 2027</li>
+            </ol>
+          </article>
+        </div>
+      </section>
+
+      <div class="rh-raster" aria-hidden="true"></div>
+
+      <section class="rh-section" id="harbour">
+        <div class="rh-head">
+          <p class="rh-eyebrow">The harbour</p>
+          <h2>A ferry terminal, a bigscreen and the sea.</h2>
+          <p>The old terminal on Pier 4 hasn't seen a ferry since 1998. Once a year it sees six hundred sceners instead.</p>
+        </div>
+        <ul class="rh-venue">
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><rect x="3" y="6" width="26" height="16" rx="1.5"/><path d="M12 26h8M16 22v4"/></svg>
+            <h3>The bigscreen</h3>
+            <p>A 14-metre LED wall in the old departure hall, with 7.1 sound and a compo machine for every platform.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 22h24M6 22v-6h20v6M9 16v-3h6v3"/><path d="M4 26v-4M28 26v-4"/></svg>
+            <h3>Sleeping hall</h3>
+            <p>Upstairs in the old waiting lounge, quiet from 02:00. Bring a sleeping bag and a mat.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27h22M8 27V13l8-6 8 6v14"/><path d="M13 27v-6h6v6M3 20c2-1.4 4-1.4 6 0s4 1.4 6 0"/></svg>
+            <h3>Sea sauna</h3>
+            <p>On the end of the pier, Saturday 20:00 to 02:00. Towels at the info desk. The sea is four degrees.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M6 14h20v4a10 10 0 0 1-20 0z"/><path d="M11 6c0 2 2 2 2 4M16 5c0 2 2 2 2 4M21 6c0 2 2 2 2 4"/></svg>
+            <h3>Harbour kitchen</h3>
+            <p>Soup, smoked salmon and a vegan pot, from noon to midnight. Breakfast on Saturday and Sunday.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 11h15v9a6 6 0 0 1-6 6h-3a6 6 0 0 1-6-6z"/><path d="M22 13h2a3 3 0 0 1 0 6h-2M11 4v3M15 4v3"/></svg>
+            <h3>Coffee</h3>
+            <p>Around the clock, from a machine old enough to have a name. Ask the info desk what it is.</p>
+          </li>
+          <li>
+            <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M11 4v7M21 4v7M8 11h16v5a8 8 0 0 1-16 0zM16 24v4"/></svg>
+            <h3>Power and network</h3>
+            <p>One socket and a gigabit per seat. Bring an extension cable, and please no space heaters.</p>
+          </li>
+        </ul>
+      </section>
+
+      <section class="rh-section" id="tickets">
+        <div class="rh-head">
+          <p class="rh-eyebrow">Tickets</p>
+          <h2>Pay at the door, or before.</h2>
+          <p>Every ticket includes a seat, the sleeping hall and the sauna. Card, cash or a very convincing floppy.</p>
+        </div>
+        <ul class="rh-tickets">
+          <li>
+            <h3>Visitor</h3>
+            <p class="rh-price">€40</p>
+            <p>All three days, a seat with power and network, and a spot in the sleeping hall.</p>
+          </li>
+          <li class="rh-featured">
+            <h3>Supporter</h3>
+            <p class="rh-price">€80</p>
+            <p>The same, plus the party shirt and a line in the closing scroller. You keep the party free for students.</p>
+          </li>
+          <li>
+            <h3>Remote voter</h3>
+            <p class="rh-price">€10</p>
+            <p>Watch the stream, vote from home, and enter any compo remotely.</p>
+          </li>
+          <li>
+            <h3>Under 15</h3>
+            <p class="rh-price">Free</p>
+            <p>With a parent or guardian. The next generation of sceners gets in for nothing.</p>
+          </li>
+        </ul>
+      </section>
+
+      <div class="rh-raster" aria-hidden="true"></div>
+
+      <section class="rh-section rh-faq" id="faq">
+        <div class="rh-head">
+          <p class="rh-eyebrow">Questions</p>
+          <h2>First party? Good.</h2>
+        </div>
+        <div class="rh-questions">
+          <details>
+            <summary>I've never been to a demoparty. Will I fit in?</summary>
+            <p>Yes. Half the hall comes to watch the bigscreen, not to compete. Say hello to your neighbours; they have been waiting all year to show someone their work.</p>
+          </details>
+          <details>
+            <summary>Do I have to bring a computer?</summary>
+            <p>No, but most people do. Every seat has a socket and a wired gigabit. The compo machines are ours, so you don't need to bring one to compete.</p>
+          </details>
+          <details>
+            <summary>Can I come for just one day?</summary>
+            <p>Day tickets are €20 at the door on Saturday and Sunday. Saturday night is when the big compos run.</p>
+          </details>
+          <details>
+            <summary>What's a scroller?</summary>
+            <p>The line of text that waves across the bottom of an old demo, full of greetings and inside jokes. Ours answers questions: try it.</p>
+          </details>
+        </div>
+        <div class="rh-desk">
+          <p><strong>Something else?</strong> The info desk is open around the clock, in the scroller at the bottom of the page.</p>
+          <button class="rh-button" type="button" data-chat-open>Ask the info desk</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="rh-foot">
+      <span class="rh-logo"><span class="rh-logo-bars" aria-hidden="true"><i></i><i></i><i></i></span><span>Raster Harbour</span></span>
+      <span>A fictional demoparty, made up for this Stand Chat example. Greetings to sceners everywhere.</span>
+    </footer>
+  </div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>A chat that starts as a sine scroller</h2>
+      <p class="sx-lead">Stand's widget is optional. The scroller along the bottom of this page is a complete Stand chat built from scratch on the Visitor API: it asks Stand who can answer, starts a conversation with the visitor's first message, sends over HTTP, listens on a WebSocket, and recovers after reloads. Everything else is a 1993 demo: a sine scroller, copper bars, a starfield and glenz vectors, drawn with WebGL 2 in a pixel font made for it.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Watch the scroller for a moment. It waves the info desk's greeting in raster colours, the way cracktros carried their messages. Hover over it and the letters jump. Click anywhere and the party tune starts; the Music button turns it off.</li>
+        <li>Click the scroller, tap it, or just start typing. Its letters burst into pixels, the copper bars open into a full-screen demo, and the greeting lands as the first line of the chat.</li>
+        <li>Ask something, like when the doors open or what the coffee machine is called. Replies stream in from the right like a scroller and stop in place, letter by letter.</li>
+        <li>Press <kbd>Esc</kbd> and keep reading. When a reply arrives, the scroller drops what it was saying and delivers the new message. Click it to answer. Reload the page and the chat is still there.</li>
+        <li>Play with the glenz crystal bouncing in the hero on a wide screen. It keeps time with the music, watches your pointer and spins when you scroll. Bat it a few times, or click it, and it dives into the scroller to open the chat.</li>
+      </ol>
+
+      <div class="sx-note">This example uses <code>siteId: 'demo'</code>, Stand Chat's shared demo site, which works on any domain. Its demo Stand-in plays the info desk from the page's prompt. With your own Site ID, your own Stand-ins answer, and your team can take over.</div>
+
+      <h3>1. Discover, then start on the first message</h3>
+      <p><code>stand-client.js</code> is the whole network side, with no UI and no dependencies. It is the <a href="/vintage-terminal/">Vintage terminal</a>'s client, unchanged but for where it saves the chat. It follows the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>, including the parts that are easy to skip: recovering after a reload or a dropped socket, merging messages without duplicates, and never starting two conversations from one click.</p>
+      <pre class="sx-code" data-file="stand-client.js, condensed"><code class="language-js">// Who can answer on this page? Public: no key, no token.
+const offer = await get(`/v1/reps/find?siteId=${siteId}&amp;page=${page}&amp;greetingsEnabled=false`);
+
+// The visitor's first message starts the conversation, once.
+const session = await post('/v1/sessions', {
+  siteId, page,
+  standinProfileId: offer.standinProfileId, // or repId, when a person answers
+  initialMessage: text,
+  includeOpeningGreeting: true, openingMessage: greeting, // the scroller's words
+  prompt, // the info desk persona and the party's facts
+});
+
+// Later messages over HTTP, replies and handoffs over a WebSocket.
+await post(`/v1/sessions/${id}/messages`, { body, type: 'text', clientMessageId }, token);
+const socket = new WebSocket(`wss://api.stand.chat/ws/sessions/${id}?token=${token}`);</code></pre>
+      <p>The greeting in the scroller is the one the conversation opens with: Stand stores it as the first message, so your team sees what the visitor saw. The <code>prompt</code> gives the demo Stand-in its info desk voice and the party's facts: doors, compos, the sauna.</p>
+
+      <h3>2. Take the scroller apart</h3>
+      <p>A sine scroller bends every letter column by column along the wave. When you open the chat, <code>strip.js</code> takes a snapshot of every lit pixel on screen. The greeting's pixels are paired with the pixels of the same letters in the chat, each on a curve that bursts outwards before it pulls home, and the rest fall away like sparks. The particles land exactly on the letters' pixels, so the chat's text takes over without a seam.</p>
+      <pre class="sx-code" data-file="strip.js, condensed"><code class="language-js">for (let k = 0; k &lt; n; k++) {
+  const [sx, sy] = from[Math.floor((k * from.length) / n)]; // a pixel on the wave
+  const [lx, ly] = lit[Math.floor((k * lit.length) / n)]; // the same letter, in the chat
+  const tx = target.x + lx * target.size;
+  const ty = target.y + ly * target.size;
+  // A burst outwards first, then the pull home: a quadratic Bézier.
+  const angle = rnd() * Math.PI * 2;
+  particles.push({ sx, sy, tx, ty, cx: sx + Math.cos(angle) * burst, cy: sy + Math.sin(angle) * burst });
+}</code></pre>
+
+      <h3>3. Write like a scroller</h3>
+      <p>Replies don't type out. Each letter leaves the right edge in reading order, rides the sine wave, and stops where it belongs, so a reply arrives as a little scroller that comes to rest as text. Long replies speed up; <kbd>Enter</kbd> on an empty line lands everything at once.</p>
+      <pre class="sx-code" data-file="screen.js, condensed"><code class="language-js">const emit = glyph.order / rate; // when the letter leaves the right edge
+const distance = startX - x; // how far it flies
+const land = emit + distance / speed; // when it gets there
+if (age &lt; emit) continue; // not yet
+if (age &lt; land) {
+  const left = distance - (age - emit) * speed;
+  x += left; // still flying,
+  y += Math.sin(x / wavelength - now * 7) * amplitude * Math.min(1, (left / distance) * 2.5); // on the wave
+}</code></pre>
+
+      <h3>4. Draw it like it's 1993</h3>
+      <p>Nearly everything is a sprite, drawn in a few instanced WebGL 2 calls a frame: letters, copper bars, stars, particles. The pixel font is drawn in text in <code>font.js</code>, one glyph per little grid, and accented letters are composed from a letter and a mark, so <em>Mäkinen</em> and <em>Łódź</em> work too. Anything the font doesn't have, like emoji or Japanese, the browser draws at twice the font's resolution. The glenz vectors are the real thing: 24 see-through triangles, rotated on the CPU and drawn at the chunky virtual resolution.</p>
+      <pre class="sx-code" data-file="font.js, condensed"><code class="language-js">const SHEETS = [
+  [2, `
+a     b     c     d     e     f    g
+..... #.... ..... ....# ..... ..## .....
+..... #.... ..... ....# ..... .#.. .....
+.###. ####. .###. .#### .###. #### .####
+....# #...# #.... #...# #...# .#.. #...#
+.#### #...# #.... #...# ##### .#.. #...#
+#...# #...# #.... #...# #.... .#.. #...#
+.#### ####. .###. .#### .###. .#.. .####
+..... ..... ..... ..... ..... .... ....#
+..... ..... ..... ..... ..... .... .###.
+`],
+  // …
+];</code></pre>
+
+      <h3>5. Let the page play along</h3>
+      <p>The hero's glenz is part of the party site, not of the chat, so the two talk through events. When the glenz is clicked, or batted three times in three seconds, <code>intro.js</code> hands the chat its position and spin. The chat takes over: the glenz hops and drops onto the scroller, the impact bursts the letters away from where it hit, and the glenz rises to its place beside the chat. When the chat closes, the glenz drops back into the hero.</p>
+      <pre class="sx-code" data-file="intro.js"><code class="language-js">dispatchEvent(new CustomEvent('scroller-chat:open', {
+  detail: { glenz: { x, y, r, a, b, c } }, // where it is on screen, in CSS pixels, and its rotation
+}));
+addEventListener('scroller-chat:closed', () =&gt; dropBackIn());</code></pre>
+      <p>The music keeps time for everything: <code>music.bar()</code> says how far the tune is through the current bar, so the glenz lands every bounce on the first beat, and <code>music.level()</code> flares the copper bars on the drums.</p>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>stand-client.js</code></strong> is the part to copy: discovery, one-time creation, idempotent sends, WebSocket receive, recovery, handoffs, follow-ups and link clicks.</li>
+        <li><strong><code>transcript.js</code></strong> turns Stand's state into what the chat shows: replies, your own lines, notices, link cards and who is speaking.</li>
+        <li><strong><code>screen.js</code></strong> is the chat screen: layout, the text writer, the input line with its block cursor, scrolling and the header.</li>
+        <li><strong><code>strip.js</code></strong> is the scroller and the morph from scroller to chat.</li>
+        <li><strong><code>effects.js</code></strong> and <strong><code>gl.js</code></strong> are the demo: copper bars, starfields, glenz vectors, and WebGL 2 sprites with a glyph atlas.</li>
+        <li><strong><code>font.js</code></strong> is the pixel font; <strong><code>music.js</code></strong> a four-channel tune synthesized in Web Audio, on by default; <strong><code>intro.js</code></strong> the hero's invitation intro and its glenz, with the same effects.</li>
+        <li><strong><code>scroller-chat.js</code></strong> puts it on the page: the settings, layout, opening and closing, the keyboard and a screen-reader version of the chat.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> The header and every reply's label name who is answering and say <em>AI Stand-in</em>. If someone from your team takes over, the label changes and a notice says so.</li>
+        <li><strong>Closing isn't ending.</strong> <kbd>Esc</kbd> and Close send the chat back to the scroller, and it carries on there. Only End chat closes it in Stand, as the guide asks.</li>
+        <li><strong>Accessible under the pixels.</strong> The scroller is a button. A real textarea takes the typing, a live region announces each reply as a whole, and the chat's buttons are real buttons over the pixel labels. With reduced motion, the scroller stands still and text appears at once.</li>
+        <li><strong>Light on the GPU.</strong> While the chat is closed, the canvas covers only the scroller. The hero's intro only runs while it is on screen.</li>
+        <li><strong>Music on, the way demos are.</strong> Browsers allow no sound before a visitor's first click, tap or key press, so that is when the tune starts. The Music button in the menu or in the chat, or <code>/music</code>, turns it off, and the page remembers. It pauses in a hidden tab.</li>
+        <li><strong>Keep the attribution.</strong> A custom UI keeps the notices and the Powered by Stand link that discovery returns, like the widget does.</li>
+        <li><strong>It's a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn't know, and you can always go back to the standard widget.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>This example is nearly a one-shot. <strong>Claude Opus 5.5, with max effort, in Claude Code</strong>, built it in one session from the prompt below and one follow-up: the pixel font, the effects, the tune and the party. It read the custom chat UI guide, tested the info desk's voice in real conversations with Stand's demo site, and checked its own work in headless Chrome, from screenshots at desktop and phone sizes to a recording of the music.</p>
+          <p>Now that AI writes the front end, a chat can look like anything your site's world calls for, even a scroller from 1993. Stand's Visitor API keeps the conversation, the AI Stand-in and your team behind it.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Think of Future Crew's Unreal and other legendary demos of that era. Could some of their visual effects make a fun experience that transforms into a chat?
+
+Imagine such an effect and build an example for this repo:
+
+- A creative website on a fitting topic
+- A demo effect that captures the attention and transforms into a chat</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">This is cool! Have the music on by default on the page. The track is awesome.
+
+Have the bouncing shape react to the cursor and scrolling, subtly. If the visitor seems to play with it on purpose, have it open the chat, and have it take part in that animation.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Link the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>. It is written as a contract for coding agents, with a brief to paste.</li>
+            <li>Start on the <code>demo</code> Site ID, so the agent can hold real conversations while it builds and tests, then switch to yours.</li>
+            <li>Keep the network client apart from the effect. <code>stand-client.js</code> here is the one from the Vintage terminal; only the presentation is new.</li>
+            <li>Ask for the whole effect to be drawn by code, and let the agent see it: a pixel font written as text is easy for a model to draw, render, check and fix.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/raster-harbour my-scroller</code></pre>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/raster-harbour/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>

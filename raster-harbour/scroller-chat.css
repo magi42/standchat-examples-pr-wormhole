@@ -1,0 +1,111 @@
+/* The scroller chat's page furniture. Everything you see is drawn on the
+   canvas; these elements are the hit areas, the keyboard input, the buttons
+   and the screen-reader version of the chat. */
+
+.scroller-chat { --sc-z: 2147483000; }
+.scroller-chat [hidden] { display: none !important; }
+
+.sc-safe {
+  position: fixed;
+  visibility: hidden;
+  padding: 0 env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) 0;
+  pointer-events: none;
+}
+
+.sc-canvas {
+  position: fixed;
+  left: 0;
+  z-index: calc(var(--sc-z) + 1);
+  display: block;
+  pointer-events: none;
+}
+
+/* The strip is a button: click, tap or Enter opens the chat. */
+.sc-launcher {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: calc(var(--sc-z) + 2);
+  height: var(--scroller-height, 80px);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sc-launcher:focus-visible { outline: 3px solid #ffb04a; outline-offset: -5px; }
+
+.sc-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--sc-z) + 3);
+}
+.sc-backdrop {
+  position: absolute;
+  inset: 0;
+  touch-action: none;
+}
+.sc-transcript {
+  position: fixed;
+  cursor: text;
+  touch-action: none;
+}
+
+/* The real inputs: invisible, lying exactly over the input line. They take
+   the keyboard, the phone's keyboard, paste and IME; the canvas draws the text. */
+.sc-input,
+.sc-email {
+  position: fixed;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  /* 16px or more keeps iOS from zooming in on focus. */
+  font: 16px/1.2 ui-monospace, monospace;
+  resize: none;
+  -webkit-text-fill-color: transparent;
+}
+.sc-input::selection,
+.sc-email::selection { background: transparent; }
+
+.sc-controls button,
+.sc-controls a {
+  position: fixed;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: transparent;
+  font-size: 1px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sc-controls button:focus-visible,
+.sc-controls a:focus-visible { outline: 2px solid #ffb04a; outline-offset: 2px; }
+
+/* Phones: generous targets for the small labels. */
+@media (pointer: coarse) {
+  .sc-controls button,
+  .sc-controls a { min-height: 40px; transform: translateY(-8px); }
+}
+
+.sc-sr {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
