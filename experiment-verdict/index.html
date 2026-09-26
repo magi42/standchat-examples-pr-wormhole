@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signalburrow — Would you ship this experiment?</title>
+    <meta
+      name="description"
+      content="An experiment decision room: conflicting sample metrics, a replay trail, and a real contextual Stand Chat conversation. Ship, stop, or dig deeper."
+    />
+    <meta name="author" content="Stand Chat Examples" />
+    <meta
+      name="keywords"
+      content="custom chat UI, experiments, analytics, contextual conversation"
+    />
+    <meta
+      property="og:title"
+      content="Signalburrow — Would you ship this experiment?"
+    />
+    <meta
+      property="og:description"
+      content="More signups. Less activation. Bring your reasoning to a live conversation beside the evidence."
+    />
+    <meta
+      property="og:image"
+      content="https://examples.stand.chat/experiment-verdict/og.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="theme-color" content="#f5f2e9" />
+    <link rel="icon" href="./mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/_shared/example.css" />
+    <script type="module" src="/_shared/example.js"></script>
+    <script
+      defer
+      src="https://cdn.stand.chat/widget/stand.js"
+      data-stand-id="demo"
+    ></script>
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <sx-example-bar></sx-example-bar>
+    <a class="skip" href="#decision-room">Skip to the experiment</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href="#" aria-label="Signalburrow home"
+        ><img src="./mark.svg" width="32" height="32" alt="" />signalburrow<span
+          class="beta"
+          >/ LAB</span
+        ></a
+      >
+      <nav aria-label="Main">
+        <a href="#product">The toolkit</a
+        ><a href="#how-it-works">Under the hood</a
+        ><a class="nav-cta" href="#decision-room"
+          >Make the call <span aria-hidden="true">↗</span></a
+        >
+      </nav>
+    </header>
+    <main>
+      <section class="hero wrap">
+        <div>
+          <p class="eyebrow">
+            <span class="small-square"></span> ANALYTICS FOR THE INQUISITIVE
+          </p>
+          <h1>
+            Would you ship<br />
+            this
+            <span class="underlined"
+              >experiment?<svg
+                viewBox="0 0 430 17"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+                <path d="M3 10Q210 0 426 9M9 15Q215 6 407 14" /></svg
+            ></span>
+          </h1>
+        </div>
+        <div class="hero-aside">
+          <p>
+            More signups. Less activation.<br />
+            A very good reason to look twice.
+          </p>
+          <p class="subtle">
+            Signalburrow brings analytics, replay, and experiments into the same
+            conversation. Take this one for a spin.
+          </p>
+          <a href="#decision-room" class="text-link"
+            >Follow the evidence <span aria-hidden="true">↓</span></a
+          >
+        </div>
+        <p class="margin-note" aria-hidden="true">
+          the graph is not the decision
+          <svg viewBox="0 0 65 45">
+            <path d="M4 3Q58 0 50 37M40 29L50 40 61 29" />
+          </svg>
+        </p>
+      </section>
+      <section
+        id="decision-room"
+        class="room wrap"
+        aria-labelledby="experiment-title"
+      >
+        <div class="room-top">
+          <span class="eyebrow">FIELD NOTE / 014</span
+          ><span class="sample-label">FICTIONAL EXPERIMENT · SAMPLE DATA</span
+          ><button id="reset" class="text-button" type="button">
+            ↺ Reset evidence
+          </button>
+        </div>
+        <div class="workspace">
+          <div class="evidence-column">
+            <div class="experiment-heading">
+              <div>
+                <p class="eyebrow">ONBOARDING / A/B TEST</p>
+                <h2 id="experiment-title">One less step. One more question.</h2>
+                <p>
+                  Variant B removes two fields from signup. Did getting in
+                  easier help people get started?
+                </p>
+              </div>
+              <span class="experiment-id"
+                >EXP–014<br /><span>DAY 10 / 14*</span></span
+              >
+            </div>
+            <div class="experiment-meta">
+              <span><i class="dot"></i> Quickstart signup</span
+              ><span>10,000 visitors</span><span>50 : 50 split</span>
+            </div>
+            <div
+              id="metrics"
+              class="metrics"
+              aria-label="Overview metrics"
+            ></div>
+            <div class="legend">
+              <span><i class="swatch control"></i> A · original</span
+              ><span><i class="swatch variant"></i> B · fewer fields</span
+              ><span>Same scale within each metric</span>
+            </div>
+            <div class="observation">
+              <span class="asterisk" aria-hidden="true">✳</span>
+              <p>
+                <strong>24 fewer people reached value.</strong> More signups
+                don’t automatically mean more successful starts.
+              </p>
+            </div>
+            <div class="evidence-nav" aria-label="Evidence stages">
+              <button type="button" data-stage="0" aria-current="step">
+                01 <span>Overview</span></button
+              ><button type="button" data-stage="1" disabled>
+                02 <span>Segments</span></button
+              ><button type="button" data-stage="2" disabled>
+                03 <span>Replay</span></button
+              ><button type="button" data-stage="3" disabled>
+                04 <span>The fine print</span>
+              </button>
+            </div>
+            <div class="evidence-content" id="evidence-content" tabindex="-1">
+              <section data-panel="0">
+                <div class="panel-heading">
+                  <span class="eyebrow">FIRST IMPRESSION</span
+                  ><span class="page-number">01 / 04</span>
+                </div>
+                <h3>The top of the funnel looks happy.</h3>
+                <p>
+                  The rest is less convinced. Activation means creating a first
+                  dashboard within 24 hours of signup. Every visitor in this
+                  sample has completed that observation window.
+                </p>
+                <p class="footnote">
+                  Signup rate = signups ÷ visitors. Activation rate = activated
+                  ÷ signups. Reached value = activated ÷ visitors. All counts
+                  are invented.
+                </p>
+              </section>
+              <section data-panel="1" hidden>
+                <div class="panel-heading">
+                  <span class="eyebrow">DEVICE SEGMENTS</span
+                  ><span class="page-number">02 / 04</span>
+                </div>
+                <h3>The average is keeping a secret.</h3>
+                <p>
+                  Desktop gained 72 activated visitors; mobile lost 96. Same
+                  traffic mix in both arms. Different stories.
+                </p>
+                <div class="table-scroll">
+                  <table id="segments">
+                    <caption>
+                      Sample counts and activation among signups · original →
+                      variant
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Device</th>
+                        <th scope="col">Visitors / arm</th>
+                        <th scope="col">Signups</th>
+                        <th scope="col">Activated</th>
+                        <th scope="col">Activation</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+                <p class="footnote">
+                  Device was recorded at assignment. Activation among signups
+                  conditions on a post-assignment outcome; treat it as
+                  descriptive, not a clean causal effect.
+                </p>
+              </section>
+              <section data-panel="2" hidden>
+                <div class="panel-heading">
+                  <span class="eyebrow">ILLUSTRATIVE EVENT REPLAY</span
+                  ><span class="page-number">03 / 04</span>
+                </div>
+                <h3>One session. A useful loose thread.</h3>
+                <p>
+                  A synthetic mobile journey, built for this example. It
+                  illustrates a possible failure point; it is not a recording of
+                  a real person.
+                </p>
+                <div class="replay">
+                  <div class="mini-screen">
+                    <div class="phone-top">
+                      <span></span><span>QUICKSTART / B</span>
+                    </div>
+                    <div class="screen-body">
+                      <span class="screen-icon" aria-hidden="true">↗</span
+                      ><strong id="replay-screen"></strong
+                      ><span class="screen-action" id="replay-button"></span>
+                    </div>
+                  </div>
+                  <div class="replay-detail">
+                    <p class="eyebrow" id="replay-time"></p>
+                    <h4 id="replay-heading"></h4>
+                    <p id="replay-description"></p>
+                    <code id="replay-event"></code>
+                  </div>
+                </div>
+                <div class="replay-controls">
+                  <button id="play-replay" type="button" class="small-button">
+                    ▶ Play trail
+                  </button>
+                  <div
+                    id="trail-steps"
+                    class="trail-steps"
+                    aria-label="Replay events"
+                  ></div>
+                  <button id="reset-replay" type="button" class="text-button">
+                    ↺ Replay
+                  </button>
+                </div>
+                <p class="footnote">
+                  Hypothesis: connection friction may contribute. Compare error
+                  frequency across both arms before generalizing.
+                </p>
+              </section>
+              <section data-panel="3" hidden>
+                <div class="panel-heading">
+                  <span class="eyebrow">SAMPLE-SIZE CAVEATS</span
+                  ><span class="page-number">04 / 04</span>
+                </div>
+                <h3>Certainty is not on the menu.</h3>
+                <div class="caveat-grid">
+                  <div>
+                    <strong>5,000 <span>/ 10,000</span></strong>
+                    <p>
+                      visitors per arm · half the illustrative sample target
+                    </p>
+                    <div class="progress"><span></span></div>
+                  </div>
+                  <div>
+                    <strong id="interval"></strong>
+                    <p>
+                      percentage points · approximate 95% interval for the
+                      difference in reached-value rates
+                    </p>
+                  </div>
+                </div>
+                <p>
+                  The interval crosses zero. It uses independent visitor
+                  proportions, a normal approximation, and no correction for
+                  repeated looks or multiple comparisons. It is descriptive, not
+                  a stopping rule.
+                </p>
+                <p class="footnote">
+                  *14 days is a planning horizon, not a guarantee of adequate
+                  sample size. Revenue, retention beyond 24 hours, and error
+                  prevalence are unknown. No choice wins under every set of
+                  priorities.
+                </p>
+              </section>
+            </div>
+            <div class="evidence-bottom">
+              <span id="progress-label">1 of 4 evidence cards opened</span
+              ><button id="next-evidence" class="ink-button" type="button">
+                Look at the segments <span aria-hidden="true">→</span>
+              </button>
+            </div>
+          </div>
+          <aside class="decision-column" aria-labelledby="decision-title">
+            <p class="eyebrow">YOUR CALL, WITH CONTEXT</p>
+            <h2 id="decision-title">What’s your read?</h2>
+            <p class="decision-intro">
+              Pick a direction. Defend it. Change your mind if the evidence
+              earns it.
+            </p>
+            <fieldset id="choices">
+              <legend class="sr-only">Your experiment decision</legend>
+              <label class="choice"
+                ><input type="radio" name="decision" value="ship" /><span
+                  class="choice-icon"
+                  aria-hidden="true"
+                  >↗</span
+                ><span
+                  ><strong>Ship it</strong
+                  ><small>Take the upside, watch the risk.</small></span
+                ><span class="radio-mark"></span></label
+              ><label class="choice"
+                ><input type="radio" name="decision" value="stop" /><span
+                  class="choice-icon"
+                  aria-hidden="true"
+                  >⊣</span
+                ><span
+                  ><strong>Stop it</strong
+                  ><small>Protect the path to value.</small></span
+                ><span class="radio-mark"></span></label
+              ><label class="choice"
+                ><input type="radio" name="decision" value="investigate" /><span
+                  class="choice-icon"
+                  aria-hidden="true"
+                  >⌕</span
+                ><span
+                  ><strong>Investigate</strong
+                  ><small>Pull on the loose thread.</small></span
+                ><span class="radio-mark"></span
+              ></label>
+            </fieldset>
+            <label for="priority" class="form-label"
+              >Your working assumption</label
+            ><select id="priority">
+              <option value="activation">Activated visitors matter most</option>
+              <option value="signup">Signup growth is worth the risk</option>
+              <option value="evidence">More evidence before a decision</option>
+            </select>
+            <div class="discussion-head">
+              <span class="eyebrow">THE DISCUSSION</span
+              ><span id="connection-status" role="status">Checking Stand…</span>
+            </div>
+            <div id="chat-intro">
+              <p>
+                <strong>A point of view beats a button click.</strong
+                ><br />Choose a direction above, then discuss your reasoning
+                with Stand’s live demo responder.
+              </p>
+              <button
+                id="open-discussion"
+                class="ink-button"
+                type="button"
+                disabled
+              >
+                Discuss my decision <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div id="chat-area" hidden>
+              <div id="context-status" class="context-status" role="status">
+                Your selection and opened evidence are attached to your next
+                message.
+              </div>
+              <stand-inline
+                id="decision-chat"
+                site="demo"
+                scope="signalburrow-experiment-v1"
+                look="card"
+                grow="unfold"
+                placeholder="Why this direction? What would change your mind?"
+                aria-label="Live discussion about the experiment"
+                ><div slot="offline">
+                  <p>
+                    Stand is unavailable right now. Your evidence and local
+                    decision still work.
+                  </p>
+                  <button type="button" id="retry-chat" class="small-button">
+                    Check availability
+                  </button>
+                </div></stand-inline
+              >
+              <p class="chat-fallback">Loading the conversation interface…</p>
+            </div>
+            <details id="shared-context" class="shared-context" hidden>
+              <summary>Last context shared with this thread</summary>
+              <p id="shared-context-text"></p>
+            </details>
+            <p class="privacy-note">
+              Sample data stays local until you send. Sending shares your
+              message and the attached context with
+              <a
+                href="https://stand.chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Stand Chat</a
+              >. The demo uses a real AI Stand-in; a human can join if
+              available. Replies never change the sample.
+            </p>
+            <button id="own-product" type="button" class="text-link">
+              Now, about your product <span aria-hidden="true">↗</span>
+            </button>
+          </aside>
+        </div>
+      </section>
+      <section id="product" class="product wrap">
+        <div class="product-title">
+          <p class="eyebrow">FEWER TABS. BETTER QUESTIONS.</p>
+          <h2>Stay curious.<br />Get somewhere.</h2>
+          <p>
+            A fictional toolkit for builders who want to understand what
+            changed, where it hurt, and what to try next.
+          </p>
+        </div>
+        <article>
+          <span class="feature-number">01 / ANALYTICS</span
+          ><svg viewBox="0 0 160 75" aria-hidden="true">
+            <path d="M8 67H152M20 66V41H40V66M62 66V23H82V66M104 66V8H124V66" />
+          </svg>
+          <h3>Find the split.</h3>
+          <p>
+            Keep the denominator in view. Trace a headline metric back to the
+            people and segments behind it.
+          </p>
+        </article>
+        <article>
+          <span class="feature-number">02 / REPLAY</span
+          ><svg viewBox="0 0 160 75" aria-hidden="true">
+            <path d="M10 16H146V65H10ZM10 28H146M71 39L90 49 71 59Z" />
+            <path d="M18 22H20M25 22H27" />
+          </svg>
+          <h3>Follow the friction.</h3>
+          <p>
+            Use a session trail to form a better hypothesis. A moment is a clue,
+            not a whole population.
+          </p>
+        </article>
+        <article>
+          <span class="feature-number">03 / EXPERIMENTS</span
+          ><svg viewBox="0 0 160 75" aria-hidden="true">
+            <path d="M15 38H57M57 38L88 14H143M57 38L88 63H143" />
+            <circle cx="57" cy="38" r="5" />
+            <path d="M129 7L143 14 129 21M129 56L143 63 129 70" />
+          </svg>
+          <h3>Make a considered call.</h3>
+          <p>
+            Put the evidence next to the discussion. Keep the tradeoffs attached
+            to the decision.
+          </p>
+        </article>
+      </section>
+      <section id="how-it-works" class="sx-explainer">
+        <div class="sx-wrap">
+          <p class="sx-eyebrow">How it works</p>
+          <h2>A decision room, with a real conversation.</h2>
+          <p class="sx-lead">
+            The evidence is a deterministic local simulation. The discussion
+            uses Stand’s visitor API and a custom inline interface. There are no
+            scripted AI replies.
+          </p>
+          <h3>Try it</h3>
+          <ol class="sx-steps">
+            <li>
+              Choose ship, stop, or investigate and set your working assumption.
+            </li>
+            <li>
+              Open the evidence in order: segments, a synthetic event trail,
+              then sample-size caveats. Use the replay’s buttons to play, pause,
+              or inspect any event.
+            </li>
+            <li>
+              Choose “Discuss my decision,” type your reasoning or a question,
+              and send. The visible context quote travels with it. You can
+              remove the quote before sending.
+            </li>
+            <li>
+              Revise your choice to attach an updated snapshot to your next
+              message. “Now, about your product” prepares a new topic in the
+              same thread. Resetting the evidence keeps the live conversation
+              and your draft.
+            </li>
+          </ol>
+          <h3>Copy this example</h3>
+          <pre
+            class="sx-code"
+          ><code>npx degit standchat/examples/experiment-verdict my-decision-room</code></pre>
+          <p>
+            Serve the copied folder with any static HTTP server. Keep
+            <code>app.js</code>, <code>scenario.js</code>,
+            <code>style.css</code>, <code>mark.svg</code>,
+            <code>stand-inline.js</code>, and
+            <code>stand-visitor.js</code> beside <code>index.html</code>. No
+            install or build step is needed. Remove the two
+            <code>/_shared/</code> references and
+            <code>&lt;sx-example-bar&gt;</code> when using it on your own site.
+          </p>
+          <p>
+            Replace the Stand script with your installation snippet from Sites
+            in Stand and set the element’s <code>site</code> attribute to that
+            same Site ID. <code>demo</code> uses Stand’s shared demo responder,
+            not a Signalburrow team or your account’s history.
+          </p>
+          <h3>The integration</h3>
+          <pre
+            class="sx-code"
+            data-file="index.html"
+          ><code class="language-html">&lt;script defer src="https://cdn.stand.chat/widget/stand.js"
+  data-stand-id="demo"&gt;&lt;/script&gt;
+&lt;script type="module" src="./stand-inline.js"&gt;&lt;/script&gt;
+&lt;stand-inline site="demo" scope="my-experiment" look="card"
+  grow="unfold"&gt;&lt;/stand-inline&gt;</code></pre>
+          <pre
+            class="sx-code"
+            data-file="app.js"
+          ><code class="language-js">// This prepares context. It does not send a message.
+chat.quote = contextSnapshot({ decision, stage, priority });
+chat.setAttribute('prompt', 'Discuss tradeoffs; sample data is fictional.');
+// The visitor writes and sends from the inline composer.
+// First send: POST /v1/sessions { initialMessage, prompt, ... }
+// Later sends: POST /v1/sessions/:id/messages
+// Replies arrive over WebSocket and reconcile with HTTP reads.</code></pre>
+          <p>
+            <code>prompt</code> is session context, limited to 2,000 characters;
+            it is not secret or an authorization boundary. Evidence updates use
+            the visible quote, included only on the visitor’s next send. Replies
+            are safely rendered and cannot control the page. The copied client
+            preserves responder identity, notices, attribution, handoffs,
+            follow-up offers, session recovery, and message IDs for safe
+            retries.
+          </p>
+          <p>
+            Read the
+            <a href="https://stand.chat/guide/custom-chat-ui"
+              >official custom chat UI contract (beta)</a
+            >. The chart counts and interval assumptions live in
+            <code>scenario.js</code>; run
+            <code>node --test experiment-verdict/scenario.test.mjs</code> from
+            this repository to verify the arithmetic.
+          </p>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer wrap">
+      <a class="wordmark" href="#"
+        ><img src="./mark.svg" width="25" height="25" alt="" />signalburrow</a
+      >
+      <p>
+        A fictional product. A real conversation.<br />Made with
+        <a href="https://stand.chat">Stand Chat</a> · Public domain example.
+      </p>
+      <a href="#how-it-works">Copy it. Make it yours. ↗</a>
+    </footer>
+    <noscript
+      ><p class="noscript">
+        Enable JavaScript to explore the local evidence and use the live Stand
+        conversation.
+      </p></noscript
+    >
+  </body>
+</html>
