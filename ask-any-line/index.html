@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Ask about any line of the docs</title>
+  <meta name="description" content="A payments quickstart where developers can ask about any line of code or any sentence. The answer appears right there as an inline annotation, follows the code into every language, and points at other lines. One Stand conversation carries every thread, with the file, line and language attached.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, developer docs, code annotations, inline threads, page references">
+  <meta property="og:title" content="Ask about any line of the docs">
+  <meta property="og:description" content="A payments quickstart where developers can ask about any line of code or any sentence. The answer appears right there as an inline annotation, follows the code into every language, and points at other lines.">
+  <meta property="og:image" content="https://examples.stand.chat/ask-any-line/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,400..800;1,400&family=Source+Code+Pro:wght@400..600&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The chat UI: threads on code lines and sentences, over Stand's Visitor API. No stand.js. -->
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="tn" id="top">
+    <!-- The header strip: an animated gradient mesh behind the docs' top bar, tucked under the code panel. -->
+    <div class="tn-mesh" aria-hidden="true"><canvas></canvas></div>
+    <header class="tn-top">
+      <div class="tn-top-in">
+        <a class="tn-skip" href="#cp-body">Skip to the code</a>
+        <button class="tn-menu" type="button" aria-label="Open the docs menu" aria-expanded="false" aria-controls="tn-nav">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 6h14M3 10h14M3 14h14"/></svg>
+        </button>
+        <a class="tn-brand" href="#top" aria-label="Tender Docs">
+          <svg class="tn-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <defs>
+              <mask id="tn-mark-top"><rect width="24" height="24" fill="#fff"/><path d="M10.2 4.6v10.3c0 2.2 1.1 3.3 3.2 3.3h2.2" fill="none" stroke="#000" stroke-width="2.9" stroke-linecap="round"/><path d="M6.2 10.4 17.6 8" fill="none" stroke="#000" stroke-width="2.9" stroke-linecap="round"/></mask>
+            </defs>
+            <rect width="24" height="24" rx="7" fill="currentColor" mask="url(#tn-mark-top)"/>
+          </svg>
+          <span class="tn-word">tender</span>
+          <span class="tn-brand-docs">Docs</span>
+        </a>
+        <div class="tn-search" role="search">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"/><path d="m12.8 12.8 4 4"/></svg>
+          <input id="tn-q" type="text" placeholder="Search the docs" autocomplete="off" spellcheck="false"
+            role="combobox" aria-label="Search the docs, or ask a question" aria-expanded="false" aria-controls="tn-results" aria-autocomplete="list">
+          <kbd aria-hidden="true">/</kbd>
+          <div class="tn-results" id="tn-results" role="listbox" aria-label="Search results" hidden></div>
+        </div>
+        <div class="tn-top-meta">
+          <span class="tn-version" title="The API version this guide is written for"><span>API</span> 2026-09-01</span>
+          <span class="tn-testmode"><i aria-hidden="true"></i>Test mode</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- On phones and tablets the code sits inside each step; this keeps the language in reach. -->
+    <div class="tn-langbar" aria-label="Code language" role="group"></div>
+
+    <div class="tn-docs">
+      <nav class="tn-nav" id="tn-nav" aria-label="Documentation">
+        <div class="tn-nav-in">
+          <p class="tn-nav-group">Get started</p>
+          <p class="tn-nav-group is-open">Payments</p>
+          <ul class="tn-nav-list">
+            <li><a class="tn-nav-page" href="#top" aria-current="page">Accept a payment</a>
+              <ul class="tn-nav-steps">
+                <li><a href="#step-1" data-nav-step="1">Set up Tender</a></li>
+                <li><a href="#step-2" data-nav-step="2">Create a payment</a></li>
+                <li><a href="#step-3" data-nav-step="3">Collect card details</a></li>
+                <li><a href="#step-4" data-nav-step="4">Handle webhooks</a></li>
+                <li><a href="#step-5" data-nav-step="5">Test it</a></li>
+              </ul>
+            </li>
+            <li><span class="tn-nav-off">Refunds</span></li>
+            <li><span class="tn-nav-off">Disputes</span></li>
+            <li><span class="tn-nav-off">Payouts</span></li>
+          </ul>
+          <p class="tn-nav-group">Billing</p>
+          <p class="tn-nav-group">Platforms</p>
+          <p class="tn-nav-group">Tax</p>
+          <p class="tn-nav-group">Reporting</p>
+          <p class="tn-nav-group">Developer tools</p>
+          <p class="tn-nav-note">This demo has one page. Everything else in this menu is scenery.</p>
+        </div>
+      </nav>
+
+      <main class="tn-main" id="main">
+        <article class="tn-article" aria-labelledby="tn-title">
+          <p class="tn-crumbs"><span>Payments</span><svg viewBox="0 0 12 12" aria-hidden="true"><path d="m4.5 2.5 3.5 3.5-3.5 3.5"/></svg><span>Accept a payment</span></p>
+          <h1 id="tn-title">Accept a payment</h1>
+          <p class="tn-lead">Take your first card payment in about 15 minutes. Your server creates a payment, the browser collects card details with Tender.js, and a webhook tells you when the money is in.</p>
+
+          <div class="tn-asknote">
+            <span class="tn-new">New</span>
+            <p><strong>Ask about any line.</strong> <span class="tn-asknote-wide">Hover the code and click <b class="tn-plus" aria-hidden="true">+</b>, or select any sentence here.</span><span class="tn-asknote-narrow">Tap a line of code, or select any sentence.</span> The answer appears right where you asked, from the Tender team.</p>
+          </div>
+
+          <div class="tn-page-notes" data-notes="page"></div>
+
+          <aside class="tn-callout is-test" aria-label="Test mode">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 3h5M8.5 3v4.2L4.3 14.6A1.6 1.6 0 0 0 5.7 17h8.6a1.6 1.6 0 0 0 1.4-2.4L11.5 7.2V3"/><path d="M6.4 11.5h7.2"/></svg>
+            <p><strong>Test mode.</strong> Everything here uses test keys, so no real money moves. Pay with <span class="tn-card">4000 0012 3456 7899</span>, any future expiry date and any CVC.</p>
+          </aside>
+
+          <section class="tn-step" id="step-1" data-step="1" data-title="Set up Tender" aria-labelledby="step-1-title">
+            <header class="tn-step-head">
+              <span class="tn-step-n" aria-hidden="true">1</span>
+              <h2 id="step-1-title">Set up Tender</h2>
+              <button class="tn-ask-step" type="button" data-ask-step="1" aria-label="Ask about step 1, Set up Tender">Ask about this step</button>
+            </header>
+            <div class="tn-sub" id="step-1a" data-sub="1a" data-file="server" data-focus="header header-2 package framework import import-extra import-extra-2 import-extra-3 import-open import-close api-key-env">
+              <h3>Install the library</h3>
+              <p data-hide-lang="curl">Add Tender's server library. It signs every request with your key, retries safely when the network drops, and checks webhook signatures for you.</p>
+              <p data-only-lang="curl" hidden>curl talks to the API directly, so the calls need nothing installed. For webhooks, get the Tender CLI: it forwards events to your machine and sends test ones.</p>
+              <div class="tn-cmd" data-cmd="install"><span class="tn-cmd-label">Terminal</span><code></code><button class="tn-copy" type="button" aria-label="Copy the command">Copy</button></div>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-1b" data-sub="1b" data-file="server" data-focus="client-init api-key api-version api-key-end">
+              <h3>Add your API keys</h3>
+              <p>Your account has two pairs of keys. The secret key, <code>tk_test_…</code>, stays on your server in an environment variable, never in your repository. The publishable key, <code>tpub_test_…</code>, is safe to ship to the browser.</p>
+              <p>Pin the API version as well. Your integration keeps behaving the same way when Tender ships changes, until you upgrade on purpose.</p>
+              <div class="tn-env" aria-label="Example environment file"><span class="tn-cmd-label">.env</span><code>TENDER_SECRET_KEY=tk_test_4Qa8Lm2Zx7Rc…<br>TENDER_WEBHOOK_SECRET=tws_test_…</code></div>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+          </section>
+
+          <section class="tn-step" id="step-2" data-step="2" data-title="Create a payment" aria-labelledby="step-2-title">
+            <header class="tn-step-head">
+              <span class="tn-step-n" aria-hidden="true">2</span>
+              <h2 id="step-2-title">Create a payment</h2>
+              <button class="tn-ask-step" type="button" data-ask-step="2" aria-label="Ask about step 2, Create a payment">Ask about this step</button>
+            </header>
+            <div class="tn-sub" id="step-2a" data-sub="2a" data-file="server" data-focus="app static json-body main route-create route-create-def read-order-var read-order">
+              <h3>Add an endpoint</h3>
+              <p>Your checkout page calls this endpoint when the customer is ready to pay. Create one payment per order: it follows the attempt from the first try to the final result, retries and declines included.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-2b" data-sub="2b" data-file="server" data-focus="create-comment create-payment params-open amount currency methods metadata params-close create-end">
+              <h3>Set the amount</h3>
+              <p>Amounts are integers in the currency's smallest unit, so <code>2000</code> is $20.00. Work out the total on your server from the order, and never trust a price the browser sends you.</p>
+              <p>With automatic payment methods, Tender offers every method you've enabled in the dashboard that fits the currency and the customer's country.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-2c" data-sub="2c" data-file="server" data-focus="idempotency">
+              <h3>Make it safe to retry</h3>
+              <p>Send an idempotency key with the request, such as the order ID. If a request times out and you send it again, Tender returns the payment it already created instead of charging twice. Keys expire after 24 hours.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-2d" data-sub="2d" data-file="server" data-focus="content-type create-response client-secret client-secret-2 client-secret-3 create-error create-error-2 create-error-3 create-error-4 route-create-end">
+              <h3>Return the client secret</h3>
+              <p>The new payment has a <code>client_secret</code>. Send only that to the browser: it lets Tender.js confirm this one payment and nothing else. Don't log it, and keep it out of URLs.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+          </section>
+
+          <section class="tn-step" id="step-3" data-step="3" data-title="Collect card details" aria-labelledby="step-3-title">
+            <header class="tn-step-head">
+              <span class="tn-step-n" aria-hidden="true">3</span>
+              <h2 id="step-3-title">Collect card details</h2>
+              <button class="tn-ask-step" type="button" data-ask-step="3" aria-label="Ask about step 3, Collect card details">Ask about this step</button>
+            </header>
+            <div class="tn-sub" id="step-3a" data-sub="3a" data-file="client" data-focus="header header-2 tenderjs">
+              <h3>Load Tender.js</h3>
+              <p>Load Tender.js from <code>js.tender.dev</code> instead of bundling it, so card numbers go straight to Tender and never touch your servers. Then create an instance with your publishable key.</p>
+              <div class="tn-snippet" aria-label="checkout.html"><span class="tn-cmd-label">checkout.html</span><pre><code><span class="t-p">&lt;</span><span class="t-key">script</span> <span class="t-attr">src</span><span class="t-p">=</span><span class="t-str">"https://js.tender.dev/v2"</span><span class="t-p">&gt;&lt;/</span><span class="t-key">script</span><span class="t-p">&gt;</span>
+<span class="t-p">&lt;</span><span class="t-key">form</span> <span class="t-attr">id</span><span class="t-p">=</span><span class="t-str">"payment-form"</span><span class="t-p">&gt;</span>
+  <span class="t-p">&lt;</span><span class="t-key">div</span> <span class="t-attr">id</span><span class="t-p">=</span><span class="t-str">"card-field"</span><span class="t-p">&gt;&lt;/</span><span class="t-key">div</span><span class="t-p">&gt;</span>
+  <span class="t-p">&lt;</span><span class="t-key">button</span><span class="t-p">&gt;</span>Pay $20.00<span class="t-p">&lt;/</span><span class="t-key">button</span><span class="t-p">&gt;</span>
+<span class="t-p">&lt;/</span><span class="t-key">form</span><span class="t-p">&gt;</span>
+<span class="t-p">&lt;</span><span class="t-key">script</span> <span class="t-attr">type</span><span class="t-p">=</span><span class="t-str">"module"</span> <span class="t-attr">src</span><span class="t-p">=</span><span class="t-str">"checkout.js"</span><span class="t-p">&gt;&lt;/</span><span class="t-key">script</span><span class="t-p">&gt;</span></code></pre></div>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M5.5 14h5"/></svg>Browser</p>
+            </div>
+            <div class="tn-sub" id="step-3b" data-sub="3b" data-file="client" data-focus="fetch-secret fetch-method fetch-headers send-order fetch-end card mount">
+              <h3>Mount the card field</h3>
+              <p>Fetch the client secret from your endpoint, then mount the card field into your form. It's a secure iframe that validates as the customer types and picks up your page's font.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M5.5 14h5"/></svg>Browser</p>
+            </div>
+            <div class="tn-sub" id="step-3c" data-sub="3c" data-file="client" data-focus="form submit prevent-default confirm confirm-fields return-url confirm-end error-comment show-error submit-end">
+              <h3>Confirm the payment</h3>
+              <p>When the customer clicks Pay, call <code>confirmPayment</code>. If the bank asks for 3-D Secure, Tender.js shows the challenge and carries on by itself. On success, the customer lands on your <code>returnUrl</code>.</p>
+              <p>Show <code>error.message</code> as it is. It's written for customers, like “Your card was declined.”</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M5.5 14h5"/></svg>Browser</p>
+            </div>
+          </section>
+
+          <section class="tn-step" id="step-4" data-step="4" data-title="Handle webhooks" aria-labelledby="step-4-title">
+            <header class="tn-step-head">
+              <span class="tn-step-n" aria-hidden="true">4</span>
+              <h2 id="step-4-title">Handle webhooks</h2>
+              <button class="tn-ask-step" type="button" data-ask-step="4" aria-label="Ask about step 4, Handle webhooks">Ask about this step</button>
+            </header>
+            <div class="tn-sub" id="step-4a" data-sub="4a" data-file="server" data-focus="raw-body route-webhook route-webhook-def event-var try verify payload sig-header webhook-secret verify-end bad-signature reject reject-2 catch-end verify-comment">
+              <h3>Verify the signature</h3>
+              <p>Tender sends a <code>payment.succeeded</code> event to your webhook endpoint when the money is in. Before you trust it, check the <code>Tender-Signature</code> header with your endpoint's secret.</p>
+              <aside class="tn-callout is-warn" aria-label="Warning">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3.2 2.8 16h14.4z"/><path d="M10 8.2v3.6M10 13.9v.1"/></svg>
+                <p>Verify the raw request body. Parsing the JSON first changes the bytes, and the signature won't match.</p>
+              </aside>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-4b" data-sub="4b" data-file="server" data-focus="event-type fulfill event-end trigger-comment">
+              <h3>Fulfill the order</h3>
+              <p>Fulfill from the webhook, not from the return page. A customer can close the tab before the redirect finishes, but the event always arrives.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-4c" data-sub="4c" data-file="server" data-focus="respond route-webhook-end">
+              <h3>Reply right away</h3>
+              <p>Reply with a 2xx within 10 seconds, then do slow work, like emailing the receipt, in the background. Tender retries failed deliveries with backoff for up to three days.</p>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+          </section>
+
+          <section class="tn-step" id="step-5" data-step="5" data-title="Test it" aria-labelledby="step-5-title">
+            <header class="tn-step-head">
+              <span class="tn-step-n" aria-hidden="true">5</span>
+              <h2 id="step-5-title">Test it</h2>
+              <button class="tn-ask-step" type="button" data-ask-step="5" aria-label="Ask about step 5, Test it">Ask about this step</button>
+            </header>
+            <div class="tn-sub" id="step-5a" data-sub="5a" data-file="server" data-focus="listen main main-end listen-comment">
+              <h3>Run it locally</h3>
+              <p data-hide-lang="curl">Start your server, then forward events to it with the Tender CLI. The CLI prints a webhook secret for local use: put it in <code>TENDER_WEBHOOK_SECRET</code>.</p>
+              <p data-only-lang="curl" hidden>Run the calls one at a time and read each response. To watch events arrive, forward them with the Tender CLI to an endpoint you run locally.</p>
+              <div class="tn-cmd" data-cmd="run"><span class="tn-cmd-label">Terminal</span><code></code><button class="tn-copy" type="button" aria-label="Copy the command">Copy</button></div>
+              <div class="tn-cmd"><span class="tn-cmd-label">Terminal</span><code>tender events forward --to localhost:3000/webhook</code><button class="tn-copy" type="button" aria-label="Copy the command">Copy</button></div>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/></svg>Server</p>
+            </div>
+            <div class="tn-sub" id="step-5b" data-sub="5b" data-file="client" data-focus="confirm confirm-fields return-url confirm-end">
+              <h3>Pay with a test card</h3>
+              <p>Open <code>localhost:3000</code> and pay with one of these cards. Use any future expiry date, any three-digit CVC and any postal code.</p>
+              <div class="tn-table">
+                <table>
+                  <thead><tr><th scope="col">Card number</th><th scope="col">What happens</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="tn-card">4000 0012 3456 7899</span></td><td>Succeeds. Your webhook receives <code>payment.succeeded</code>.</td></tr>
+                    <tr><td><span class="tn-card">4000 0012 3333 3335</span></td><td>Asks for 3-D Secure. Approve or fail the challenge.</td></tr>
+                    <tr><td><span class="tn-card">4000 0012 0000 0008</span></td><td>Declined, with the code <code>card_declined</code>.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <p class="tn-side"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="3" width="12" height="9" rx="1.5"/><path d="M5.5 14h5"/></svg>Browser</p>
+            </div>
+          </section>
+
+          <div class="tn-feedback">
+            <p>Was this page helpful?</p>
+            <button type="button" data-feedback="yes">Yes</button>
+            <button type="button" data-feedback="no">No, something's missing</button>
+            <span class="tn-feedback-thanks" role="status"></span>
+          </div>
+        </article>
+      </main>
+
+      <!-- Wide screens: which lines each sub-step is about, and notes on sentences, beside their paragraph. -->
+      <div class="tn-margin"></div>
+
+      <!-- The code panel. app.js renders the lines, the threads and the conversation strip. -->
+      <aside class="cp" aria-label="Code for this guide">
+        <div class="cp-head">
+          <div class="cp-langs" role="group" aria-label="Server language"></div>
+          <button class="cp-copy" type="button">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 3.5v-.5A1.5 1.5 0 0 0 9 1.5H4A1.5 1.5 0 0 0 2.5 3v5A1.5 1.5 0 0 0 4 9.5h.5"/></svg>
+            <span>Copy</span>
+          </button>
+        </div>
+        <div class="cp-files" role="tablist" aria-label="Files"></div>
+        <div class="cp-body" id="cp-body" role="tabpanel"></div>
+        <div class="cp-foot" data-strip-home></div>
+      </aside>
+    </div>
+
+    <footer class="tn-footer">
+      <div class="tn-footer-in">
+        <a class="tn-brand is-dark" href="#top" aria-label="Tender Docs, back to top">
+          <svg class="tn-mark" viewBox="0 0 24 24" aria-hidden="true">
+            <defs>
+              <mask id="tn-mark-foot"><rect width="24" height="24" fill="#fff"/><path d="M10.2 4.6v10.3c0 2.2 1.1 3.3 3.2 3.3h2.2" fill="none" stroke="#000" stroke-width="2.9" stroke-linecap="round"/><path d="M6.2 10.4 17.6 8" fill="none" stroke="#000" stroke-width="2.9" stroke-linecap="round"/></mask>
+            </defs>
+            <rect width="24" height="24" rx="7" fill="currentColor" mask="url(#tn-mark-foot)"/>
+          </svg>
+          <span class="tn-word">tender</span>
+        </a>
+        <p class="tn-status"><i aria-hidden="true"></i>All systems normal</p>
+        <p class="tn-fiction">Tender is a fictional company. This page demonstrates a custom chat UI on Stand Chat's Visitor API: questions go to a real conversation, answered by Stand's demo AI Stand-in.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Announces whole replies to screen readers. -->
+  <div class="tn-live sr-only" aria-live="polite" aria-atomic="false"></div>
+  <!-- The "Ask about this" button that follows a text selection. -->
+  <button class="tn-selask" type="button" hidden>
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1H7.5L4.5 14v-2.5H3a1 1 0 0 1-1-1v-6a1 1 0 0 1 1-1z"/></svg>
+    Ask about this
+  </button>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Let developers ask about the exact line that confused them</h2>
+      <p class="sx-lead">Docs are where a developer tool wins or loses its users, and the questions that decide it are small: why <code>2000</code> and not <code>20</code>, which header, what happens on a retry. On this quickstart, a developer can ask about any line of code or any sentence. The answer lands right there, as an annotation under the line, like a comment in a code review. Every question reaches the team through Stand with its file, line and language, so the team learns exactly which line of the quickstart trips people up.</p>
+      <p>There's no <code>stand.js</code> on this page. The annotations are plain JavaScript in this folder, on Stand's Visitor API, and every thread you open is part of one real conversation.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Hover a line in the code panel and click <strong>+</strong>. With a keyboard, tab into the code, move with <kbd>↑</kbd> <kbd>↓</kbd> and press <kbd>Enter</kbd>. Ask something small, like “Why 2000 and not 20?”</li>
+        <li>Switch from Node to Python. Your question and its answer move to the matching Python line.</li>
+        <li>Select a sentence in the guide and choose <strong>Ask about this</strong>, or use <strong>Ask about this step</strong> next to a step's title.</li>
+        <li>When an answer names another part of the code, click it: the code panel jumps there and lights it up.</li>
+        <li>Reload mid-conversation. Every thread comes back where it was. <strong>End conversation</strong> is at the bottom of the code panel.</li>
+      </ol>
+
+      <div class="sx-note">Questions here use <code>site: 'demo'</code>, Stand Chat's shared demo site, which works on any domain. Its demo Stand-in answers from this page's prompt, as the made-up Tender team. With your own Site ID, your own Stand-ins answer, and your team can take over from Stand.</div>
+
+      <h3>1. Every line has a logical ID</h3>
+      <p>The samples live in the page as plain text, one line per row, with an ID that says what the line does. The same statement has the same ID in every language, so a thread asked on Node's <code>amount: 2000,</code> knows that Python's <code>amount=2000,</code> is the same line.</p>
+      <pre class="sx-code" data-file="index.html"><code class="language-html">&lt;script type="text/plain" data-sample="server" data-lang="node" data-file="server.js"&gt;
+create-payment │   const payment = await tender.payments.create(
+params-open    │     {
+amount         │       amount: 2000, // $20.00, in cents
+currency       │       currency: 'usd',
+&lt;/script&gt;
+
+&lt;script type="text/plain" data-sample="server" data-lang="python" data-file="server.py"&gt;
+create-payment │     payment = client.payments.create(
+amount         │         amount=2000,  # $20.00, in cents
+currency       │         currency="usd",
+&lt;/script&gt;</code></pre>
+      <p>Python has no line for the opening <code>{</code>, so <code>catalog.js</code> lists where such a line's thread goes instead: <code>params-open</code> falls back to <code>create-payment</code>. curl has no web server at all, and its lines answer to a few IDs at once. When you switch languages, each annotation looks up its line in the new sample and slides there.</p>
+      <pre class="sx-code" data-file="app.js"><code class="language-js">// Where a code thread sits: the exact line it was asked on, in that language.
+// In any other language, the same statement, found by its logical ID.
+function lineFor(anchor) {
+  if (anchor.file === 'client' || anchor.lang === ui.lang) return anchor.n;
+  const from = catalog.file(anchor.file, anchor.lang)?.lines[anchor.n - 1];
+  return lineOf(anchor.file, partLine(anchor.part) ?? from?.id);
+}
+
+// catalog.js: follow the fallbacks until the language has the line.
+locate(kind, lang, id) {
+  for (let at = id; at; at = FALLBACK[at]) {
+    const line = this.file(kind, lang).lines.find((l) =&gt; l.ids.includes(at));
+    if (line) return { line, exact: at === id };
+  }
+}</code></pre>
+
+      <h3>2. One conversation, many threads</h3>
+      <p>The threads aren't separate chats. Every Stand session counts against the site's chats, and whoever answers is better off with one conversation per visitor. So every question starts with where it was asked, readable at a glance in Stand:</p>
+      <pre class="sx-code" data-wrap><code>⌘ server.py L20 (Python) — amount: Why 2000 and not 20?
+⌘ checkout.js L12 (browser) — mount card field: Can I style the field?
+¶ Step 4 “Handle webhooks”: “Reply with a 2xx within 10 seconds” — Even for events I ignore?
+¶ Step 5 “Test it”: How do I test a refund?
+§ Accept a payment: Do you support Apple Pay?</code></pre>
+      <p>The prefix is also how the page finds each message's thread again after a reload: it parses the transcript, so the threads need no storage of their own. A reply belongs to the thread of the latest question before it. While an answer is on its way, asking on another line waits for it, so answers can't land in the wrong place.</p>
+      <pre class="sx-code" data-file="threads.js, condensed"><code class="language-js">const LINE = /^⌘ (\S+) L(\d+) \(([^)]*)\) — (.+?): ([\s\S]*)$/;
+
+for (const m of state.messages) {
+  if (!isConversation(m)) continue; // cards, and our own prompt echoed back
+  if (m.senderType === 'visitor') {
+    const parsed = parseMessage(m.body, catalog); // { anchor, question }
+    const thread = ensure(parsed.anchor); // "line:server:amount", "step:4", …
+    thread.items.push({ kind: 'visitor', m, question: parsed.question });
+    current = thread.key;
+  } else {
+    threads.get(current).items.push({ kind: 'reply', m, author });
+  }
+}</code></pre>
+
+      <h3>3. The prompt</h3>
+      <p>The first question carries a private prompt for whoever answers: the AI Stand-in, and anyone on your team reading the conversation in Stand. It stays under Stand's 2,000 characters, and ends with where the visitor was. Here it is, live: until you ask something, its last line follows you around the page. After that, it's the prompt your conversation started with, as Stand echoes it back.</p>
+      <div class="ex-live" data-live="prompt" data-file="prompt.js"><pre></pre></div>
+
+      <h3>4. Answers that point at lines</h3>
+      <p>The prompt lists the page's parts by name and asks for at most two references per answer, in double brackets. In testing, the demo Stand-in writes them like nouns: “the client secret comes back from [[create payment]]”. Each known name becomes a chip that shows where that part is in your language. A click switches to the right file, scrolls, and lights up the whole statement. Unknown names stay plain text, and a person on the team never has to use them.</p>
+      <pre class="sx-code" data-file="app.js, condensed"><code class="language-js">// cards.js hands every [[name]] in an answer to this.
+function chip(name) {
+  // "create payment" → { kind: 'code', file: 'server', id: 'create-payment' }
+  const target = resolveReference(name);
+  if (!target) return null; // plain text, without the brackets
+  const button = el('button', 'ref');
+  const at = lineOf(target.file, target.id); // in the language on screen
+  button.append(name, ` ${fileName(target.file)}:${at}`);
+  // A click switches file, scrolls and flashes the lines. Never more.
+  button.addEventListener('click', () =&gt; goTo(target));
+  return button;
+}</code></pre>
+
+      <h3>5. Ask about a sentence</h3>
+      <p>Selecting text in the guide shows <strong>Ask about this</strong> by the selection (below it on touch screens, where the system's own menu sits above), or press <kbd>?</kbd> after selecting with the keyboard. The thread opens under the paragraph and quotes what you selected. On very wide screens it sits in the margin beside the paragraph instead, next to labels that say which lines each part of the guide is about. After a reload, the page finds the paragraph again by searching the step for the quote, and highlights the sentence with the CSS Custom Highlight API, without touching the text.</p>
+
+      <h3>6. What the team learns</h3>
+      <p>Analytics can show that people leave the quickstart at step 4. The questions show why, down to the line and the language. This is what the next question from this page would carry, as you move around:</p>
+      <div class="ex-live" data-live="next" data-file="The next question"><pre></pre></div>
+      <div class="ex-asked" data-live="asked"></div>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> Every answer shows the name Stand gives its author and an <em>AI</em> badge for a Stand-in. If someone from the team takes over, their answers say <em>Team</em>, and the code panel says who joined.</li>
+        <li><strong>Resolving isn't ending.</strong> <em>Resolve</em> folds a thread into a check mark in the gutter. The conversation goes on until you choose <em>End conversation</em> at the bottom of the code panel, which closes it in Stand.</li>
+        <li><strong>A reload keeps everything.</strong> Threads come back from the transcript, in their places and in your language. The language, resolved threads and an unsent question are kept in <code>sessionStorage</code>. Without storage, it all still works until the tab closes.</li>
+        <li><strong>Nobody around?</strong> If Stand finds no one who can answer, the ask boxes say so and offer to check again, instead of taking a question nobody will read.</li>
+        <li><strong>Keyboard and screen readers.</strong> <em>Skip to the code</em> is the first stop. Every line is reachable with the arrow keys, <kbd>Enter</kbd> or <kbd>?</kbd> asks about it, <kbd>Esc</kbd> closes a box and returns focus to the line, and <kbd>/</kbd> jumps to search. Whole answers are announced as they arrive, never letter by letter.</li>
+        <li><strong>Reduced motion.</strong> The header's gradient stops, and annotations appear in place instead of sliding.</li>
+        <li><strong>It's a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn't know.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>This page was built with <strong>Claude Opus 5.5 in Claude Code</strong>. A lead session turned a list of ideas into ten briefs, this one among them, and reviewed what came back. A separate Claude agent built this example in its own git worktree: it studied a well-known payments API's docs for their look and voice, wrote the quickstart and its five code samples, tuned the prompt in real conversations with Stand's demo Stand-in, and checked its own screenshots in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example's brief</p>
+          <blockquote class="made-prompt">Docs for an invented payments API, in the three-column look of the payments docs every developer-tools founder imitates: navigation, prose steps, and a sticky dark code panel with file and language tabs.
+Let developers ask about any line: a + in the gutter opens a question box under the line, and the answer arrives there as an annotation, like a code-review comment.
+Selecting a sentence offers "Ask about this"; the thread opens as a note by the paragraph.
+Give every line a logical ID shared across Node, Python, Ruby, Go and curl, so switching languages keeps each annotation on the matching line.
+Replies point at lines with references that become chips; clicking one scrolls to the line and flashes it.
+All threads are one Stand conversation, with a readable prefix per message. The team learns which line, in which language, confuses people.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Start from the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>, which is written as a contract for coding agents, and on the <code>demo</code> Site ID, so the agent can hold real conversations while it builds.</li>
+            <li>Put the anchor in the message, not in storage. A prefix like <code>⌘ server.py L20 (Python) — amount:</code> tells the team where the question was asked and tells the page where to put it back.</li>
+            <li>References became reliable once the prompt showed one in use (<code>like [[verify signature]]</code>) and listed the names. Without the example, the Stand-in never used them.</li>
+            <li>Handoffs, email follow-ups and link cards never happen on the demo site. Test them against a small fake of Stand's API that your test script injects into the page, so the real client and UI run unchanged.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/ask-any-line my-docs-annotations</code></pre>
+      <p>The part to keep is the model: <code>stand-visitor.js</code> (the conversation, with no UI), <code>threads.js</code> (the message format and the threads), <code>catalog.js</code> (logical line IDs) and <code>prompt.js</code>. The rest draws this page: <code>app.js</code> puts things in place, <code>code-view.js</code> and <code>blocks.js</code> draw the code, <code>cards.js</code> the threads and the question box, <code>notes.js</code> the notes on sentences, <code>strip.js</code> the conversation strip, and <code>richtext.js</code>, <code>highlight.js</code>, <code>search.js</code>, <code>explainer.js</code>, <code>mesh.js</code> and <code>dom.js</code> the details.</p>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Feature reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/ask-any-line/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+
+  <!--
+    The code samples. One line per row: `logical-id │ code`. The same statement
+    has the same ID in every language; see catalog.js for fallbacks and names.
+  -->
+  <script type="text/plain" data-sample="server" data-lang="node" data-file="server.js" data-syntax="js">
+header            │ // Accept a payment with Tender: create it on your server,
+header-2          │ // confirm it in the browser, fulfill it from a webhook.
+framework         │ import express from 'express';
+import            │ import Tender from '@tender/node';
+                  │
+api-key           │ const tender = new Tender(process.env.TENDER_SECRET_KEY, {
+api-version       │   apiVersion: '2026-09-01',
+api-key-end       │ });
+                  │
+app               │ const app = express();
+static            │ app.use(express.static('public'));
+json-body         │ const jsonBody = express.json();
+                  │
+route-create      │ app.post('/create-payment', jsonBody, async (req, res) => {
+read-order        │   const { orderId } = req.body;
+create-payment    │   const payment = await tender.payments.create(
+params-open       │     {
+amount            │       amount: 2000, // $20.00, in cents
+currency          │       currency: 'usd',
+methods           │       payment_methods: { automatic: true },
+metadata          │       metadata: { order_id: orderId },
+params-close      │     },
+idempotency       │     { idempotencyKey: `order-${orderId}` },
+create-end        │   );
+client-secret     │   res.json({ clientSecret: payment.client_secret });
+route-create-end  │ });
+                  │
+raw-body          │ const rawBody = express.raw({ type: 'application/json' });
+                  │
+route-webhook     │ app.post('/webhook', rawBody, (req, res) => {
+event-var         │   let event;
+try               │   try {
+verify            │     event = tender.webhooks.verify(
+payload           │       req.body,
+sig-header        │       req.headers['tender-signature'],
+webhook-secret    │       process.env.TENDER_WEBHOOK_SECRET,
+verify-end        │     );
+bad-signature     │   } catch (err) {
+reject            │     return res.status(400).send('Bad signature');
+catch-end         │   }
+                  │
+event-type        │   if (event.type === 'payment.succeeded') {
+fulfill           │     fulfillOrder(event.data.metadata.order_id);
+event-end         │   }
+respond           │   res.sendStatus(200);
+route-webhook-end │ });
+                  │
+listen            │ app.listen(3000, () => console.log('Listening on :3000'));
+  </script>
+
+  <script type="text/plain" data-sample="server" data-lang="python" data-file="server.py" data-syntax="python">
+header            │ # Accept a payment with Tender: create it on your server,
+header-2          │ # confirm it in the browser, fulfill it from a webhook.
+import-extra      │ import os
+                  │
+import            │ import tender
+framework         │ from flask import Flask, jsonify, request
+                  │
+client-init       │ client = tender.Client(
+api-key           │     api_key=os.environ["TENDER_SECRET_KEY"],
+api-version       │     api_version="2026-09-01",
+api-key-end       │ )
+                  │
+app               │ app = Flask(__name__, static_url_path="")
+                  │
+                  │
+route-create      │ @app.post("/create-payment")
+route-create-def  │ def create_payment():
+read-order        │     order_id = request.json["orderId"]
+create-payment    │     payment = client.payments.create(
+amount            │         amount=2000,  # $20.00, in cents
+currency          │         currency="usd",
+methods           │         payment_methods={"automatic": True},
+metadata          │         metadata={"order_id": order_id},
+idempotency       │         idempotency_key=f"order-{order_id}",
+create-end        │     )
+client-secret     │     return jsonify(clientSecret=payment.client_secret)
+                  │
+                  │
+route-webhook     │ @app.post("/webhook")
+route-webhook-def │ def webhook():
+try               │     try:
+verify            │         event = client.webhooks.verify(
+payload           │             request.get_data(),
+sig-header        │             request.headers["Tender-Signature"],
+webhook-secret    │             os.environ["TENDER_WEBHOOK_SECRET"],
+verify-end        │         )
+bad-signature     │     except tender.SignatureError as err:
+reject            │         return f"Bad signature: {err}", 400
+                  │
+event-type        │     if event.type == "payment.succeeded":
+fulfill           │         fulfill_order(event.data.metadata["order_id"])
+respond           │     return "", 200
+                  │
+                  │
+main              │ if __name__ == "__main__":
+listen            │     app.run(port=3000)
+  </script>
+
+  <script type="text/plain" data-sample="server" data-lang="ruby" data-file="server.rb" data-syntax="ruby">
+header            │ # Accept a payment with Tender: create it on your server,
+header-2          │ # confirm it in the browser, fulfill it from a webhook.
+framework         │ require 'sinatra'
+import-extra      │ require 'json'
+import            │ require 'tender'
+                  │
+client-init       │ client = Tender::Client.new(
+api-key           │   api_key: ENV.fetch('TENDER_SECRET_KEY'),
+api-version       │   api_version: '2026-09-01'
+api-key-end       │ )
+                  │
+listen            │ set :port, 3000
+static            │ set :public_folder, 'public'
+                  │
+route-create      │ post '/create-payment' do
+read-order        │   order_id = JSON.parse(request.body.read)['orderId']
+create-payment    │   payment = client.payments.create(
+params-open       │     {
+amount            │       amount: 2000, # $20.00, in cents
+currency          │       currency: 'usd',
+methods           │       payment_methods: { automatic: true },
+metadata          │       metadata: { order_id: order_id }
+params-close      │     },
+idempotency       │     idempotency_key: "order-#{order_id}"
+create-end        │   )
+content-type      │   content_type :json
+client-secret     │   { clientSecret: payment.client_secret }.to_json
+route-create-end  │ end
+                  │
+route-webhook     │ post '/webhook' do
+try               │   begin
+verify            │     event = client.webhooks.verify(
+payload           │       request.body.read,
+sig-header        │       request.env['HTTP_TENDER_SIGNATURE'],
+webhook-secret    │       ENV.fetch('TENDER_WEBHOOK_SECRET')
+verify-end        │     )
+bad-signature     │   rescue Tender::SignatureError => e
+reject            │     halt 400, "Bad signature: #{e.message}"
+catch-end         │   end
+                  │
+event-type        │   if event.type == 'payment.succeeded'
+fulfill           │     fulfill_order(event.data.metadata['order_id'])
+event-end         │   end
+respond           │   status 200
+route-webhook-end │ end
+  </script>
+
+  <script type="text/plain" data-sample="server" data-lang="go" data-file="server.go" data-syntax="go">
+header            │ // Accept a payment with Tender: create it on your server,
+header-2          │ // confirm it in the browser, fulfill it from a webhook.
+package           │ package main
+                  │
+import-open       │ import (
+import-extra      │ 	"encoding/json"
+import-extra-2    │ 	"io"
+framework         │ 	"net/http"
+import-extra-3    │ 	"os"
+                  │
+import            │ 	"tender.dev/go/tender"
+import-close      │ )
+                  │
+client-init       │ var client = tender.NewClient(
+api-key           │ 	os.Getenv("TENDER_SECRET_KEY"),
+api-version       │ 	tender.WithAPIVersion("2026-09-01"),
+api-key-end       │ )
+                  │
+main              │ func main() {
+static            │ 	http.Handle("/", http.FileServer(http.Dir("public")))
+route-create      │ 	http.HandleFunc("POST /create-payment", createPayment)
+route-webhook     │ 	http.HandleFunc("POST /webhook", webhook)
+listen            │ 	http.ListenAndServe(":3000", nil)
+main-end          │ }
+                  │
+route-create-def  │ func createPayment(w http.ResponseWriter, r *http.Request) {
+read-order-var    │ 	var req struct{ OrderID string `json:"orderId"` }
+read-order        │ 	json.NewDecoder(r.Body).Decode(&req)
+                  │
+create-payment    │ 	payment, err := client.Payments.Create(r.Context(),
+params-open       │ 		&tender.PaymentParams{
+amount            │ 			Amount:   2000, // $20.00, in cents
+currency          │ 			Currency: "usd",
+methods           │ 			Methods:  tender.AutomaticMethods(),
+metadata          │ 			Metadata: tender.Meta{"order_id": req.OrderID},
+params-close      │ 		},
+idempotency       │ 		tender.WithIdempotencyKey("order-"+req.OrderID),
+create-end        │ 	)
+create-error      │ 	if err != nil {
+create-error-2    │ 		http.Error(w, err.Error(), http.StatusBadGateway)
+create-error-3    │ 		return
+create-error-4    │ 	}
+client-secret     │ 	json.NewEncoder(w).Encode(map[string]string{
+client-secret-2   │ 		"clientSecret": payment.ClientSecret,
+client-secret-3   │ 	})
+route-create-end  │ }
+                  │
+route-webhook-def │ func webhook(w http.ResponseWriter, r *http.Request) {
+raw-body          │ 	body, _ := io.ReadAll(r.Body)
+verify            │ 	event, err := client.Webhooks.Verify(
+payload           │ 		body,
+sig-header        │ 		r.Header.Get("Tender-Signature"),
+webhook-secret    │ 		os.Getenv("TENDER_WEBHOOK_SECRET"),
+verify-end        │ 	)
+bad-signature     │ 	if err != nil {
+reject            │ 		http.Error(w, err.Error(), http.StatusBadRequest)
+reject-2          │ 		return
+catch-end         │ 	}
+                  │
+event-type        │ 	if event.Type == "payment.succeeded" {
+fulfill           │ 		fulfillOrder(event.Data.Metadata["order_id"])
+event-end         │ 	}
+respond           │ 	w.WriteHeader(http.StatusOK)
+route-webhook-end │ }
+  </script>
+
+  <script type="text/plain" data-sample="server" data-lang="curl" data-file="requests.sh" data-syntax="sh">
+header                     │ # Accept a payment with Tender, one HTTP request at a time.
+header-2                   │ # Your server makes these calls. Export a test key first:
+api-key-env                │ export TENDER_SECRET_KEY=tk_test_4Qa8Lm2Zx7Rc…
+                           │
+create-comment             │ # Create a payment for order 6735.
+create-payment             │ curl https://api.tender.dev/v1/payments \
+api-key                    │   -u "$TENDER_SECRET_KEY:" \
+api-version                │   -H "Tender-Version: 2026-09-01" \
+idempotency                │   -H "Idempotency-Key: order-6735" \
+amount                     │   -d amount=2000 \
+currency                   │   -d currency=usd \
+methods                    │   -d "payment_methods[automatic]=true" \
+metadata                   │   -d "metadata[order_id]=6735"
+create-response            │ # → {"id": "pay_1RkT9…", "status": "requires_payment",
+client-secret              │ #    "client_secret": "pay_1RkT9…_secret_Vq8…"}
+                           │
+listen-comment             │ # Forward webhook events to your local server.
+route-webhook, listen      │ tender events forward --to localhost:3000/webhook
+webhook-secret             │ # → Ready. Your webhook signing secret is tws_test_…
+                           │
+verify-comment             │ # Check a signature by hand: HMAC-SHA256 of "<t>.<body>".
+payload, raw-body          │ printf '%s.%s' "$T" "$BODY" |
+verify, sig-header         │   openssl dgst -sha256 -hmac "$TENDER_WEBHOOK_SECRET"
+                           │
+trigger-comment            │ # Send a test event to your endpoint.
+event-type, fulfill, respond │ tender events send payment.succeeded
+  </script>
+
+  <script type="text/plain" data-sample="client" data-file="checkout.js" data-syntax="js">
+header          │ // Collect card details, then confirm the payment.
+header-2        │ // checkout.html loads Tender.js from js.tender.dev first.
+tenderjs        │ const tender = Tender('tpub_test_7Rz2VnK4…');
+                │
+fetch-secret    │ const { clientSecret } = await fetch('/create-payment', {
+fetch-method    │   method: 'POST',
+fetch-headers   │   headers: { 'Content-Type': 'application/json' },
+send-order      │   body: JSON.stringify({ orderId: '6735' }),
+fetch-end       │ }).then((res) => res.json());
+                │
+card            │ const card = tender.cardField({ clientSecret });
+mount           │ card.mount('#card-field');
+                │
+form            │ const form = document.querySelector('#payment-form');
+submit          │ form.addEventListener('submit', async (event) => {
+prevent-default │   event.preventDefault();
+confirm         │   const { error } = await tender.confirmPayment({
+confirm-fields  │     card,
+return-url      │     returnUrl: `${location.origin}/complete.html`,
+confirm-end     │   });
+error-comment   │   // Success leaves for returnUrl; errors come back here.
+show-error      │   if (error) showMessage(error.message);
+submit-end      │ });
+  </script>
+</body>
+</html>
