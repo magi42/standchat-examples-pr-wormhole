@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="en" style="overflow-anchor: none">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Will it deploy? Paste your package.json</title>
+  <meta name="description" content="A hosting site that deploys the visitor's own package.json in the browser and lets them ask about any finding or build log line. A custom chat UI on Stand's Visitor API: one conversation, threaded by finding, that already knows the visitor's stack.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, bring your own input, package.json, threads, page references, devtools">
+  <meta property="og:title" content="Will it deploy? Paste your package.json">
+  <meta property="og:description" content="A hosting site that deploys the visitor's own package.json in the browser and lets them ask about any finding or build log line. A custom chat UI on Stand's Visitor API: one conversation, threaded by finding, that already knows the visitor's stack.">
+  <meta property="og:image" content="https://examples.stand.chat/will-it-deploy/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Site chrome: the top bar and "How it works" styles. The example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23171717' fill-rule='evenodd' d='M6 0h12a6 6 0 0 1 6 6v12a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6ZM8.61 17.9L9.26 17.14A1.2 1.2 0 0 0 7.42 15.6L6.77 16.36A1.2 1.2 0 0 0 8.61 17.9ZM11.63 14.3L12.92 12.77A1.2 1.2 0 0 0 11.08 11.23L9.8 12.76A1.2 1.2 0 0 0 11.63 14.3ZM15.3 9.94L17.42 7.41A1.2 1.2 0 0 0 15.58 5.87L13.46 8.39A1.2 1.2 0 0 0 15.3 9.94Z'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The page: the rules engine, the simulated deployment and the deployment conversation. No chat widget: it talks to Stand's Visitor API itself. -->
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+  <!-- Frames the social image (og.mjs: 1200 × 630, top bar hidden) on the console, just under the nav. Inline and absolute, so it is in place before the stylesheet loads; app.js turns scroll anchoring back on once the page has settled. -->
+  <div data-og-focus aria-hidden="true" style="position: absolute; top: 202px; left: 0; width: 1px; height: 630px; visibility: hidden; pointer-events: none"></div>
+
+  <!-- Icons and the Airstrip mark, drawn for this page. -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <symbol id="mark" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M6 0h12a6 6 0 0 1 6 6v12a6 6 0 0 1-6 6H6a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6ZM8.61 17.9L9.26 17.14A1.2 1.2 0 0 0 7.42 15.6L6.77 16.36A1.2 1.2 0 0 0 8.61 17.9ZM11.63 14.3L12.92 12.77A1.2 1.2 0 0 0 11.08 11.23L9.8 12.76A1.2 1.2 0 0 0 11.63 14.3ZM15.3 9.94L17.42 7.41A1.2 1.2 0 0 0 15.58 5.87L13.46 8.39A1.2 1.2 0 0 0 15.3 9.94Z"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 16 16"><path d="M8 10V2.5M4.75 5.75 8 2.5l3.25 3.25M2.5 10.5v2a1 1 0 0 0 1 1h9a1 1 0 0 0 1-1v-2"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 16 16"><rect x="3.25" y="3" width="9.5" height="11" rx="1.5"/><path d="M6 3v-.5a.75.75 0 0 1 .75-.75h2.5A.75.75 0 0 1 10 2.5V3M5.75 7.5h4.5M5.75 10h2.75"/></symbol>
+    <symbol id="i-file" viewBox="0 0 16 16"><path d="M9 1.75H4.5a1 1 0 0 0-1 1v10.5a1 1 0 0 0 1 1h7a1 1 0 0 0 1-1V5.25L9 1.75Z"/><path d="M9 1.75v3.5h3.5"/></symbol>
+    <symbol id="i-code" viewBox="0 0 16 16"><path d="M5.5 3C4 3 4 4 4 5.25S3.5 7.5 2.5 8c1 .5 1.5 1.5 1.5 2.75S4 13 5.5 13M10.5 3c1.5 0 1.5 1 1.5 2.25s.5 2.25 1.5 2.75c-1 .5-1.5 1.5-1.5 2.75S12 13 10.5 13"/></symbol>
+    <symbol id="i-redeploy" viewBox="0 0 16 16"><path d="M13.25 8A5.25 5.25 0 1 1 11.7 4.3M13.25 2.25v3h-3"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 16 16"><path d="M2.5 4A1.5 1.5 0 0 1 4 2.5h8A1.5 1.5 0 0 1 13.5 4v6a1.5 1.5 0 0 1-1.5 1.5H7l-3 2.25V11.5A1.5 1.5 0 0 1 2.5 10Z"/></symbol>
+    <symbol id="i-send" viewBox="0 0 16 16"><path d="M8 13V3M3.75 7.25 8 3l4.25 4.25"/></symbol>
+    <symbol id="i-more" viewBox="0 0 16 16"><path d="M3.25 8h.01M8 8h.01M12.75 8h.01" stroke-width="2.25"/></symbol>
+    <symbol id="i-close" viewBox="0 0 16 16"><path d="M4 4l8 8M12 4l-8 8"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 16 16"><path d="M6 3.75 10.25 8 6 12.25"/></symbol>
+    <symbol id="i-external" viewBox="0 0 16 16"><path d="M6 3.5h6.5V10M12.5 3.5l-9 9"/></symbol>
+    <symbol id="i-check" viewBox="0 0 16 16"><path d="M3.5 8.5 6.5 11.5 12.5 4.5"/></symbol>
+    <symbol id="i-ok" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M5.5 8.25 7.25 10l3.25-3.75"/></symbol>
+    <symbol id="i-warn" viewBox="0 0 16 16"><path d="M7.13 2.6a1 1 0 0 1 1.74 0l5.25 9.2a1 1 0 0 1-.87 1.5H2.75a1 1 0 0 1-.87-1.5Z"/><path d="M8 6.25v3M8 11.25v.01"/></symbol>
+    <symbol id="i-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M8 7.25V11M8 4.9v.01"/></symbol>
+    <symbol id="i-error" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M5.75 5.75l4.5 4.5M10.25 5.75l-4.5 4.5"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 16 16"><circle cx="4.5" cy="3.5" r="1.5"/><circle cx="4.5" cy="12.5" r="1.5"/><circle cx="11.5" cy="5" r="1.5"/><path d="M4.5 5v6M11.5 6.5c0 2.75-3.5 2.5-6.25 4.75"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M8 4.75V8l2.25 1.5"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.25"/><path d="M1.75 8h12.5M8 1.75c1.75 1.9 2.5 3.9 2.5 6.25S9.75 12.35 8 14.25C6.25 12.35 5.5 10.35 5.5 8S6.25 3.65 8 1.75Z"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 16 16"><rect x="5.5" y="5.5" width="8" height="8" rx="1.5"/><path d="M10.5 5.5V4A1.5 1.5 0 0 0 9 2.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 16 16"><path d="M8 2.25 13.75 5 8 7.75 2.25 5Z"/><path d="M2.25 8 8 10.75 13.75 8M2.25 11 8 13.75 13.75 11"/></symbol>
+    <symbol id="i-log" viewBox="0 0 16 16"><path d="M2.75 4h.5M6 4h7.25M2.75 8h.5M6 8h7.25M2.75 12h.5M6 12h5"/></symbol>
+    <symbol id="i-store" viewBox="0 0 16 16"><path d="M3.25 5.5h9.5l-.8 8.25H4.05Z"/><path d="M5.75 7V4.75a2.25 2.25 0 0 1 4.5 0V7"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 16 16"><rect x="3.25" y="2" width="9.5" height="12" rx="1.5"/><path d="M5.75 5.5h4.5M5.75 8h4.5M5.75 10.5h2.5"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 16 16"><path d="M2.5 13.25h11M4.75 10.75V8M8 10.75V4.5M11.25 10.75V6.75"/></symbol>
+    <symbol id="i-layout" viewBox="0 0 16 16"><rect x="2.5" y="2.5" width="11" height="11" rx="1.5"/><path d="M2.5 6h11M6.5 6v7.5"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 16 16"><path d="M9 1.75 3.75 9h4l-.75 5.25L12.25 7h-4Z"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 16 16"><path d="M8 1.75 14.25 8 8 14.25 1.75 8Z"/><path d="M8 5.25V8.5M8 10.75v.01"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 16 16"><path d="M3 8h10M9 4l4 4-4 4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 16 16"><rect x="3.25" y="7" width="9.5" height="7" rx="1.5"/><path d="M5.25 7V5.25a2.75 2.75 0 0 1 5.5 0V7"/></symbol>
+  </svg>
+
+  <div class="as" id="top">
+    <header class="nav" data-nav>
+      <div class="nav-in">
+        <a class="brand" href="#top" aria-label="Airstrip home">
+          <svg class="brand-mark" aria-hidden="true"><use href="#mark"/></svg>
+          <span>airstrip</span>
+        </a>
+        <nav class="nav-links" aria-label="Airstrip">
+          <a href="#deploy">Deploy</a>
+          <a href="#platform">Platform</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="btn btn-ghost btn-sm" href="#pricing">Log in</a>
+          <a class="btn btn-dark btn-sm" href="#deploy" data-start>Start deploying</a>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero: the product is the pitch. The sample deploys on its own; the visitor's package.json replaces it. -->
+      <section class="band hero" aria-labelledby="hero-title">
+        <div class="wrap">
+          <div class="hero-copy">
+            <h1 id="hero-title">From package.json<br>to production.</h1>
+            <div class="hero-side">
+              <p>Airstrip builds, deploys and serves your frontend from 18 regions. Drop in your package.json to see how your stack deploys, and ask about anything you find.</p>
+              <p class="hero-meta"><span><svg class="i"><use href="#i-lock"/></svg>Analyzed in your browser</span><span><svg class="i"><use href="#i-chat"/></svg>Answers that know your stack</span></p>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="glow" aria-hidden="true"></div>
+
+            <div class="console" id="deploy" data-console>
+              <div class="console-bar">
+                <div class="crumbs">
+                  <svg class="crumb-mark" aria-hidden="true"><use href="#mark"/></svg>
+                  <span class="crumb-slash" aria-hidden="true">/</span>
+                  <span class="project"><span class="project-avatar" data-project-avatar aria-hidden="true"></span><span class="project-name" data-project-name>tidepool-store</span></span>
+                  <span class="source-badge" data-source-badge>Sample</span>
+                  <span class="crumb-slash crumb-deploy" aria-hidden="true">/</span>
+                  <span class="crumb-deploy crumb-id" data-deploy-id>Deployment</span>
+                </div>
+                <div class="bar-actions">
+                  <button type="button" class="btn btn-ghost btn-sm" data-ask-stack>
+                    <svg class="i"><use href="#i-chat"/></svg><span>Ask about my whole stack</span>
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm btn-icon-only" data-redeploy aria-label="Redeploy" title="Redeploy">
+                    <svg class="i"><use href="#i-redeploy"/></svg>
+                  </button>
+                  <button type="button" class="btn btn-ghost btn-sm convo-toggle" data-convo-toggle hidden>
+                    <svg class="i"><use href="#i-chat"/></svg><span>Conversation</span><span class="unread" data-unread hidden></span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="console-body" data-console-body>
+                <div class="console-main">
+                  <!-- The input: drop, paste, upload or edit a package.json. Nothing leaves the browser here. -->
+                  <div class="source" data-dropzone>
+                    <div class="source-row">
+                      <div class="source-text">
+                        <svg class="i source-icon" aria-hidden="true"><use href="#i-upload"/></svg>
+                        <div>
+                          <p class="source-title"><span class="wide-only">Drop your package.json here, or paste it.</span><span class="narrow-only">Paste or upload your package.json.</span></p>
+                          <p class="source-privacy">Analyzed in your browser. Only what you ask about is sent, with a summary of your stack.</p>
+                        </div>
+                      </div>
+                      <div class="source-actions">
+                        <button type="button" class="btn btn-dark btn-sm" data-paste><svg class="i"><use href="#i-paste"/></svg><span>Paste</span></button>
+                        <label class="btn btn-ghost btn-sm file-btn"><svg class="i"><use href="#i-file"/></svg><span>Upload</span><input type="file" accept=".json,application/json" data-file></label>
+                        <button type="button" class="btn btn-ghost btn-sm" data-edit aria-expanded="false" aria-controls="editor"><svg class="i"><use href="#i-code"/></svg><span>Edit</span></button>
+                      </div>
+                    </div>
+                    <div class="editor" id="editor" data-editor hidden>
+                      <label class="sr-only" for="pkg-text">package.json</label>
+                      <textarea id="pkg-text" data-text spellcheck="false" autocomplete="off" autocapitalize="off" rows="10" placeholder='{ "name": "my-app", "dependencies": { … } }'></textarea>
+                      <div class="editor-foot">
+                        <p class="editor-hint" data-editor-hint>Paste or type a package.json, then deploy it.</p>
+                        <button type="button" class="btn btn-dark btn-sm" data-deploy-text>Deploy this</button>
+                      </div>
+                    </div>
+                    <p class="source-error" data-source-error role="alert" hidden></p>
+                    <div class="samples">
+                      <span class="samples-label" id="samples-label">Samples</span>
+                      <div class="sample-list" role="group" aria-labelledby="samples-label" data-samples></div>
+                    </div>
+                    <div class="drop-overlay" aria-hidden="true"><svg class="i"><use href="#i-upload"/></svg><span>Drop to deploy it</span></div>
+                  </div>
+
+                  <!-- The deployment card -->
+                  <div class="card" data-card>
+                    <figure class="thumb" data-thumb aria-label="Preview of the deployed site"></figure>
+                    <dl class="facts">
+                      <div class="fact"><dt>Status</dt><dd><span class="status" data-status><i></i><span data-status-text>Queued</span></span></dd></div>
+                      <div class="fact"><dt>Duration</dt><dd data-duration>–</dd></div>
+                      <div class="fact"><dt>Framework</dt><dd class="ellipsis" data-framework>–</dd></div>
+                      <div class="fact"><dt>Node.js</dt><dd data-node>–</dd></div>
+                      <div class="fact fact-region"><dt>Functions region</dt><dd class="ellipsis" data-region>–</dd></div>
+                      <div class="fact fact-url"><dt>Deployment</dt><dd class="mono ellipsis" data-url>–</dd></div>
+                      <div class="fact fact-domains"><dt>Domains</dt><dd class="mono ellipsis" data-domains>–</dd></div>
+                      <div class="fact fact-runtime"><dt>Runtime</dt><dd data-runtime>–</dd></div>
+                    </dl>
+                  </div>
+
+                  <div class="split">
+                    <!-- Build log: phases collapse; every line can be asked about. -->
+                    <section class="logs" aria-labelledby="logs-title">
+                      <header class="panel-head">
+                        <h2 id="logs-title">Build logs</h2>
+                        <span class="panel-meta" data-log-meta></span>
+                        <span class="panel-grow"></span>
+                        <div class="seg" role="group" aria-label="Show lines">
+                          <button type="button" aria-pressed="true" data-log-filter="all">All</button>
+                          <button type="button" aria-pressed="false" data-log-filter="warn">Warnings<span class="seg-count" data-warn-count></span></button>
+                        </div>
+                      </header>
+                      <div class="log-body" data-log tabindex="-1">
+                        <p class="log-sim">Simulated from your package.json. Nothing is built or uploaded.</p>
+                        <div data-phases></div>
+                      </div>
+                    </section>
+
+                    <!-- Findings: what works, what needs attention, and tips. Each one can be asked about. -->
+                    <section class="findings" aria-labelledby="findings-title">
+                      <header class="panel-head">
+                        <h2 id="findings-title">Findings</h2>
+                        <span class="panel-meta" data-findings-meta></span>
+                      </header>
+                      <div class="seg seg-wide" role="group" aria-label="Filter findings" data-finding-filters></div>
+                      <ol class="finding-list" data-findings></ol>
+                    </section>
+                  </div>
+                </div>
+
+                <!-- The deployment conversation: docked beside the deployment on wide screens, a sheet on phones. -->
+                <aside class="convo" id="convo" aria-labelledby="convo-title" data-convo hidden>
+                  <div class="convo-grip" aria-hidden="true"></div>
+                  <header class="convo-head">
+                    <div class="convo-title-row">
+                      <h2 id="convo-title" tabindex="-1">Deployment conversation</h2>
+                      <div class="convo-tools">
+                        <div class="menu-wrap">
+                          <button type="button" class="icon-btn" data-menu-button aria-haspopup="true" aria-expanded="false" aria-controls="convo-menu" aria-label="Conversation options"><svg class="i"><use href="#i-more"/></svg></button>
+                          <div class="menu" id="convo-menu" data-menu hidden>
+                            <button type="button" data-end>End conversation</button>
+                          </div>
+                        </div>
+                        <button type="button" class="icon-btn" data-close aria-label="Close (the conversation keeps going)"><svg class="i"><use href="#i-close"/></svg></button>
+                      </div>
+                    </div>
+                    <div class="who" data-who></div>
+                    <div class="knows" data-knows></div>
+                    <div class="threads" role="group" aria-label="Threads" data-threads hidden></div>
+                  </header>
+                  <div class="convo-log" data-convo-log role="log" aria-live="off" aria-labelledby="convo-title"></div>
+                  <div class="convo-foot" data-convo-foot></div>
+                </aside>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- The rest of the loop -->
+      <section class="band platform" id="platform" aria-labelledby="platform-title">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 id="platform-title">What happens on every push.</h2>
+            <p>The deployment above is one push. This is the rest of the loop: a preview for every branch, a way back, and a network that puts it near everyone.</p>
+          </div>
+          <div class="tiles">
+            <article class="tile">
+              <div class="tile-art" data-art="branches"></div>
+              <h3>A URL for every branch</h3>
+              <p>Each push to a branch gets its own live preview, built the same way as production. Share the link, review it, merge it.</p>
+            </article>
+            <article class="tile">
+              <div class="tile-art" data-art="rollback"></div>
+              <h3>Roll back in one click</h3>
+              <p>Deployments never change once they’re live. Rolling back points your domain at an earlier one, so there’s nothing to rebuild.</p>
+            </article>
+            <article class="tile tile-wide">
+              <div class="tile-art tile-map" data-art="map"></div>
+              <div class="tile-map-copy">
+                <h3>Near everyone, by default</h3>
+                <p>Static files are served from 18 regions. Functions run in the region you choose, next to your data, and edge functions run in all of them.</p>
+                <p class="tile-note" data-map-note></p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pricing: the same numbers the conversation knows. -->
+      <section class="band pricing" id="pricing" aria-labelledby="pricing-title">
+        <div class="wrap">
+          <div class="section-head">
+            <h2 id="pricing-title">Start free. Pay when it’s working.</h2>
+            <p>Every plan deploys from any push, with a preview for every branch. Upgrade when your traffic, your team or your functions need it.</p>
+          </div>
+          <div class="plans">
+            <article class="plan" id="plan-hobby" data-plan="hobby">
+              <h3>Hobby</h3>
+              <p class="price"><strong>$0</strong><span class="mono">/month</span></p>
+              <p class="plan-lead">For personal projects and experiments.</p>
+              <ul>
+                <li><svg class="i"><use href="#i-check"/></svg>A preview URL for every push</li>
+                <li><svg class="i"><use href="#i-check"/></svg>80 GB bandwidth a month</li>
+                <li><svg class="i"><use href="#i-check"/></svg>400 build minutes a month</li>
+                <li><svg class="i"><use href="#i-check"/></svg>Node functions: 1 GB, up to 10 s</li>
+                <li><svg class="i"><use href="#i-check"/></svg>2 cron jobs</li>
+              </ul>
+              <a class="btn btn-ghost" href="#deploy" data-start>Start deploying</a>
+            </article>
+            <article class="plan plan-featured" id="plan-pro" data-plan="pro">
+              <h3>Pro <span class="pill">Teams</span></h3>
+              <p class="price"><strong>$18</strong><span class="mono">/member/month</span></p>
+              <p class="plan-lead">For teams shipping to customers.</p>
+              <ul>
+                <li><svg class="i"><use href="#i-check"/></svg>Everything in Hobby</li>
+                <li><svg class="i"><use href="#i-check"/></svg>1 TB bandwidth a month</li>
+                <li><svg class="i"><use href="#i-check"/></svg>5,000 build minutes a month</li>
+                <li><svg class="i"><use href="#i-check"/></svg>Node functions: 3 GB, up to 300 s</li>
+                <li><svg class="i"><use href="#i-check"/></svg>40 cron jobs</li>
+              </ul>
+              <a class="btn btn-dark" href="#deploy" data-start>Start with Pro</a>
+            </article>
+            <article class="plan" id="plan-enterprise" data-plan="enterprise">
+              <h3>Enterprise</h3>
+              <p class="price"><strong>Custom</strong></p>
+              <p class="plan-lead">For scale, security reviews and an SLA.</p>
+              <ul>
+                <li><svg class="i"><use href="#i-check"/></svg>Everything in Pro</li>
+                <li><svg class="i"><use href="#i-check"/></svg>Single sign-on for your team</li>
+                <li><svg class="i"><use href="#i-check"/></svg>99.99% uptime SLA</li>
+              </ul>
+              <button type="button" class="btn btn-ghost" data-ask-plan="Enterprise">Ask about Enterprise</button>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="band foot">
+      <div class="wrap foot-in">
+        <span class="brand brand-foot"><svg class="brand-mark" aria-hidden="true"><use href="#mark"/></svg><span>airstrip</span></span>
+        <span class="foot-status"><i aria-hidden="true"></i>All systems normal</span>
+        <p class="foot-note">Airstrip is a fictional company. This page demonstrates a custom chat UI on Stand Chat’s Visitor API.</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Phones: the way back to the conversation while it's closed. -->
+  <button type="button" class="convo-pill" data-convo-pill hidden><svg class="i"><use href="#i-chat"/></svg><span>Conversation</span><span class="unread" data-unread hidden></span></button>
+  <div class="scrim" data-scrim hidden></div>
+  <p class="sr-only" role="status" aria-live="polite" data-announce></p>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Let visitors bring their own input, and talk about their result</h2>
+      <p class="sx-lead">The first question on a hosting site is “will it work with my project?” This page answers it with the visitor’s own package.json: read in the browser, played back as a deployment, and open to questions about every finding and log line. The conversation runs on Stand’s Visitor API, and whoever answers already knows the visitor’s stack, because the first question carries a summary of it.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Watch the sample deploy. Then drop your own package.json onto the page, paste it anywhere with <kbd>⌘V</kbd> or <kbd>Ctrl+V</kbd>, or pick another sample. The tricky one fails.</li>
+        <li>Click <strong>Ask</strong> on a finding, or point at a log line and click its <strong>Ask</strong>. The conversation opens beside the deployment, on that finding’s thread, with questions to start from.</li>
+        <li>In the answer, click a highlighted name like <em>bcrypt</em> or <em>Building</em>. The page scrolls to that finding or build phase and lights up its log lines.</li>
+        <li>Ask about something else: it gets its own thread in the same conversation. Reload, and your package.json, the log and every thread come back.</li>
+      </ol>
+      <div class="sx-note">Chats here use <code>site: 'demo'</code>, Stand Chat’s shared demo site, which answers on any domain. Its demo Stand-in follows this page’s prompt and speaks for the made-up company. With your own Site ID, your own Stand-ins and your team answer, and every conversation lands in Stand.</div>
+
+      <h3>1. Read the input in the browser</h3>
+      <p>The package.json never leaves the page. It’s parsed with <code>JSON.parse</code>, checked by a rules engine, and turned into a deployment that only exists as data. Nothing reaches Stand until the visitor sends a question, and then only the question and a summary of the stack.</p>
+      <pre class="sx-code" data-file="app.js"><code class="language-js">const { pkg, invalid } = readPackageJson(await file.text()); // Strict JSON, like npm
+const analysis = analyze(pkg, { invalid }); // The rules engine: findings, framework, output
+const deployment = simulate(analysis, { region, key: text }); // The log, seeded by the input</code></pre>
+      <p>A near-miss still gets analyzed. Comments or a trailing comma make npm fail, so the page reads the file leniently, and the first finding says why the real install would stop.</p>
+
+      <h3>2. A rules engine you can read</h3>
+      <p><code>analyze.js</code> holds 40 rules about the made-up platform: the framework and its output, the Node range in <code>engines</code>, the package manager, native addons, headless browsers, WebSocket servers, background jobs, ORMs, uploads, auth on preview URLs, monorepo roots and more. Each finding carries what the page and the conversation need.</p>
+      <pre class="sx-code" data-file="analyze.js, condensed"><code class="language-js">if (has('puppeteer')) {
+  add({
+    id: 'puppeteer', // Also the name answers point with: [[puppeteer]]
+    level: 'error', // ok, info, warn or error
+    title: 'puppeteer is too big for a function',
+    summary: 'Its Chromium pushes the function past the 200 MB limit.',
+    brief: 'bundled Chromium exceeds the 200 MB function limit', // For the prompt
+    fatal: 'Deploying', // The simulated deployment fails here
+    log: {
+      phase: 'Installing', level: 'warn',
+      text: 'puppeteer@23.11.1: downloading Chromium (171 MB)',
+    },
+    questions: ['How do I run a headless browser on Airstrip?'],
+  });
+}</code></pre>
+      <p>The build log in <code>deploy.js</code> is generated from the findings and seeded by the input, so the same package.json always gives the same lines. That matters for the conversation: a thread about a log line finds its line again after a reload.</p>
+
+      <h3>3. The stack rides along with the first question</h3>
+      <p>The first question creates the Stand session, with a private prompt of up to 2,000 characters: who answers, the platform’s facts, the page’s conventions, and a summary of this stack. The summary fills up most important first, as far as it fits: every warning, then their reasons, tips, up to 25 package names and what works as is. This is the prompt your next question would carry right now:</p>
+      <pre class="sx-code" data-file="The prompt, live from this page" data-wrap><code data-live-prompt>Loading…</code></pre>
+      <pre class="sx-code" data-file="app.js"><code class="language-js">await client.send(composeMessage(subject, question), {
+  prompt: buildPrompt(analysis, deployment), // Only read on the first send
+  analyticsId: 'will-it-deploy',
+});</code></pre>
+
+      <h3>4. One conversation, a thread per finding</h3>
+      <p>Every finding, log line and phase can start a thread, and they all share one Stand conversation, so the site owner is charged for one chat, not twenty. Each question starts with its subject. The team sees exactly what was asked about, and the panel sorts messages into threads by reading the subjects back, even after a reload.</p>
+      <pre class="sx-code" data-file="What the team sees in Stand" data-wrap><code>[Finding: bcrypt] Will this still work if I move login to the edge?
+[Log: Installing "puppeteer@23.11.1: downloading Chromium (171 MB)"] Why is this so big?
+[Stack] Can I run this on the free plan?</code></pre>
+      <pre class="sx-code" data-file="chat.js, condensed"><code class="language-js">export function parseMessage(body) {
+  const m = body.match(/^\[(Finding|Log|Stack)(?::\s*([^\]]*))?\]\s*/);
+  // m[1] is the kind of subject; m[2] a finding id, or a phase and its log line.
+  // The rest is the question, shown in its thread without the prefix.
+}</code></pre>
+      <p>Replies belong to the thread of the latest question before them. While an answer is on its way, the panel asks the visitor to wait before starting a thread somewhere else. Later messages can’t change the prompt, so when the visitor loads another package.json mid-conversation, their next question carries it along as <code>[New stack: …]</code>.</p>
+
+      <h3>5. Answers that point at the deployment</h3>
+      <p>The prompt lists the page’s vocabulary: this stack’s finding ids, the five build phases and the three plans, and asks for them in double square brackets. The panel turns names it recognizes into buttons that scroll to the finding, expand the phase or open the plan. Anything else stays plain text, and a reply is only ever escaped text with a small formatting subset.</p>
+      <pre class="sx-code" data-file="Reply from the Stand-in, and what the panel shows"><code>No: bcrypt is a native addon, so it only runs in Node functions ([[bcrypt]]).
+→ No: bcrypt is a native addon, so it only runs in Node functions ([⚠ bcrypt]).</code></pre>
+
+      <h3>6. What your team learns</h3>
+      <p>In Stand, every conversation opens with the visitor’s stack, and every question names the finding or log line behind it. After a few weeks, that’s a map of which stacks bring people to your site and which findings stop them. If a third of the conversations start on the WebSockets finding, that’s a product decision, not a support queue.</p>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> The panel names whoever answers exactly as Stand reports them, with an AI badge for a Stand-in. If someone from the team takes over, the badge changes and the conversation says so.</li>
+        <li><strong>Closing isn’t ending.</strong> The × and <kbd>Esc</kbd> put the panel away; replies keep arriving. <em>End conversation</em>, in the panel’s menu, ends it in Stand.</li>
+        <li><strong>A reload keeps everything.</strong> The client restores the transcript from <code>sessionStorage</code> and Stand, the threads come back from each message’s subject, and the package.json and its deployment (same lines, same times) are saved per tab.</li>
+        <li><strong>Nobody around.</strong> The analysis works on its own. When Stand has nobody to answer, the Ask buttons open a panel that says so, with a way to check again.</li>
+        <li><strong>Keyboard and screen readers.</strong> Every Ask is a button; in the build log, arrow keys move between lines and <kbd>Enter</kbd> asks about one. The transcript announces whole replies, not typing, and <kbd>Esc</kbd> closes the panel and returns focus.</li>
+        <li><strong>Reduced motion.</strong> The deployment appears at once instead of streaming, and nothing slides or shimmers.</li>
+        <li><strong>It’s a beta.</strong> The Visitor API can add fields and events. The client ignores what it doesn’t know, and the page still works as a static analyzer if the chat can’t load.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>This page was written by <strong>Claude Opus 5.5 in Claude Code</strong>. A lead session reworked a list of ideas, wrote the brief below and reviewed the result. A separate Claude agent built the example in its own git worktree: it studied the reference product’s site for tone and layout, wrote the rules engine and tested it in Node before any UI existed, tuned the prompt in real conversations with Stand’s demo Stand-in, and checked its own screenshots in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example’s brief</p>
+          <blockquote class="made-prompt">"Will it deploy?" for a made-up frontend cloud in the black-and-white, grid-lined style of the platform many web developers deploy to. The visitor drops or pastes a package.json (or picks a sample), and the page runs a local, simulated deployment of their stack: a streaming build log with collapsible phases, a deployment card and a list of findings from a rules engine of 25 to 40 rules.
+
+Every finding and log line can be asked about. The conversation docks beside the deployment like an inspector, with chips for what it's about. The first message's prompt carries a compact stack summary; later questions carry their subject as a prefix, threading one Stand session. Answers reference findings and build phases by name, and those become chips that highlight the page.
+
+"Analyzed in your browser. Only what you ask about is sent, with a summary of your stack." Make it true.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Start from the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a> and the <code>demo</code> Site ID, so the agent can hold real conversations from localhost while it builds.</li>
+            <li>Budget the prompt. 2,000 characters go fast, so have the agent measure it for every sample, and fill it most important first: here, every warning, then their reasons, tips and package names.</li>
+            <li>Make the simulation deterministic. Seeding the log from the input means a reload regenerates the same lines, and threads anchored to a log line still find it.</li>
+            <li>Probe the reference convention before wiring the UI. Once the prompt listed the exact names, the demo Stand-in used them reliably; a closed vocabulary with plain-text fallback kept stray names harmless.</li>
+            <li>Probe for what it shouldn’t say, too. Pressed for “a product name”, the Stand-in recommended real companies until the prompt said never to, even when asked, and gave a generic example to use instead.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/will-it-deploy my-deploy-check</code></pre>
+      <p><code>stand-visitor.js</code> talks to Stand and has no DOM code. <code>chat.js</code> is the conversation model: the prompt, the subjects, threads and reply formatting. <code>analyze.js</code> and <code>deploy.js</code> are the rules engine and the simulated deployment, and <code>samples.js</code> holds the seven samples. <code>app.js</code> puts it all on the page, with <code>preview.js</code> drawing the site thumbnail and <code>sections.js</code> the art below it.</p>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Guide: custom chat UI ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Feature reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/will-it-deploy/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
