@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Pause the product tour to ask</title>
+  <meta name="description" content="A product tour you can pause at any second to ask about exactly what’s on screen. Questions drop onto the timeline as markers, and answers jump the tour to the moment they mean. A custom chat UI on Stand’s Visitor API.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, product tour, video player, timeline markers, seekable animation, website builder">
+  <meta property="og:title" content="Pause the product tour to ask">
+  <meta property="og:description" content="A product tour you can pause at any second to ask about exactly what’s on screen. Questions drop onto the timeline as markers, and answers jump the tour to the moment they mean.">
+  <meta property="og:image" content="https://examples.stand.chat/pause-to-ask/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Site chrome: the top bar and "How it works" styles. The example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <!-- No icon of its own: none is requested either, even without /_shared/. -->
+  <link rel="icon" href="data:,">
+
+  <!-- Marquee, the made-up website builder, and its tour. -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..800&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="tour.css">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="mq" id="top">
+    <header class="mq-nav" data-og-hide>
+      <div class="mq-wrap mq-nav-in">
+        <a class="mq-logo" href="#top" aria-label="Marquee home">
+          <svg class="mq-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V3h4.6v18z" fill="currentColor"/><path d="M16.4 3H21v18h-4.6z" fill="currentColor"/><path d="m8.6 3 3.4 5.2L15.4 3v7.1L12 15.3l-3.4-5.2z" fill="currentColor" opacity=".55"/></svg>
+          <span>Marquee</span>
+        </a>
+        <nav class="mq-links" aria-label="Marquee">
+          <a href="#features">Product</a>
+          <a href="#templates">Templates</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+        <a class="btn btn-white btn-sm" href="#pricing">Start for free</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" data-og-hide>
+        <div class="mq-wrap">
+          <h1><span>Design it.</span> <span>Ship it.</span> <span>Tonight.</span></h1>
+          <div class="hero-row">
+            <p class="hero-sub">Design on a canvas, publish a fast site. Pause the tour anytime to ask about what you see.</p>
+            <div class="hero-cta">
+              <a class="btn btn-white" href="#pricing">Start for free</a>
+              <a class="btn btn-dark" href="#templates">Browse templates</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="theater mq-wrap" id="tour" data-theater aria-label="Product tour">
+        <div class="player" data-player data-og-focus>
+          <div class="stage" data-stage>
+            <div class="tour-host" data-tour aria-hidden="true"></div>
+            <button type="button" class="stage-hit" data-stage-hit tabindex="-1" aria-hidden="true"></button>
+            <p class="caption" data-caption></p>
+            <div class="paused-ui">
+              <button type="button" class="pill pill-play" data-play-big>
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>
+                <span>Play</span>
+              </button>
+              <button type="button" class="pill pill-ask" data-ask aria-label="Ask about this moment (q)">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3.5h10a.5.5 0 0 1 .5.5v6.5a.5.5 0 0 1-.5.5H7l-3 2.5V11H3a.5.5 0 0 1-.5-.5V4a.5.5 0 0 1 .5-.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                <span>Ask about this moment</span><kbd>Q</kbd>
+              </button>
+            </div>
+
+            <form class="composer" data-composer hidden aria-label="Ask about this moment">
+              <div class="composer-top">
+                <span class="chip-moment" data-chip></span>
+                <button type="button" class="icon-btn" data-close aria-label="Close (Esc)"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="m4.5 4.5 7 7m0-7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+              </div>
+              <textarea data-input rows="1" maxlength="1500" placeholder="What would you like to know about this moment?" aria-label="Your question about this moment"></textarea>
+              <p class="composer-status" data-status role="status"></p>
+              <div class="composer-foot">
+                <span class="who who-mini" data-who></span>
+                <span class="composer-actions" data-composer-actions></span>
+                <button type="submit" class="send" data-send aria-label="Send question" disabled><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3.5M3.8 7.4 8 3.2l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <p class="composer-notice" data-notice-mini hidden></p>
+              <p class="composer-legal"><span>Real conversation</span><a data-powered hidden target="_blank" rel="noopener noreferrer">Powered by Stand</a></p>
+            </form>
+          </div>
+
+          <div class="controls">
+            <div class="scrub-wrap">
+              <div class="scrub" data-scrub role="slider" tabindex="0" aria-label="Tour position" aria-valuemin="0" aria-valuemax="110" aria-valuenow="42">
+                <div class="segs" data-segs></div>
+              </div>
+              <div class="markers" data-markers></div>
+              <div class="scrub-tip" data-tip hidden>
+                <div class="tip-thumb" data-tip-thumb></div>
+                <div class="tip-text"><b data-tip-time></b><span data-tip-label></span></div>
+              </div>
+              <div class="seg-names" data-names></div>
+            </div>
+            <div class="bar">
+              <button type="button" class="play-btn" data-toggle data-icon="play" aria-label="Play (k)">
+                <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>
+                <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9M11 3.5v9" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                <svg class="i-replay" viewBox="0 0 16 16" aria-hidden="true"><path d="M3.6 8a4.4 4.4 0 1 0 1.5-3.3M3.4 2.6v2.6H6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <span class="time"><span data-now>0:42</span><span class="of"> / 1:50</span></span>
+              <span class="now-where"><b data-chapter>Breakpoints</b><span data-moment>phone-only headline size</span></span>
+              <button type="button" class="ask-btn" data-ask aria-label="Ask about this moment (q)">
+                <span>Ask about this moment</span><kbd>Q</kbd>
+              </button>
+              <button type="button" class="cc-btn" data-cc aria-pressed="true" aria-label="Captions (c)">CC</button>
+            </div>
+          </div>
+        </div>
+
+        <aside class="rail" data-rail aria-labelledby="rail-title">
+          <header class="rail-head">
+            <div class="rail-title"><h2 id="rail-title">Questions</h2><span class="count" data-count>0</span></div>
+            <div class="who" data-who></div>
+          </header>
+          <div class="rail-body" data-rail-body>
+            <div class="intro" data-intro>
+              <p>Pause the tour anywhere and ask about what’s on screen. Your question is pinned to that second, and answers can jump the tour to show you.</p>
+              <button type="button" class="btn-ask-mini" data-action="ask" aria-label="Ask about this moment (q)">Ask about this moment <kbd aria-hidden="true">Q</kbd></button>
+            </div>
+            <ol class="threads" data-threads aria-label="Questions, by moment in the tour"></ol>
+          </div>
+          <footer class="rail-foot">
+            <div class="notes" data-notices></div>
+            <div class="rail-banner" data-banner role="status" hidden></div>
+            <p class="rail-notice" data-notice hidden></p>
+            <p class="rail-meta"><span data-honest>Real conversation via Stand</span><a data-powered hidden target="_blank" rel="noopener noreferrer">Powered by Stand</a></p>
+            <button type="button" class="link-btn rail-end" data-action="end" data-end hidden>End conversation</button>
+          </footer>
+          <p class="sr-only" aria-live="polite" data-live></p>
+        </aside>
+
+        <details class="transcript" data-og-hide>
+          <summary>Read the tour as text</summary>
+          <ol>
+            <li><button type="button" data-jump="0">0:00</button> <b>Templates.</b> Start from a template. Each one is a complete, responsive site.</li>
+            <li><button type="button" data-jump="6">0:06</button> It opens on the canvas, ready to make your own.</li>
+            <li><button type="button" data-jump="13">0:13</button> <b>Canvas.</b> Click any text on the canvas and type. The canvas is the site.</li>
+            <li><button type="button" data-jump="19">0:19</button> Swap an image straight from your assets.</li>
+            <li><button type="button" data-jump="24">0:24</button> Buttons are components: switch a variant and every instance follows.</li>
+            <li><button type="button" data-jump="31">0:31</button> <b>Breakpoints.</b> Add a tablet breakpoint from the frame’s + menu.</li>
+            <li><button type="button" data-jump="36">0:36</button> Add phone too. All three layouts sit side by side.</li>
+            <li><button type="button" data-jump="39">0:39</button> Breakpoints follow desktop until you override them, like this smaller headline on phone.</li>
+            <li><button type="button" data-jump="48">0:48</button> <b>CMS.</b> Content lives in CMS collections, like the studio’s Journal.</li>
+            <li><button type="button" data-jump="54">0:54</button> Connect a list to a collection, and the cards fill themselves in.</li>
+            <li><button type="button" data-jump="64">1:04</button> <b>Effects.</b> Add a scroll effect from the Effects panel. No timeline to wire up.</li>
+            <li><button type="button" data-jump="70">1:10</button> Preview it right away: the image drifts as the page scrolls.</li>
+            <li><button type="button" data-jump="80">1:20</button> <b>Localization.</b> Add a language, and every string is translated for you to review.</li>
+            <li><button type="button" data-jump="86">1:26</button> The whole page in French, on its own /fr address.</li>
+            <li><button type="button" data-jump="94">1:34</button> <b>Publish.</b> Publish to your own domain. It’s live in seconds.</li>
+            <li><button type="button" data-jump="100">1:40</button> The live site: SSL, a global CDN, and nothing to maintain.</li>
+          </ol>
+          <p class="keys">Keys: <kbd>Space</kbd> or <kbd>K</kbd> play and pause, <kbd>J</kbd> and <kbd>L</kbd> skip 5 seconds, <kbd>Q</kbd> asks about the moment, <kbd>C</kbd> captions.</p>
+        </details>
+      </section>
+
+      <section class="logos mq-wrap" aria-label="Teams on Marquee" data-reveal>
+        <p>Studios, shops and startups publish on Marquee</p>
+        <ul>
+          <li class="lg-loam">loam<i></i></li>
+          <li class="lg-north">◆ northwind</li>
+          <li class="lg-halden">Halden &amp; Co</li>
+          <li class="lg-parade">PARADE</li>
+          <li class="lg-tessera">TESSERA</li>
+          <li class="lg-quiet">Quiet Hours</li>
+        </ul>
+      </section>
+
+      <section class="mq-sec" id="templates" data-reveal>
+        <div class="mq-wrap mq-sec-head">
+          <h2>Start from something<br>that already looks right</h2>
+          <a class="btn btn-dark btn-sm" href="#tour" data-jump="0">See one in the tour</a>
+        </div>
+        <p class="mq-wrap mq-sec-sub">240 templates, free and paid. Every one is responsive, editable and yours from the first click.</p>
+        <div class="tstrip" data-templates></div>
+      </section>
+
+      <section class="mq-sec" id="features">
+        <div class="mq-wrap mq-sec-head" data-reveal>
+          <h2>Everything a site needs.<br>Nothing it doesn’t.</h2>
+        </div>
+        <div class="mq-wrap bento">
+          <article class="card card-canvas" data-reveal>
+            <div class="vignette v-canvas" aria-hidden="true">
+              <div class="vc-frame">
+                <span class="vc-eyebrow"></span>
+                <span class="vc-line"><span class="vc-type">Stoneware for slow mornings.</span><i class="vc-caret"></i></span>
+                <span class="vc-sel"><i></i><i></i><i></i><i></i><b>Heading</b></span>
+                <span class="vc-p"></span><span class="vc-p short"></span>
+                <span class="vc-btn"></span>
+              </div>
+            </div>
+            <div class="card-text">
+              <h3>Canvas</h3>
+              <p>Design on the page itself. Type, drag, swap images and restyle components, and what you see is what ships.</p>
+              <button type="button" class="jump" data-jump="13"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>In the tour · 0:13</button>
+            </div>
+          </article>
+          <article class="card" data-reveal>
+            <div class="vignette v-bp" aria-hidden="true"><span class="bp-d"><i></i><i></i></span><span class="bp-t"><i></i><i></i></span><span class="bp-p"><i></i><i></i></span></div>
+            <div class="card-text">
+              <h3>Breakpoints</h3>
+              <p>Desktop, tablet and phone side by side. They follow desktop until you say otherwise.</p>
+              <button type="button" class="jump" data-jump="31"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>In the tour · 0:31</button>
+            </div>
+          </article>
+          <article class="card" data-reveal>
+            <div class="vignette v-cms" aria-hidden="true"><span><b></b><i></i><em>Published</em></span><span><b></b><i></i><em>Published</em></span><span><b></b><i></i><em>Draft</em></span></div>
+            <div class="card-text">
+              <h3>CMS</h3>
+              <p>Collections for posts, products and people. Lists fill themselves in, and every item gets a page.</p>
+              <button type="button" class="jump" data-jump="48"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>In the tour · 0:48</button>
+            </div>
+          </article>
+          <article class="card" data-reveal>
+            <div class="vignette v-fx" aria-hidden="true">
+              <div class="fx-page">
+                <div class="fx-scroll"><span class="fx-line"></span><span class="fx-line short"></span><span class="fx-img"><i></i></span><span class="fx-line"></span><span class="fx-line short"></span><span class="fx-line"></span></div>
+                <span class="fx-bar"><i></i></span>
+              </div>
+            </div>
+            <div class="card-text">
+              <h3>Effects</h3>
+              <p>Appear, scroll and hover effects from a panel, with no timeline to wire up. They respect reduced motion.</p>
+              <button type="button" class="jump" data-jump="64"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>In the tour · 1:04</button>
+            </div>
+          </article>
+          <article class="card" data-reveal>
+            <div class="vignette v-loc" aria-hidden="true"><span lang="en">Slow mornings</span><span lang="fr">Matins lents</span><span lang="de">Langsame Morgen</span><span lang="es">Mañanas lentas</span></div>
+            <div class="card-text">
+              <h3>Localization</h3>
+              <p>Up to 15 languages per site, translated for you to review, each on its own address.</p>
+              <button type="button" class="jump" data-jump="80"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.6v8.8a.5.5 0 0 0 .76.43l7-4.4a.5.5 0 0 0 0-.86l-7-4.4A.5.5 0 0 0 5 3.6z" fill="currentColor"/></svg>In the tour · 1:20</button>
+            </div>
+          </article>
+          <article class="card card-half" data-reveal>
+            <div class="vignette v-stats" aria-hidden="true">
+              <b>12,480</b><small>Visitors this week</small>
+              <svg viewBox="0 0 240 70" preserveAspectRatio="none"><path class="vs-area" d="M0 58 C30 52 40 40 70 44 S120 20 150 28 S200 10 240 6 V70 H0Z"/><path class="vs-line" d="M0 58 C30 52 40 40 70 44 S120 20 150 28 S200 10 240 6"/></svg>
+            </div>
+            <div class="card-text">
+              <h3>Analytics</h3>
+              <p>Visitors, sources and conversions, without cookies or a banner to go with them.</p>
+            </div>
+          </article>
+          <article class="card card-half" data-reveal>
+            <div class="vignette v-seo" aria-hidden="true">
+              <span class="seo-result"><small>loam.studio › journal</small><b>Twelve glazes, one kiln · Loam</b><i></i><i class="short"></i></span>
+              <span class="seo-score"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15"/><circle class="ring" cx="18" cy="18" r="15"/></svg><b>100</b></span>
+            </div>
+            <div class="card-text">
+              <h3>SEO</h3>
+              <p>Sitemaps, meta tags, redirects and social images, set up before you think to ask.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="mq-sec" id="pricing">
+        <div class="mq-wrap mq-sec-head" data-reveal>
+          <h2>Start free.<br>Pay per site as it grows.</h2>
+        </div>
+        <div class="mq-wrap plans" data-reveal>
+          <div class="plan">
+            <h3>Free</h3><p class="plan-for">For trying an idea</p>
+            <p class="price"><b>$0</b></p>
+            <a class="btn btn-dark btn-block" href="#tour">Start for free</a>
+            <ul><li>A marquee.site address</li><li>1 GB bandwidth</li><li>100 CMS items</li><li>1 language</li></ul>
+          </div>
+          <div class="plan">
+            <h3>Basic</h3><p class="plan-for">For a personal site</p>
+            <p class="price"><b>$12</b><span>per site / month</span></p>
+            <a class="btn btn-dark btn-block" href="#tour">Start with Basic</a>
+            <ul><li>Your own domain</li><li>20 GB bandwidth</li><li>1,000 CMS items</li><li>2 languages</li></ul>
+          </div>
+          <div class="plan plan-pop">
+            <h3>Pro <em>Most popular</em></h3><p class="plan-for">For a growing business</p>
+            <p class="price"><b>$29</b><span>per site / month</span></p>
+            <a class="btn btn-white btn-block" href="#tour">Start with Pro</a>
+            <ul><li>100 GB bandwidth</li><li>10,000 CMS items</li><li>5 languages</li><li>Staging and password pages</li></ul>
+          </div>
+          <div class="plan">
+            <h3>Scale</h3><p class="plan-for">For sites that can’t go down</p>
+            <p class="price"><b>$99</b><span>per site / month</span></p>
+            <a class="btn btn-dark btn-block" href="#tour">Start with Scale</a>
+            <ul><li>500 GB bandwidth</li><li>50,000 CMS items</li><li>15 languages</li><li>SSO and a 99.99% uptime SLA</li></ul>
+          </div>
+        </div>
+        <p class="mq-wrap plans-note">Every plan includes 2 editors. More are $15 a month each.</p>
+      </section>
+
+      <section class="mq-sec" id="faq">
+        <div class="mq-wrap faq">
+          <h2 data-reveal>Questions,<br>answered</h2>
+          <div class="faq-list" data-reveal>
+            <details><summary>Can I use my own domain?</summary><p>Yes, on Basic and up. Free sites live at a marquee.site address. Every domain gets SSL.</p></details>
+            <details><summary>Do I need to know how to code?</summary><p>No. If you do, you can bring your own React components onto the canvas and use them like any other.</p></details>
+            <details><summary>Can I move my existing site?</summary><p>Paste its address and Marquee imports the pages, text and images from most other builders. You tidy up on the canvas.</p></details>
+            <details><summary>Can I sell products?</summary><p>Through integrations: embed checkout from the commerce service you already use. Marquee doesn’t take payments itself.</p></details>
+            <details><summary>How many languages can a site have?</summary><p>One on Free, 2 on Basic, 5 on Pro and 15 on Scale. Each language gets its own address, like /fr.</p></details>
+            <details><summary>How fast are the sites?</summary><p>Every site is served from a global CDN with SSL. Scale adds a 99.99% uptime SLA.</p></details>
+            <p class="faq-more">Something else? <button type="button" class="link-btn" data-ask-tour>Pause the tour</button> at the moment that raised it, and ask.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="cta" data-reveal>
+        <div class="mq-wrap">
+          <h2>Your site could be<br>live by tonight.</h2>
+          <div class="hero-cta">
+            <a class="btn btn-white" href="#pricing">Start for free</a>
+            <a class="btn btn-dark" href="#tour" data-jump="94">Watch it publish</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="mq-foot">
+      <div class="mq-wrap mq-foot-in">
+        <a class="mq-logo" href="#top" aria-label="Marquee home">
+          <svg class="mq-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21V3h4.6v18z" fill="currentColor"/><path d="M16.4 3H21v18h-4.6z" fill="currentColor"/><path d="m8.6 3 3.4 5.2L15.4 3v7.1L12 15.3l-3.4-5.2z" fill="currentColor" opacity=".55"/></svg>
+          <span>Marquee</span>
+        </a>
+        <nav class="foot-cols" aria-label="Footer">
+          <div><b>Product</b><a href="#features">Canvas</a><a href="#features">Breakpoints</a><a href="#features">CMS</a><a href="#features">Effects</a></div>
+          <div><b>Explore</b><a href="#tour">The tour</a><a href="#templates">Templates</a><a href="#pricing">Pricing</a><a href="#faq">FAQ</a></div>
+        </nav>
+        <p class="foot-status"><i></i>All systems normal</p>
+      </div>
+      <p class="mq-wrap foot-note">Marquee is a fictional company. This page demonstrates a custom chat UI on Stand Chat’s Visitor API.</p>
+    </footer>
+  </div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Let visitors pause your demo and ask about what they see</h2>
+      <p class="sx-lead">Every product has a demo video, and nobody knows where viewers get lost. Here the tour is a live animation you can pause at any second. A question carries the moment it’s about, drops onto the timeline as a marker, and the answer can jump the tour to the moment it means. It’s a custom chat UI on Stand’s Visitor API: one real conversation, answered by an AI Stand-in, with your team a click away.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Let the tour play, or drag along its chapters. Hover the timeline to preview any second.</li>
+        <li>Pause when something catches your eye and choose <strong>Ask about this moment</strong>, or press <kbd>Q</kbd>. Try “If I shrink this headline, does desktop change too?” at 0:42.</li>
+        <li>Your question drops onto the timeline as a marker, and the answer arrives in the Questions rail. Times in it, like 0:39, play the tour from there.</li>
+        <li>Ask about another moment: it gets its own marker and thread. Then reload the page. The markers, the threads and the frame you were on all come back.</li>
+      </ol>
+
+      <div class="sx-note">This page uses <code>site: 'demo'</code>, Stand Chat’s shared demo site, which works on any domain. Its demo Stand-in follows the page’s prompt, but won’t speak for the made-up business. With your own Site ID, your own Stand-ins answer, and your team can step in.</div>
+
+      <h3>1. The tour is a function of time</h3>
+      <p>There’s no video file. The editor is HTML and CSS, laid out at a fixed size and scaled like a video. <code>render(t)</code> sets every element from a script: where the cursor is, how much of the headline is typed, which menu is open, how far the canvas has zoomed. Nothing animates on its own, so seeking is instant, a paused frame stays exactly still, and any second can be drawn again, which is what a question needs to point at.</p>
+      <pre class="sx-code" data-file="tour-script.js"><code class="language-js">// What happens when, in seconds. The cursor aims at elements, not pixels,
+// so the same script drives the desktop layout and the compact phone one.
+go(39.4, 'p:headline@0.5,0.5', 1.2); // arrive on the phone's headline
+click(39.6);
+go(41.6, 'insp-size@0.22,0.5', 0.8); // drag the size field: 44 → 36
+export const AT = { phoneSize: [40.8, 41.6], locale: 85.9 };</code></pre>
+      <pre class="sx-code" data-file="tour.js"><code class="language-js">function render(t) {
+  renderSite(t);     // the site being built: typed text, swapped image, French copy
+  renderChrome(t);   // panels, layers, inspector values
+  renderOverlays(t); // template gallery, CMS, menus, preview, the live site
+  renderWorld(t);    // where the canvas looks, and how close
+  renderCursor(t);   // eased moves between targets, clicks as ripples
+}
+player.seek(72); // → tour.render(72), and the scrubber, captions and markers follow</code></pre>
+      <p>The previews work the same way. Hover the timeline, a marker or a time in an answer, and a second, smaller copy of the tour renders that exact second.</p>
+
+      <h3>2. A question carries its moment</h3>
+      <p>Pausing gives the question its context: the second, the chapter and what’s on screen. Every visitor message starts with that moment, so your team reads exactly where the question came from, and the page can read it back.</p>
+      <pre class="sx-code" data-file="threads.js"><code class="language-js">formatQuestion(42, 'Does desktop change too?');
+// → "⏱ 0:42 Breakpoints: Does desktop change too?"
+
+parseQuestion('⏱ 0:42 Breakpoints: Does desktop change too?');
+// → { time: 42, text: 'Does desktop change too?' }</code></pre>
+      <p>Paused at <b data-live-where>0:40, Breakpoints</b>, your next question would be sent as:</p>
+      <pre class="live-code" data-label="Live"><code data-live-message>⏱ 0:40 Breakpoints: Your question</code></pre>
+
+      <h3>3. Markers are threads in one conversation</h3>
+      <p>Each moment gets its own marker and thread, but they all live in one Stand conversation, so a visit counts as one chat however many questions it raises. The threads are rebuilt from the transcript: a reply belongs to the thread of the latest question before it. After a reload, the markers come back from the messages themselves.</p>
+      <pre class="sx-code" data-file="questions.js, simplified"><code class="language-js">const { threads, notices, awaiting } = buildThreads(client.getSnapshot());
+// threads: one per moment, in timeline order, each with its messages.
+// notices: handoffs, follow-up offers and the end, for the whole conversation.
+// awaiting: the thread an answer is due in. Other moments wait their turn.
+player.setMarkers(threads.map((t) =&gt; ({ key: t.key, time: t.time, kind: 'you' })));</code></pre>
+
+      <h3>4. Answers that seek</h3>
+      <p>The prompt lists the chapters and what’s on screen every few seconds, and asks the Stand-in to point at moments in double brackets. It does, reliably. The page turns those into timestamp chips that play the tour from there. It’s a closed vocabulary: anything else in brackets is shown as plain text, and a reply can only ever move the tour.</p>
+      <pre class="sx-code" data-file="threads.js"><code class="language-js">resolveReference('0:39');         // → { kind: 'time', time: 39, label: '0:39' }
+resolveReference('Chapter: CMS'); // → { kind: 'chapter', time: 48, label: 'CMS' }
+resolveReference('Pricing');      // → null: shown as plain text</code></pre>
+
+      <h3>5. The prompt</h3>
+      <p>Sent once, with the first question: facts for the Stand-in, and the tour’s outline, generated from the same script that draws it. The last line follows the tour. It’s the moment your first question would be about.</p>
+      <pre class="live-code live-prompt" data-label="prompt.js, as it would be sent now"><code data-live-prompt>You are answering visitors on the website of Marquee, a fictional website builder (a demo page on examples.stand.chat; Marquee is invented). Speak as Marquee's team. Keep replies short: 1-3 sentences unless asked for detail.
+If a fact isn't below, say you're not sure and offer to bring in someone from the team. Don't invent prices, limits or features.
+
+Prices per site per month. Free $0: marquee.site address, 1 GB bandwidth, 100 CMS items, 1 language. Basic $12: custom domain, 20 GB, 1,000 CMS items, 2 languages. Pro $29: 100 GB, 10,000 CMS items, 5 languages, staging, password pages. Scale $99: 500 GB, 50,000 CMS items, 15 languages, SSO, 99.99% SLA. 2 editors included, more $15/month each. Built in: SSL, CDN hosting, sitemaps, meta tags, redirects, cookie-free analytics. Imports other builders' sites by URL. React code components. Effects respect reduced-motion settings. Selling products: via integrations only.
+
+This page: a 1:50 tour of the editor building a site for Loam, a made-up ceramics studio. Visitors pause it to ask. Every visitor message starts with ⏱, the time and chapter they paused at, then a colon, like "⏱ 0:42 Breakpoints: ...". Answer about what's on screen then. Don't repeat the marker.
+Tour: Templates 0:00 picking a template, 0:06 template opens | Canvas 0:13 typing the headline, 0:19 swapping the hero image, 0:24 switching the button variant | Breakpoints 0:31 adding tablet, 0:36 adding phone: 3 frames side by side, 0:39 phone-only headline size | CMS 0:48 the Journal collection, 0:54 list connected, cards fill in | Effects 1:04 adding a scroll effect, 1:10 preview: image drifts on scroll | Localization 1:20 adding French, 1:26 page in French | Publish 1:34 publishing to loam.studio, 1:40 live site.
+When a moment helps answer, point to it: its time in double square brackets, like [[1:12]], or a chapter, like [[Chapter: CMS]]. At most one or two per reply.
+
+The visitor first paused at 0:40 (Breakpoints: phone-only headline size).</code></pre>
+
+      <h3>What your team learns</h3>
+      <p>Analytics can tell you that people stop watching at 0:40. Here they tell you why. Every question arrives in Stand with the second it was asked, so your team sees which part of the demo raises questions, what those questions are, and how the answer went. When the same moment keeps coming up, that’s a feature to explain better, or to rethink.</p>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about who answers.</strong> The rail shows the responder’s name exactly as Stand gives it, and whether it’s an AI or a person. The example threads you see before your first question are marked as examples, and their answers aren’t attributed to anyone.</li>
+        <li><strong>One chat per visit.</strong> Every marker is a thread in the same conversation. While an answer is due, other moments wait for it, so replies never land in the wrong thread.</li>
+        <li><strong>Closing isn’t ending.</strong> Closing the question box, or pressing <kbd>Esc</kbd>, keeps everything. Only <strong>End conversation</strong>, at the bottom of the rail, closes it in Stand.</li>
+        <li><strong>A reload keeps everything.</strong> The client restores the conversation from <code>sessionStorage</code> and Stand, the markers come from the transcript, and the tour’s position and open thread are saved under the example’s own key. Without storage, it still works; it just forgets on reload.</li>
+        <li><strong>When nobody can answer,</strong> the Ask buttons still open, say so, and offer to try again. Nothing is created until a question is sent.</li>
+        <li><strong>Keyboard and screen readers.</strong> <kbd>Space</kbd> or <kbd>K</kbd> plays and pauses, <kbd>J</kbd> and <kbd>L</kbd> skip, the arrow keys step through the timeline, and <kbd>Q</kbd> asks. Captions narrate the tour, the whole tour is also available as text, and answers are announced as they arrive.</li>
+        <li><strong>Reduced motion.</strong> The tour doesn’t autoplay; it waits on a still frame. When played, it skips the zooms.</li>
+        <li><strong>It’s a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn’t know, and a custom UI keeps Stand’s notices and attribution.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p><strong>Claude Opus 5.5 in Claude Code</strong> built this example from a brief. A lead session reworked a list of ideas for custom chat UIs, wrote the brief below and reviewed the result. A separate Claude agent built the page in its own git worktree: it studied a well-known website builder’s site for tone, scripted the tour second by second, tuned the prompt in real conversations with Stand’s demo Stand-in until the timestamps it cited matched the screen, and checked its own screenshots in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example’s brief</p>
+          <blockquote class="made-prompt">Marquee, a made-up website builder with a bold black marketing site, has a product tour you can pause at any moment to ask about exactly what’s on screen.
+
+The tour is not a video file: it’s a live, seekable animation of the editor building a site, drawn by render(t) so seeking is instant. Chapters: Templates, Canvas, Breakpoints, CMS, Effects, Localization, Publish.
+
+The player has play and pause, a chapter scrubber, captions, keyboard shortcuts and "Ask about this moment" (Q). A question carries its timestamp, drops a marker on the timeline, and lives in a Questions rail synced with playback. Answers point at times like [[1:12]], rendered as chips that seek the tour.
+
+All markers are threads in one Stand conversation, rebuilt from the transcript after a reload.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Link the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>. It’s written as a contract for coding agents.</li>
+            <li>Start on the <code>demo</code> Site ID, so the agent can hold real conversations while it builds, then switch to yours.</li>
+            <li>Generate the prompt’s outline from the same data that drives your demo. The Stand-in cites times precisely when every moment it knows is one it can see.</li>
+            <li>Make the demo a pure function of time and have the agent screenshot chosen seconds. Each frame is a test it can look at and fix.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/pause-to-ask my-product-tour</code></pre>
+      <p><code>stand-visitor.js</code> is the conversation client, <code>threads.js</code> the message format and thread model, <code>questions.js</code> the rail and the question box, and <code>player.js</code> the player. <code>tour.js</code> and <code>tour-script.js</code> are Marquee’s tour: replace them with your own product’s. <code>createPlayer</code> takes any scene with a <code>render(t)</code>.</p>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/pause-to-ask/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
