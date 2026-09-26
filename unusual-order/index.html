@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopgrove — Run your strangest order through us</title>
+  <meta name="description" content="Turn commerce exceptions into a hands-on order preview, then discuss product fit in context with a real Stand Chat conversation.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="commerce, order simulator, custom chat UI, stand-inline">
+  <meta property="og:title" content="Shopgrove — Run your strangest order through us">
+  <meta property="og:description" content="One unusual order. Every moving part. A commerce simulator with contextual Stand Chat.">
+  <meta property="og:image" content="https://examples.stand.chat/unusual-order/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231e3d2e'/%3E%3Cpath d='M16 25V10M16 19C3 19 7 4 16 13M16 16C28 16 25 3 16 10' stroke='%23e4efb0' fill='none' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+  <script defer src="https://cdn.stand.chat/widget/stand.js" data-stand-id="demo"></script>
+  <script>addEventListener('DOMContentLoaded', () => window.StandChat?.initiallyHideChatButton());</script>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+<sx-example-bar></sx-example-bar>
+<a class="skip" href="#order-lab">Skip to order simulator</a>
+<header class="site-nav wrap">
+  <a class="brand" href="#" aria-label="Shopgrove home"><svg viewBox="0 0 32 36" aria-hidden="true"><path d="M16 32V10M16 22C0 22 4 3 16 14M16 17C31 17 28 0 16 9"/></svg>shopgrove<span>®</span></a>
+  <nav aria-label="Main"><a href="#why">Why Shopgrove</a><a href="#capabilities">What’s possible</a><a class="nav-cta" href="#order-lab">Try an unusual order <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main>
+<section class="hero wrap" aria-labelledby="hero-title">
+  <div><p class="eyebrow"><span class="little-star" aria-hidden="true">✳</span> Commerce for the beautifully complicated</p><h1 id="hero-title">Run your strangest<br>order <em>through us.</em></h1></div>
+  <div class="hero-aside"><p>One launch. Two addresses. A very particular customer. Your business has its own way of doing things. Let’s make room for it.</p><a href="#order-lab" class="text-link">Put an order to the test <span aria-hidden="true">↓</span></a><span class="demo-label">An interactive, fictional product demo</span></div>
+</section>
+<section class="lab wrap" id="order-lab" aria-labelledby="lab-title">
+  <div class="lab-heading"><div><span class="eyebrow">The exception playground</span><h2 id="lab-title">A little less “what if.” A little more “let’s see.”</h2></div><span class="local-badge"><i></i> Local simulation</span></div>
+  <div class="workbench" data-og-focus>
+    <div class="workbench-top"><div class="order-id"><span aria-hidden="true">▦</span> SAMPLE ORDER <b>#SG–1042</b></div><div class="history-actions"><button id="undo" disabled>↶ Undo</button><button id="reset">Reset order</button></div></div>
+    <div class="stage-nav" role="group" aria-label="Order stage"><button data-stage="storefront" aria-pressed="true"><span>01</span> Storefront <b aria-hidden="true">→</b></button><button data-stage="checkout" aria-pressed="false"><span>02</span> Checkout <b aria-hidden="true">→</b></button><button data-stage="fulfillment" aria-pressed="false"><span>03</span> Fulfillment <b aria-hidden="true">↗</b></button></div>
+    <div class="bench-grid">
+      <aside class="exceptions"><p class="eyebrow">01 / Make it interesting</p><h3>Add a curveball.</h3><p class="small muted">Every exception changes the order.</p>
+        <div class="exception-list">
+          <label class="exception"><input type="checkbox" id="preorder"><span><strong>Mix now + later</strong><small>An in-stock mug. A preorder saucer.</small><span class="tier built">Built in</span></span></label>
+          <label class="exception"><input type="checkbox" id="personal"><span><strong>Make it personal</strong><small>A little heart on every mug.</small><span class="tier addon">Add-on</span></span></label>
+          <label class="exception"><input type="checkbox" id="wholesale"><span><strong>A wholesale buyer</strong><small>A bigger basket, its own pricing.</small><span class="tier built">Built in</span></span></label>
+          <label class="exception"><input type="checkbox" id="destinations"><span><strong>Two doorsteps</strong><small>One order. Two destinations.</small><span class="tier review">Expert review</span></span></label>
+        </div>
+        <p class="catalog-note">A bounded fictional capability catalog.<br><a href="#capabilities">See exactly what each one means ↗</a></p>
+      </aside>
+      <div class="stage-preview">
+        <div class="preview-label"><span id="preview-label">A storefront with a point of view</span><span class="tiny-pill">PREVIEW</span></div>
+        <section id="storefront-panel" aria-label="Storefront preview"><div class="store-title"><span>GROVE GOODS</span><span aria-hidden="true">Goods for slower mornings. ↗</span></div><div class="product-art"><img src="product.svg" alt="Original illustration of a cream ceramic mug, saucer, and wrapped parcel on a sage background" width="720" height="480"><span id="art-tag">Made for the everyday.</span></div><div class="product-info"><div><h3>The Grove mug</h3><p>Oat glaze · 350 ml · a daily ritual</p></div><b>$32<sup>.00</sup></b></div><div class="product-bottom"><span id="product-status">● In stock in this simulation</span><span>Small details. Big feelings.</span></div></section>
+        <section id="checkout-panel" aria-label="Checkout preview" hidden><div class="paper-heading"><span class="eyebrow">GROVE GOODS / CHECKOUT</span><h3>A basket with a backstory.</h3></div><div id="checkout-items"></div><div class="checkout-rule"><span>Buyer</span><b id="buyer-type"></b></div><div class="checkout-rule"><span>Destination plan</span><b id="destination-type"></b></div><p class="preview-note">Preview only. No addresses collected, payment taken, or inventory reserved.</p></section>
+        <section id="fulfillment-panel" aria-label="Fulfillment preview" hidden><div class="paper-heading"><span class="eyebrow">GROVE GOODS / FULFILLMENT</span><h3>Every piece has a plan.</h3></div><div id="shipment-list"></div><p class="preview-note">Readiness is relative to fictional day 0. These are planned groups, not dispatched shipments or arrival estimates.</p></section>
+        <div class="quantity-control"><label for="quantity">Grove mugs <span id="quantity-hint">1–12 mugs</span></label><div><button id="minus" aria-label="Remove one mug">−</button><input id="quantity" type="number" min="1" max="12" step="1" value="2" inputmode="numeric" aria-describedby="quantity-hint"><button id="plus" aria-label="Add one mug">+</button></div></div>
+        <div class="stage-bottom"><p id="stage-description">Start with two mugs. Add the exception your business knows by heart.</p><button id="next-stage">Preview checkout →</button></div>
+      </div>
+      <aside class="order-summary" aria-label="Order summary"><div class="summary-title"><h3>The order, unraveled.</h3><span id="unit-count">2 units</span></div><div id="line-items" class="line-items"></div><dl class="totals"><div><dt>Merchandise</dt><dd id="merchandise"></dd></div><div id="discount-row" hidden><dt>Wholesale · −20%</dt><dd id="discount"></dd></div><div id="personal-row" hidden><dt>Personalization</dt><dd id="personalization"></dd></div><div><dt id="shipping-label">Shipping</dt><dd id="shipping"></dd></div><div><dt>Illustrative tax · 7%</dt><dd id="tax"></dd></div><div class="grand-total"><dt>Total <small>USD</small></dt><dd id="total"></dd></div></dl><div class="fulfillment-count"><span aria-hidden="true">↳</span><p><strong id="shipment-count"></strong><small id="readiness"></small></p></div><button class="primary" id="discuss">Discuss this order <span aria-hidden="true">↗</span></button><p class="small muted summary-foot">No checkout. No commitments.<br>Just a clearer picture.</p></aside>
+    </div>
+    <div class="lab-foot"><span id="announcement" role="status" aria-live="polite">Ready when you are. Nothing has been sent.</span><details><summary>Calculation assumptions</summary><p>Mugs $32 each; optional saucer $18. Wholesale requires 6 mugs and discounts merchandise by 20%. Personalization adds $6 per mug, with mugs ready on day 3. Otherwise mugs are ready on day 0; the preorder saucer on day 21. Each destination/readiness group costs $8. Two destinations split mugs evenly (extra to A); the saucer goes to B. Tax is a fictional 7% of discounted merchandise plus personalization, rounded once to cents; shipping is untaxed. No combined-shipping option. All dates, prices, and capabilities are illustrative.</p></details></div>
+  </div>
+  <div class="scenario-row"><span>Borrow a curveball</span><button data-scenario="gift">The thoughtful gift <span>↗</span></button><button data-scenario="launch">The staggered launch <span>↗</span></button><button data-scenario="stockist">The new stockist <span>↗</span></button></div>
+  <section class="discussion" id="discussion" aria-labelledby="discussion-title">
+    <div class="discussion-intro"><span class="eyebrow">Your order meets a real conversation</span><h2 id="discussion-title">Let’s talk through<br>the interesting part.</h2><p>This is live Stand Chat with the demo AI Stand-in or an available human. Shopgrove and its catalog are fictional; use the conversation to explore requirements.</p><a href="https://stand.chat/" target="_blank" rel="noopener">Powered by Stand Chat ↗</a></div>
+    <div class="discussion-content"><div class="context-heading"><span id="context-label">Storefront / Your own order</span><span id="chat-status" role="status">Checking Stand availability…</span></div><details id="context-details"><summary>Review the order context that will be sent</summary><pre id="context-preview"></pre></details><p id="stand-notice" class="small" hidden></p><form id="question-form"><label for="question">What would this need to handle for your business?</label><textarea id="question" rows="2" maxlength="1200" required placeholder="For example: can the ready items ship before the preorder?"></textarea><div class="send-row"><small>Only Send shares your question + this order snapshot with Stand.</small><button id="send-question" class="primary" type="submit" disabled>Send to Stand ↗</button></div></form><p class="send-feedback" id="send-feedback" role="status"></p><button id="retry-chat" class="text-link" hidden>Check availability again ↻</button><stand-inline collapse-order-context id="order-chat" site="demo" scope="shopgrove-unusual-order" look="card" no-expand label="Follow-up message to Stand" placeholder="Continue this conversation…" analytics-id="shopgrove-order-discussion"><div slot="offline" class="offline-note">Live chat is unavailable right now. Your local order still works; try checking availability again.</div></stand-inline><p class="chat-note">The conversation keeps its last sent snapshot. Use the form above to share a changed order. Replies never change the simulator.</p></div>
+  </section>
+</section>
+<section class="why wrap" id="why"><div><p class="eyebrow">Room for your kind of business</p><h2>Good commerce makes<br>space for the exceptions.</h2></div><p>Most orders follow a line. The memorable ones branch out. Shopgrove is an imagined commerce platform built around a simple idea: understand the edge cases before you commit to the system.</p></section>
+<section class="capabilities wrap" id="capabilities" aria-label="Fictional capability catalog"><article><span class="tier built">Built in</span><h3>A solid starting point.</h3><p>Mixed availability and quantity-based wholesale pricing follow explicit rules in this demo. Buyer approval, payment terms, returns, and stock synchronization are outside this catalog.</p></article><article><span class="tier addon">Add-on</span><h3>Make it your own.</h3><p>Personalization adds a per-item fee and production time. An actual implementation would need an extension and decisions about proofs, edits, and order cutoffs.</p></article><article><span class="tier review">Expert review</span><h3>Know where to go deeper.</h3><p>Multiple destinations can be modeled here. Address validation, tax jurisdictions, routing, and fulfillment partners need a separate fit review. No compatibility is promised.</p></article></section>
+<section id="how-it-works" class="how wrap"><p class="eyebrow">How it works</p><h2>A useful preview. An informed conversation.</h2><p>Try a sample scenario or add exceptions, move through the three stages, then send a question. The order model runs locally in integer cents. Stand handles the real conversation in the page through its <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI contract (beta)</a>.</p><div class="how-grid"><div><h3>1. Copy the complete folder</h3><pre><code>npx degit standchat/examples/unusual-order my-shopgrove</code></pre><p>Serve it as static files. There is no install or build step. Keep <code>index.html</code>, <code>style.css</code>, <code>app.js</code>, <code>order-model.js</code>, <code>product.svg</code>, <code>product-personal.svg</code>, <code>stand-inline.js</code>, and <code>stand-visitor.js</code> together. The optional <code>/_shared/</code> files only add the example bar.</p><h3>2. Connect your own Stand site</h3><p>Replace <code>site="demo"</code> on the inline element and <code>data-stand-id="demo"</code> on the retained installation script with your public Site ID from <strong>Sites</strong> in Stand. The launcher is hidden using <code>initiallyHideChatButton()</code>. The copied inline client handles this conversation independently.</p></div><div><h3>3. Send a visitor-approved snapshot</h3><pre><code>import { contextMessage } from './order-model.js';
+
+// In the visitor's submit handler:
+const sent = await chat.ask(
+  contextMessage(order, question.value)
+);</code></pre><p>The first message creates a session. A bounded <code>prompt</code> describes the fictional catalog; the visible message carries the question, selected items, stage, quantities, totals, and assumptions. Later submissions include a fresh snapshot. Opening the discussion or changing an exception never sends a message.</p><h3>4. Preserve the conversation contract</h3><p>The local client supports responder discovery, AI/human disclosure, HTTP sends, WebSocket replies, reload recovery, reconnects, safe message rendering, handoff cards, email follow-up, notices, and attribution. Failed sends retain their message ID; uncertain session creation needs a visitor decision. Quotas and entitlements apply.</p></div></div><p class="how-foot">The demo Site ID reaches Stand’s shared demo, not a Shopgrove team or your account. No inventory, payments, shipping services, or automatic page mutations are connected. <a href="https://github.com/standchat/examples/tree/main/unusual-order/">View source ↗</a></p></section>
+</main>
+<footer class="site-footer wrap"><a class="brand" href="#">shopgrove<span>®</span></a><span>An invented business. A real conversation.</span><a href="#order-lab">Try another curveball ↑</a></footer>
+<noscript><p class="noscript">Enable JavaScript to use the order simulator and Stand conversation. No orders are processed here.</p></noscript>
+</body>
+</html>
