@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Questions become issues</title>
+  <meta name="description" content="A custom chat UI on Stand's Visitor API where visitors file their questions as issues in a live mini tracker. An AI Stand-in picks each one up, answers in the activity feed, and links the team's answered issues. Many issues, one conversation.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, issue tracker, threads, keyboard shortcuts, SaaS">
+  <meta property="og:title" content="Questions become issues">
+  <meta property="og:description" content="A custom chat UI on Stand's Visitor API where visitors file their questions as issues in a live mini tracker. An AI Stand-in picks each one up, answers in the activity feed, and links the team's answered issues. Many issues, one conversation.">
+  <meta property="og:image" content="https://examples.stand.chat/questions-as-issues/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#08090A">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230F1011'/%3E%3Cpath d='M15 4.5a10.5 10.5 0 0 0 0 21z' fill='%23F7F8F8'/%3E%3Cpath d='M17 7.5a10.5 10.5 0 0 1 0 21z' fill='%23F7F8F8' fill-opacity='.55'/%3E%3C/svg%3E">
+
+  <!-- Site chrome: the top bar and "How it works" styles. The example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&family=JetBrains+Mono:wght@400;500&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="tracker.css">
+
+  <!-- The tracker and its conversation: Stand's Visitor API, no stand.js. -->
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="ax" id="top">
+    <header class="ax-nav" data-og-hide>
+      <div class="ax-wrap ax-nav-in">
+        <a class="ax-brand" href="#top" aria-label="Axial home">
+          <svg class="ax-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1 2.55a9 9 0 0 0 0 17.9z" fill="currentColor"/><path d="M12.9 5.55a9 9 0 0 1 0 17.9z" fill="currentColor" opacity=".55"/></svg>
+          <span>Axial</span>
+        </a>
+        <nav class="ax-links" aria-label="Main">
+          <a href="#import">Product</a>
+          <a href="#customers">Customers</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#questions" aria-current="page">Switching</a>
+          <button type="button" class="ax-link-button" data-new-issue data-from="the Contact link in the header">Contact</button>
+        </nav>
+        <span class="ax-nav-grow"></span>
+        <button type="button" class="ax-btn ax-btn-light ax-btn-sm" data-fictional>Sign up</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- Hero: the live tracker -->
+      <section class="ax-hero" aria-labelledby="hero-title">
+        <div class="ax-wrap ax-hero-copy">
+          <p class="ax-hero-kicker" data-og-hide><span class="ax-tag">Switching to Axial</span><span class="ax-kicker-text">A migration guide you can argue with</span></p>
+          <div class="ax-hero-grid">
+            <h1 class="ax-display" id="hero-title">Bring your backlog.<br>Leave the baggage.</h1>
+            <div class="ax-hero-side">
+              <p class="ax-lead">Years of issues, sprints and history move over in an afternoon. Unsure about something? File it as an issue in the tracker below. It gets picked up in seconds.</p>
+              <div class="ax-hero-actions">
+                <button type="button" class="ax-btn ax-btn-light" data-fictional>Start your switch</button>
+                <button type="button" class="ax-btn ax-btn-dark" data-new-issue data-from="the hero, above the tracker">File a question <kbd>C</kbd></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ax-stage">
+          <!-- The social image centers this point: the headline above, an answered issue below. -->
+          <span class="ax-og-anchor" data-og-focus aria-hidden="true"></span>
+          <div class="ax-glow" aria-hidden="true"></div>
+          <div class="ax-tilt">
+            <div class="ax-window" id="tracker">
+              <noscript><p class="ax-noscript">The tracker needs JavaScript to file questions and show the answers.</p></noscript>
+            </div>
+          </div>
+          <p class="ax-stage-note"><span class="ax-live"><i></i>Live</span> Issues you file here start a real conversation. An AI Stand-in answers via Stand, and a person can join.</p>
+        </div>
+      </section>
+
+      <!-- Customers, as wordmarks -->
+      <section class="ax-logos" aria-label="Teams that switched">
+        <div class="ax-wrap">
+          <ul class="ax-logo-row">
+            <li><svg viewBox="0 0 132 32" role="img" aria-label="Kestrel"><path d="M4 22 16 8l4 9 8-3-12 12z" fill="currentColor"/><text x="36" y="22.5" font-size="18" font-weight="650" letter-spacing="-.4">Kestrel</text></svg></li>
+            <li><svg viewBox="0 0 140 32" role="img" aria-label="fernhill"><circle cx="11" cy="16" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="19" cy="16" r="7" fill="none" stroke="currentColor" stroke-width="2.4"/><text x="34" y="22" font-size="18" font-weight="500" letter-spacing="-.2">fernhill</text></svg></li>
+            <li><svg viewBox="0 0 150 32" role="img" aria-label="Quanta"><rect x="3" y="7" width="18" height="18" rx="3" fill="none" stroke="currentColor" stroke-width="2.4"/><circle cx="16" cy="12" r="2.4" fill="currentColor"/><text x="30" y="22" font-size="15" font-weight="700" letter-spacing="3.2">QUANTA</text></svg></li>
+            <li><svg viewBox="0 0 146 32" role="img" aria-label="Orbitworks"><circle cx="13" cy="16" r="4.5" fill="currentColor"/><ellipse cx="13" cy="16" rx="11" ry="5" fill="none" stroke="currentColor" stroke-width="1.8" transform="rotate(-25 13 16)"/><text x="30" y="22" font-size="17" font-weight="400" letter-spacing="-.2">orbitworks</text></svg></li>
+            <li><svg viewBox="0 0 150 32" role="img" aria-label="Brightwell"><path d="M12 5v4M12 23v4M1 16h4M19 16h4M4.2 8.2l2.8 2.8M17 21l2.8 2.8M4.2 23.8 7 21M17 11l2.8-2.8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="3.4" fill="currentColor"/><text x="30" y="22" font-size="17.5" font-weight="650" letter-spacing="-.5">Brightwell</text></svg></li>
+            <li><svg viewBox="0 0 118 32" role="img" aria-label="tessel"><rect x="3" y="7" width="8" height="8" rx="1.5" fill="currentColor"/><rect x="13" y="7" width="8" height="8" rx="1.5" fill="currentColor" opacity=".5"/><rect x="3" y="17" width="8" height="8" rx="1.5" fill="currentColor" opacity=".5"/><rect x="13" y="17" width="8" height="8" rx="1.5" fill="currentColor"/><text x="29" y="22.5" font-size="19" font-weight="720" letter-spacing="-.9">tessel</text></svg></li>
+          </ul>
+          <p class="ax-caption">Teams that switched this year</p>
+        </div>
+      </section>
+
+      <!-- The FAQ issues, changelog style -->
+      <section class="ax-section ax-faq" id="questions" aria-labelledby="faq-title" data-section="the list of common questions">
+        <div class="ax-wrap">
+          <div class="ax-split">
+            <h2 class="ax-h2" id="faq-title">What teams ask<br>before switching</h2>
+            <div class="ax-split-side">
+              <p class="ax-side-text">Every evaluation starts with the same handful of doubts. These eight come up most, so we answered them properly, as issues in the tracker above.</p>
+              <button type="button" class="ax-more" data-new-issue data-from="the list of common questions">File your own <kbd>C</kbd></button>
+            </div>
+          </div>
+          <ol class="ax-faq-grid" id="faq-grid" aria-label="Answered questions"></ol>
+        </div>
+      </section>
+
+      <!-- Import -->
+      <section class="ax-section ax-import" id="import" aria-labelledby="import-title" data-section="the Import section">
+        <div class="ax-wrap">
+          <div class="ax-split">
+            <div>
+              <p class="ax-eyebrow">Migration</p>
+              <h2 class="ax-h2" id="import-title">Import in<br>an afternoon</h2>
+            </div>
+            <div class="ax-split-side">
+              <p class="ax-side-text">Point Axial at your old tracker’s API or a CSV export. Issues, comments, attachments and sprints come over with their authors and dates, and every custom field lands somewhere sensible. Do a dry run first. It’s free.</p>
+            </div>
+          </div>
+
+          <div class="ax-import-grid">
+            <figure class="ax-panel ax-map" aria-labelledby="map-caption">
+              <figcaption class="ax-panel-head" id="map-caption"><span class="ax-fig">FIG 1.1</span> Status mapping, reviewed before anything moves</figcaption>
+              <div class="ax-map-body">
+                <ul class="ax-map-from" aria-label="Your old statuses">
+                  <li>Open</li><li>Needs info</li><li>In development</li><li>Blocked</li><li>Code review</li><li>Resolved</li><li>Won’t fix</li>
+                </ul>
+                <svg class="ax-map-lines" viewBox="0 0 100 240" preserveAspectRatio="none" aria-hidden="true"></svg>
+                <ul class="ax-map-to" aria-label="Axial statuses">
+                  <li data-status="triage">Triage</li><li data-status="todo">Todo</li><li data-status="progress">In Progress</li><li data-status="review">In Review</li><li data-status="done">Done</li><li data-status="canceled">Canceled</li>
+                </ul>
+              </div>
+            </figure>
+
+            <figure class="ax-panel ax-run" aria-labelledby="run-caption">
+              <figcaption class="ax-panel-head" id="run-caption"><span class="ax-fig">FIG 1.2</span> A real-sized import, start to finish</figcaption>
+              <div class="ax-run-body">
+                <div class="ax-run-meter" aria-hidden="true"><i></i></div>
+                <ol class="ax-run-log">
+                  <li><span class="ax-run-t">00:00</span><span>Reading <b data-count="41203">41,203</b> issues from 12 projects</span></li>
+                  <li><span class="ax-run-t">00:03</span><span>Mapping 32 custom fields to 11 labels and 9 properties</span></li>
+                  <li><span class="ax-run-t">00:05</span><span>Importing <b data-count="188420">188,420</b> comments with their authors</span></li>
+                  <li><span class="ax-run-t">00:31</span><span>Rebuilding 214 sprints and their velocity</span></li>
+                  <li><span class="ax-run-t">00:44</span><span>Keeping <b data-count="41203">41,203</b> old keys as aliases</span></li>
+                  <li class="ax-run-done"><span class="ax-run-t">00:47</span><span>Done. Nothing lost, nothing left behind.</span></li>
+                </ol>
+              </div>
+            </figure>
+          </div>
+
+          <ul class="ax-features">
+            <li>
+              <h3>Two-way sync</h3>
+              <p>Keep both trackers in step for up to 90 days, so nobody has to switch on the same Monday.</p>
+            </li>
+            <li>
+              <h3>Old keys still work</h3>
+              <p>Every imported issue answers to its old key, so links in docs and commits keep landing.</p>
+            </li>
+            <li>
+              <h3>Dry runs are free</h3>
+              <p>See exactly what would move, and what wouldn’t, before a single issue does.</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Keyboard -->
+      <section class="ax-section ax-keys" id="keyboard" aria-labelledby="keys-title" data-section="the keyboard section">
+        <div class="ax-wrap">
+          <div class="ax-split">
+            <div>
+              <p class="ax-eyebrow">Speed</p>
+              <h2 class="ax-h2" id="keys-title">Every action,<br>one keystroke away</h2>
+            </div>
+            <div class="ax-split-side">
+              <p class="ax-side-text">Axial is built for people who would rather not reach for the mouse. So is this page. Press any of these keys, anywhere.</p>
+            </div>
+          </div>
+          <div class="ax-panel ax-keyboard">
+          <p class="ax-panel-head"><span class="ax-fig">FIG 2.1</span> This page listens. Press a key, or click one.</p>
+          <ul class="ax-keycaps" aria-label="Shortcuts on this page">
+            <li><button type="button" class="ax-keycap" data-key="c" data-action="new"><kbd>C</kbd><span>New issue</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="j" data-action="next"><kbd>J</kbd><span>Next issue</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="k" data-action="previous"><kbd>K</kbd><span>Previous</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="s" data-action="status"><kbd>S</kbd><span>Status</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="p" data-action="priority"><kbd>P</kbd><span>Priority</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="l" data-action="labels"><kbd>L</kbd><span>Labels</span></button></li>
+            <li><button type="button" class="ax-keycap ax-keycap-wide" data-key="⌘k" data-action="command"><kbd><span class="ax-cmd-glyph">⌘</span>K</kbd><span>Command menu</span></button></li>
+            <li><button type="button" class="ax-keycap" data-key="?" data-action="shortcuts"><kbd>?</kbd><span>Shortcuts</span></button></li>
+          </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Customers -->
+      <section class="ax-section ax-quotes" id="customers" aria-labelledby="quotes-title" data-section="the customer stories">
+        <div class="ax-wrap">
+          <h2 class="ax-visually-hidden" id="quotes-title">What teams say after switching</h2>
+          <div class="ax-quote-grid">
+            <figure class="ax-quote ax-quote-a">
+              <svg class="ax-quote-art" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1 2.55a9 9 0 0 0 0 17.9z"/><path d="M12.9 5.55a9 9 0 0 1 0 17.9z" opacity=".6"/></svg>
+              <blockquote>“We moved 38,000 issues on a Friday afternoon. By Monday’s standup, nobody asked where anything went.”</blockquote>
+              <figcaption><span class="ax-quote-mark" aria-hidden="true">K</span><span><b>Hana Lindqvist</b> VP Engineering, Kestrel</span></figcaption>
+            </figure>
+            <figure class="ax-quote ax-quote-b">
+              <blockquote>“The shortcuts won over the engineers in a day. Two-way sync won over everyone else.”</blockquote>
+              <figcaption><span class="ax-quote-mark" aria-hidden="true">f</span><span><b>Omar Haddad</b> Head of Product, fernhill</span></figcaption>
+            </figure>
+          </div>
+          <p class="ax-stat">Axial runs <b>9,400</b> product teams. <b>1,300</b> of them switched this year.</p>
+        </div>
+      </section>
+
+      <!-- Pricing -->
+      <section class="ax-section ax-pricing" id="pricing" aria-labelledby="pricing-title" data-section="the pricing table">
+        <div class="ax-wrap">
+          <div class="ax-pricing-head">
+            <h2 class="ax-h2" id="pricing-title">Pricing</h2>
+            <label class="ax-toggle"><input type="checkbox" id="billing-yearly" checked><span class="ax-toggle-track" aria-hidden="true"><i></i></span><span>Billed yearly</span></label>
+          </div>
+          <ol class="ax-plans">
+            <li class="ax-plan" data-plan="free">
+              <h3>Free</h3>
+              <p class="ax-price"><b>$0</b></p>
+              <p class="ax-plan-note">Free for small teams</p>
+              <ul class="ax-checks"><li>250 issues</li><li>2 teams</li><li>Unlimited members</li><li>Every keyboard shortcut</li></ul>
+              <div class="ax-plan-actions"><button type="button" class="ax-btn ax-btn-dark" data-fictional>Get started</button><button type="button" class="ax-ask" data-new-issue data-from="pricing, next to Free" data-label="pricing" data-title="About Free: ">Ask about Free</button></div>
+            </li>
+            <li class="ax-plan" data-plan="standard">
+              <h3>Standard</h3>
+              <p class="ax-price"><b data-yearly="$8" data-monthly="$10">$8</b> per user/month</p>
+              <p class="ax-plan-note" data-yearly="Billed yearly" data-monthly="Billed monthly">Billed yearly</p>
+              <ul class="ax-checks"><li>Unlimited issues and teams</li><li>Importer with free dry runs</li><li>Sprint history and velocity</li><li>API and webhooks</li></ul>
+              <div class="ax-plan-actions"><button type="button" class="ax-btn ax-btn-dark" data-fictional>Get started</button><button type="button" class="ax-ask" data-new-issue data-from="pricing, next to Standard" data-label="pricing" data-title="About Standard: ">Ask about Standard</button></div>
+            </li>
+            <li class="ax-plan" data-plan="plus">
+              <h3>Plus</h3>
+              <p class="ax-price"><b data-yearly="$14" data-monthly="$17">$14</b> per user/month</p>
+              <p class="ax-plan-note" data-yearly="Billed yearly" data-monthly="Billed monthly">Billed yearly</p>
+              <ul class="ax-checks"><li>Everything in Standard</li><li>SAML SSO</li><li>Two-way sync for 90 days</li><li>Private teams and guests</li><li>Audit log</li></ul>
+              <div class="ax-plan-actions"><button type="button" class="ax-btn ax-btn-light" data-fictional>Get started</button><button type="button" class="ax-ask" data-new-issue data-from="pricing, next to Plus" data-label="pricing" data-title="About Plus: ">Ask about Plus</button></div>
+            </li>
+            <li class="ax-plan" data-plan="enterprise">
+              <h3>Enterprise</h3>
+              <p class="ax-price"><b>Custom</b></p>
+              <p class="ax-plan-note">Annual billing</p>
+              <ul class="ax-checks"><li>Everything in Plus</li><li>SCIM provisioning</li><li>Moves between US and EU regions</li><li>99.9% uptime SLA</li><li>A migration engineer</li></ul>
+              <div class="ax-plan-actions"><button type="button" class="ax-btn ax-btn-dark" data-new-issue data-from="pricing, next to Enterprise" data-label="pricing" data-title="About Enterprise: ">Talk to us</button><button type="button" class="ax-ask" data-new-issue data-from="pricing, next to Enterprise" data-label="pricing" data-title="About Enterprise: ">Ask about Enterprise</button></div>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- Closing call -->
+      <section class="ax-section ax-cta" aria-labelledby="cta-title" data-section="the bottom of the page">
+        <div class="ax-wrap">
+          <h2 class="ax-display ax-cta-title" id="cta-title">Switch this week.<br>Keep shipping.</h2>
+          <div class="ax-cta-actions">
+            <button type="button" class="ax-btn ax-btn-light" data-fictional>Start your switch</button>
+            <button type="button" class="ax-btn ax-btn-dark" data-new-issue data-from="the bottom of the page">File a question <kbd>C</kbd></button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="ax-footer">
+      <div class="ax-wrap ax-footer-in">
+        <a class="ax-brand ax-footer-brand" href="#top" aria-label="Axial, back to top"><svg class="ax-mark" viewBox="0 0 24 24" aria-hidden="true"><path d="M11.1 2.55a9 9 0 0 0 0 17.9z" fill="currentColor"/><path d="M12.9 5.55a9 9 0 0 1 0 17.9z" fill="currentColor" opacity=".55"/></svg></a>
+        <nav class="ax-footer-cols" aria-label="Footer">
+          <div><h3>Product</h3><ul><li><a href="#top">Issues</a></li><li><a href="#import">Importer</a></li><li><a href="#keyboard">Shortcuts</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+          <div><h3>Switching</h3><ul><li><a href="#questions">Common questions</a></li><li><a href="#import">Status mapping</a></li><li><button type="button" class="ax-link-button" data-new-issue data-from="the footer">Ask the team</button></li></ul></div>
+          <div><h3>Company</h3><ul><li><a href="#customers">Customers</a></li><li><button type="button" class="ax-link-button" data-fictional>Careers</button></li><li><button type="button" class="ax-link-button" data-fictional>Changelog</button></li></ul></div>
+        </nav>
+        <p class="ax-fine">Axial is a fictional company, and so are its customers. This page demonstrates a custom chat UI built on Stand Chat’s Visitor API.</p>
+      </div>
+    </footer>
+
+    <button type="button" class="ax-fab" data-new-issue data-from="the floating New issue button" hidden>
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.5v9M3.5 8h9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      New issue
+    </button>
+    <div class="ax-visually-hidden" id="tk-announce" aria-live="polite" aria-atomic="true"></div>
+  </div>
+
+  <section id="how-it-works" class="sx-explainer" aria-label="How it works">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Let visitors file their objections as issues</h2>
+      <p class="sx-lead">People weighing a switch have specific doubts, and a chat bubble in the corner rarely draws them out. Here each doubt becomes an issue in a working mini tracker, in the product’s own idiom. Stand’s AI Stand-in picks it up, answers in the issue’s activity feed and links the team’s answered issues. A person from your team can join at any point, and every question reaches them with its issue ID, priority and label.</p>
+      <p>There’s no <code>stand.js</code> on this page. The tracker is plain JavaScript in this folder, with no dependencies, talking to Stand’s Visitor API over HTTP and a WebSocket.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Press <kbd>C</kbd> anywhere, or click <em>File a question</em>. Give the issue a title, a priority (“How much does this block your switch?”) and a label, then press <kbd>⌘</kbd> <kbd>↵</kbd> (<kbd>Ctrl</kbd> <kbd>↵</kbd> on Windows and Linux).</li>
+        <li>Watch it land in Triage, get picked up, move to In Progress while the answer is written, and to In Review when it arrives.</li>
+        <li>Hover or click an issue mention in the answer, like SW-3. It opens one of Axial’s answered issues, with a way back.</li>
+        <li>Comment on your issue, file a second one, then reload the page. Everything comes back where it was.</li>
+        <li>Stay on the keyboard: <kbd>J</kbd> and <kbd>K</kbd> move, <kbd>S</kbd>, <kbd>P</kbd> and <kbd>L</kbd> change the issue you’re on, and <kbd>⌘</kbd> <kbd>K</kbd> does the rest, including <em>End conversation</em>. On a phone, the New issue button and the sheets do the same.</li>
+      </ol>
+
+      <div class="sx-note">Chats here use <code>site: 'demo'</code>, Stand Chat’s shared demo site, which works on any domain. Its demo Stand-in follows this page’s prompt and speaks for the made-up tracker. With your own Site ID, your own Stand-ins answer, and your team can take over any issue from Stand.</div>
+
+      <h3>1. One conversation, many issues</h3>
+      <p>Every issue is a thread inside a single Stand conversation. A session per issue would count each question as a separate chat against your plan, and scatter one visit across many transcripts. Instead, every visitor message starts with its issue’s ID. The first message of an issue also carries its priority and labels:</p>
+      <pre class="sx-code" data-file="The visitor’s messages, as Stand stores them"><code>SW-9 [High · Migration]: Can we keep our old issue keys?
+
+Our docs and commits link to keys like OPS-1423.
+
+SW-9: And how long does the import itself take?
+
+SW-10 [No priority · Pricing]: Is SSO included in Standard?</code></pre>
+      <p>Replies belong to the issue of the latest visitor message before them. <code>model.js</code> reads everything back from the transcript, so a reload rebuilds the same issues without storing them anywhere:</p>
+      <pre class="sx-code" data-file="model.js, condensed"><code class="language-js">// "SW-12 [High · Migration]: " files an issue; "SW-12: " comments on it.
+export function newIssueMessage({ id, title, description, priority, labels }) {
+  const meta = [priorityName(priority), labels.map(labelName).join(', ')]
+    .filter(Boolean).join(' · ');
+  const head = `${id} [${meta}]: ${title}`;
+  return description ? `${head}\n\n${description}` : head;
+}
+
+// Reading it back: a reply belongs to the issue asked about just before it.
+let thread = null;
+for (const m of state.messages) {
+  if (m.senderType === 'visitor') {
+    // { id, kind: 'issue' | 'comment', title, priority, labels, … }
+    const parsed = parseVisitorText(m.body);
+    // The first message with an ID files that issue; later ones comment.
+    thread = open(parsed.id, m, parsed);
+  } else if (thread &amp;&amp; isConversation(m)) {
+    thread.items.push(comment(m, replyAuthor(m, hostAt(m.seq)), m.body));
+  }
+}</code></pre>
+      <p>While an answer is on its way, the other issues wait. Their comment boxes say which issue is being answered, and nothing is queued. A teammate may still answer out of order, and that’s fine.</p>
+
+      <h3>2. The issue lifecycle is the conversation’s lifecycle</h3>
+      <p>No status is made up. Each one comes from the transcript and the client’s state:</p>
+      <table class="qi-table">
+        <thead><tr><th>Status</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td><span class="qi-status"><span data-status-icon="triage"></span>Triage</span></td><td>The issue’s first message is on its way. The very first one also creates the conversation.</td></tr>
+          <tr><td><span class="qi-status"><span data-status-icon="progress"></span>In Progress</span></td><td>An answer is due: the last message on the issue is the visitor’s. The icon spins while the Stand-in is writing.</td></tr>
+          <tr><td><span class="qi-status"><span data-status-icon="review"></span>In Review</span></td><td>The answer landed. The issue says “Waiting on you”.</td></tr>
+          <tr><td><span class="qi-status"><span data-status-icon="done"></span>Done</span></td><td>The visitor marked it done. That stays on the page, until they comment again.</td></tr>
+          <tr><td><span class="qi-status"><span data-status-icon="canceled"></span>Canceled</span></td><td>The conversation ended before the issue got an answer. Answered issues close as Done.</td></tr>
+        </tbody>
+      </table>
+      <p>The assignee is whoever Stand says is answering. When a person joins, a handoff card arrives, the feed says “Maya joined · assigned”, and every open issue moves to her. The tracker only sets the pace: a new issue stays in Triage for a moment before the pickup, and the typing indicator shows briefly before the answer lands, so every step can be seen.</p>
+
+      <h3>3. Answers that point at issues</h3>
+      <p>The prompt lists Axial’s answered issues and plans, each next to the facts it holds. When one of them answers the question, the Stand-in writes its name in double square brackets. The tracker turns that into an issue mention, with its status, ID and title and a preview on hover. A plan becomes a chip that scrolls to the pricing table.</p>
+      <pre class="sx-code" data-file="An answer, as Stand stores it" data-wrap><code>Past sprints import with their scope and dates, so your velocity charts keep their history [[SW-3]].</code></pre>
+      <pre class="sx-code" data-file="model.js"><code class="language-js">// [[SW-3]] names an issue and [[Plan: Plus]] a plan. Anything else stays plain text.
+export function resolveRef(raw) {
+  const name = raw.toLowerCase().replace(/\s+/g, ' ').trim().replace(/[.,;:!?]+$/, '');
+  const issue = /^sw-(\d{1,6})\b/.exec(name);
+  if (issue) return { kind: 'issue', id: `SW-${Number(issue[1])}` };
+  const plan = /^(?:(?:plan|pricing)\s*[:›&gt;-]?\s*)?([a-z]+)(?:\s+plan)?$/.exec(name);
+  if (plan &amp;&amp; PLAN_IDS.includes(plan[1])) return { kind: 'plan', id: plan[1] };
+  return null;
+}</code></pre>
+      <p>A bare ID like SW-6 in a reply becomes a mention too, the way a tracker links them. References only ever navigate. Replies are never treated as HTML: they’re split into text nodes, with a small safe subset for paragraphs, lists, bold, code and links.</p>
+
+      <h3>4. The prompt</h3>
+      <p>The first message creates the conversation and carries this private context, at most 2,000 characters. Its facts match the page and Axial’s answered issues, so the Stand-in and the FAQ agree. The last line says where the first issue was filed. Later context can’t change it, which is why every message carries its own ID, priority and labels.</p>
+      <pre class="sx-code" data-file="prompt.js" data-wrap><code>You are answering visitors on the website of Axial, a fictional issue tracker for software teams (a demo page on examples.stand.chat; Axial is invented). Speak as Axial's team. Keep replies short: 1-3 sentences unless asked for detail. If a fact isn't below, say you're not sure and offer to bring in someone from the team. Don't invent prices, limits or features.
+
+How this page works: visitors file questions as issues. Every visitor message starts with an issue ID and a colon. A new issue: "SW-12 [High · Migration]: title", maybe with a description below. A comment on it: "SW-12: text". Answer about that issue. Don't repeat the ID prefix.
+
+Facts. Link the issue or plan that holds the answer by writing its name in double square brackets, exactly as below, at most two per reply:
+[[SW-1]] Import: issues, comments, attachments, status history, sprints and links, with original authors and dates, by CSV or API from legacy trackers. 40k issues in under an hour. Free dry runs.
+[[SW-2]] Custom fields: select fields become labels; text, number and date fields become properties.
+[[SW-3]] Sprint reports: past sprints import, so velocity charts keep your history. Story points become estimates.
+[[SW-4]] SSO: SAML SSO on Plus, SCIM on Enterprise.
+[[SW-5]] Timeline: 1-2 week pilot with one team, the rest in 2-6 weeks.
+[[SW-6]] Both tools at once: two-way sync (Plus and up) keeps them in step for up to 90 days.
+[[SW-7]] Data: US or EU (Frankfurt), per workspace. SOC 2 Type II.
+[[SW-8]] API: GraphQL and webhooks. Old issue keys keep working.
+[[Plan: Free]] $0: 250 issues, 2 teams.
+[[Plan: Standard]] $8/user/month yearly, $10 monthly: unlimited issues and teams, importer, API.
+[[Plan: Plus]] $14 yearly, $17 monthly: SSO, two-way sync, private teams, audit log.
+[[Plan: Enterprise]] custom: SCIM, region moves, 99.9% SLA, a migration engineer.
+
+The visitor's first issue: SW-9 (High, Migration), filed from the tracker at the top.</code></pre>
+      <p>It goes with the first send, and only then:</p>
+      <pre class="sx-code" data-file="app.js, condensed"><code class="language-js">const id = model.nextId; // SW-9, SW-10… after Axial’s own eight
+const first = state.phase === 'available'; // this send creates the conversation
+const context = first
+  ? { prompt: buildPrompt({ id, ...fields }), analyticsId: 'questions-as-issues' }
+  : {};
+if (!(await client.send(newIssueMessage({ id, ...fields }), context))) {
+  // Nothing was filed: the dialog reopens with the visitor’s words in it.
+}</code></pre>
+
+      <h3>5. What your team reads</h3>
+      <p>In Stand, the conversation reads like a triage queue: each question arrives with its issue ID, its priority and its label, in the visitor’s own words. That’s the product learning. You see which doubts come up, and how much each one blocks a switch. This is the conversation on this page so far, exactly as Stand stores it:</p>
+      <pre class="qi-live" id="qi-wire" data-file="Live: this page’s conversation"></pre>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>stand-visitor.js</code></strong> is the network side: discovery, one-time creation, sends, the WebSocket, recovery, handoffs and follow-ups, with no DOM. It’s the client from the Stand Inline example, with this folder’s own storage keys.</li>
+        <li><strong><code>model.js</code></strong> turns the transcript into issues: threads, statuses, assignees and activity, plus the message format and the reference parser. No DOM, no network.</li>
+        <li><strong><code>tracker.js</code></strong> and <strong><code>overlays.js</code></strong> draw the tracker: the list, the issue view, the New issue dialog, menus, the command menu and toasts. <code>tracker.css</code> styles them.</li>
+        <li><strong><code>app.js</code></strong> connects the pieces, keeps what the transcript can’t know in <code>sessionStorage</code>, and owns the keyboard.</li>
+        <li><strong><code>prompt.js</code></strong> and <strong><code>seed.js</code></strong> hold the prompt and Axial’s answered issues. <code>page.js</code> and <code>style.css</code> are the made-up company’s site.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> The assignee is whoever Stand says is answering, by the name Stand gives, with an <em>AI</em> chip for a Stand-in. Axial’s answered issues are signed by its (fictional) team; live answers never are.</li>
+        <li><strong>Closing isn’t ending.</strong> Closing an issue or a dialog keeps the conversation going. Only <em>End conversation</em>, in an issue’s menu or <kbd>⌘</kbd> <kbd>K</kbd>, ends it in Stand. The issues stay in the list, closed, and <em>Start a new conversation</em> picks up the numbering where it left off.</li>
+        <li><strong>A reload keeps everything.</strong> The client restores the transcript. The page itself stores only what the transcript can’t tell: Done marks, what was read, drafts, the open issue, and the issues of a conversation that ended.</li>
+        <li><strong>Nobody around.</strong> If discovery finds nobody to answer, the tracker says so and offers to try again, and the answered issues stay browsable. A comment that fails to send stays in place as “Not delivered”, with a Retry that reuses its message ID. An uncertain first send is never retried on its own.</li>
+        <li><strong>Priority and labels travel once.</strong> They go with an issue’s first message, so your team sees them. Changes made later stay on this page.</li>
+        <li><strong>Keyboard, touch and screen readers.</strong> Every shortcut has a click or a tap. The list is a listbox, focus returns where it came from, and whole replies are announced in a live region. On phones, a New issue button replaces <kbd>C</kbd> and issues open as full-screen sheets.</li>
+        <li><strong>Reduced motion.</strong> The tilt, the gliding rows and the spinning status icons stop. The states stay.</li>
+        <li><strong>It’s a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn’t know.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p><strong>Claude Opus 5.5 in Claude Code</strong> made this example. A lead session reworked a list of ideas, wrote this example’s brief and reviewed the result. A separate Claude agent built the page in its own git worktree: it studied a well-known issue tracker’s site for tone and rhythm, tuned the prompt in real conversations with Stand’s demo Stand-in, drove the rare states (handoffs, follow-up offers, failed sends) through a fake backend, and checked its own screenshots in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example’s brief</p>
+          <blockquote class="made-prompt">A keyboard-first issue tracker’s “Switching” page, where visitors’ questions become issues in a live mini tracker. The conversation’s lifecycle is the issue’s: C opens a composer with a priority (“How much does this block your switch?”) and labels, the issue lands in Triage, the Stand-in picks it up and it moves to In Progress, the answer arrives as a comment, and it waits In Review.
+
+Several issues are threads over one Stand session, with prefixes like “SW-12 [High · Migration]:” that parse back after a reload. Eight answered questions from the invented company’s team make the first view feel alive and are targets for [[SW-3]] mentions. Keyboard-first (C, J/K, ⌘K, S/P/L, ?), with a floating New issue button and sheets on phones.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Link the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a>, and start on the <code>demo</code> Site ID so the agent can hold real conversations while it builds.</li>
+            <li>Put the reference names next to their facts. A bare list of <code>[[SW-3]]</code> names got ignored; listing each answered issue with what it says made the Stand-in link them.</li>
+            <li>Design the message format so it reads back. Here the first message of an issue carries its metadata in brackets and comments carry only the ID, so the whole tracker rebuilds from the transcript.</li>
+            <li>Build a fake backend for what the demo never sends: a few dozen lines that stand in for <code>fetch</code> and <code>WebSocket</code> made handoffs, follow-up offers and failed sends as easy to test as the happy path.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/questions-as-issues my-issue-tracker-chat</code></pre>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/questions-as-issues/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
