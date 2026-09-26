@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Search that turns into a conversation</title>
+  <meta name="description" content="An app directory whose search never dead-ends: when nothing matches, or the query reads like a question, the same box becomes a conversation with the team, carrying the search and the visitor's stack. Replies hand back app and flow cards you can use.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, search, zero results, omnibox, integrations directory, page references, WebSocket">
+  <meta property="og:title" content="Search that turns into a conversation">
+  <meta property="og:description" content="An app directory whose search never dead-ends: when nothing matches, the same box becomes a conversation with the team, and replies hand back app and flow cards you can use.">
+  <meta property="og:image" content="https://examples.stand.chat/search-that-talks/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Site chrome: the top bar and "How it works" styles. This example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23FF4F00'/%3E%3Cg fill='none' stroke='%23FFFEFB' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='19.5' cy='6.8' r='2.4'/%3E%3Cpath d='M19.5 9.2V19.5a5.75 5.75 0 0 1-11.5 0V11.5'/%3E%3Cpath d='M8 11.5l3.2 3.2'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Sans:wght@500;600;700&family=Newsreader:ital,opsz,wght@0,72,300;1,72,300&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The page: an app directory whose search box talks to Stand's Visitor API. No stand.js. -->
+  <script type="module" src="site.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="hl">
+    <a class="hl-skip" href="#apps" data-focus-search>Skip to the search</a>
+
+    <header class="hl-header">
+      <div class="hl-header-inner">
+        <a class="hl-logo" href="#top" aria-label="Hookline, back to the top">
+          <svg class="hl-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#FF4F00"/><g fill="none" stroke="#FFFEFB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="19.5" cy="6.8" r="2.4"/><path d="M19.5 9.2V19.5a5.75 5.75 0 0 1-11.5 0V11.5"/><path d="M8 11.5l3.2 3.2"/></g></svg>
+          <span class="hl-wordmark" aria-hidden="true">hookline</span>
+        </a>
+        <nav class="hl-nav" id="hl-nav" aria-label="Hookline">
+          <a href="#apps" data-focus-search>Apps</a>
+          <a href="#flows">Flows</a>
+          <a href="#tour">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#enterprise">Enterprise</a>
+        </nav>
+        <div class="hl-header-end">
+          <a class="hl-explore" href="#apps" data-focus-search><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="13.5" y="4" width="6.5" height="6.5" rx="1.2"/><rect x="4" y="13.5" width="6.5" height="6.5" rx="1.2"/><path d="M16.75 13.5v6.5M13.5 16.75H20"/></svg>Explore apps</a>
+          <button type="button" class="hl-header-link" data-prefill="I’d like to talk to sales about Hookline for my team.">Contact sales</button>
+          <a class="btn btn-orange btn-pill" href="#pricing">Sign up</a>
+          <button type="button" class="hl-menu" aria-expanded="false" aria-controls="hl-nav" aria-label="Menu"><span aria-hidden="true"></span></button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="hl-hero" id="top" aria-labelledby="hero-title">
+        <div class="hero-floats" aria-hidden="true"></div>
+        <div class="hl-wrap hero-inner">
+          <p class="eyebrow">App directory</p>
+          <h1 id="hero-title">Connect every app you run on. <span class="accent">Ask about the ones you don’t see.</span></h1>
+          <p class="hero-sub">Search triggers and actions across 7,000+ apps. When yours isn’t there, keep typing: the search box answers, and hands you what works today.</p>
+
+          <div class="omni" id="apps" data-view="idle">
+            <div class="omni-field">
+              <span class="omni-icon" aria-hidden="true">
+                <svg class="omni-glass" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L20.5 20.5"/></svg>
+                <svg class="omni-bubble" viewBox="0 0 24 24"><path d="M4 6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-8l-4 3.5V17a2 2 0 0 1-2-2z"/><path d="M8.5 10.5h7"/></svg>
+              </span>
+              <span class="omni-token" hidden></span>
+              <input class="omni-input" id="omni-input" type="text" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="omni-list" aria-label="Search apps, or ask a question" aria-describedby="omni-help" placeholder="Search 7,000+ apps, or ask anything" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+              <span class="omni-example" hidden>Example · type your own</span>
+              <button type="button" class="omni-clear" aria-label="Clear the search" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7L7 17"/></svg></button>
+              <kbd class="omni-kbd" aria-hidden="true">/</kbd>
+              <button type="button" class="omni-ask" hidden><span class="omni-ask-label">Ask</span> <span aria-hidden="true">↵</span></button>
+            </div>
+            <p class="visually-hidden" id="omni-help">Type to search apps. If nothing matches, or you type a question, press Enter to ask the Hookline team right here.</p>
+            <p class="omni-noticebar" hidden></p>
+            <div class="omni-body"><div class="omni-inner"></div></div>
+            <div class="omni-stack" hidden></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hl-band hl-stack" id="stack" aria-labelledby="stack-title">
+        <div class="hl-wrap stack-grid">
+          <div class="stack-intro">
+            <p class="eyebrow">Your stack</p>
+            <h2 class="serif-title" id="stack-title">Two apps in, and the flows line up</h2>
+            <p class="section-sub">Add apps from search, from an app’s card, or straight from an answer. With two or more in your stack, Hookline suggests flows between them. Open one to see its steps, then give it a test run.</p>
+            <div class="stack-panel" data-stack-panel></div>
+          </div>
+          <div class="stack-canvas">
+            <div class="stack-editor" data-stack-editor></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hl-section hl-flows" id="flows" aria-labelledby="flows-title">
+        <div class="hl-wrap">
+          <p class="eyebrow">Templates</p>
+          <h2 class="display-title" id="flows-title">Popular flows, <span class="accent">running in minutes</span></h2>
+          <p class="section-sub">Start from a flow thousands of teams already run. Every one of them is a trigger, an action, and nothing you have to babysit.</p>
+          <ul class="gallery" data-gallery></ul>
+        </div>
+      </section>
+
+      <section class="hl-band hl-tour" id="tour" aria-labelledby="tour-title">
+        <div class="hl-wrap">
+          <p class="eyebrow">How it works</p>
+          <h2 class="serif-title" id="tour-title">When this happens, do that. <em>Then it’s done.</em></h2>
+          <ol class="tour" data-tour aria-label="A flow, step by step">
+            <li class="tour-step" style="--n:0">
+              <p class="tour-label">1. Trigger</p>
+              <div class="tour-card"><span class="tour-app" data-app-chip="slotbook"></span><p><b>New booking</b> for Tuesday, 10:30</p></div>
+            </li>
+            <li class="tour-step" style="--n:1">
+              <p class="tour-label">2. Action</p>
+              <div class="tour-card"><span class="tour-app" data-app-chip="textbeam"></span><p><b>Send SMS</b> “See you Tuesday at 10:30!”</p></div>
+            </li>
+            <li class="tour-step tour-done" style="--n:2">
+              <p class="tour-label">3. Done</p>
+              <div class="tour-card"><span class="tour-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span><p><b>Reminder sent</b><br>0.8 seconds, 1 task</p></div>
+            </li>
+          </ol>
+          <div class="tour-notes">
+            <div>
+              <h3>Triggers start flows</h3>
+              <p>Something happens in one app: a booking, a paid invoice, a new row. Instant triggers fire within seconds; the rest check every couple of minutes.</p>
+            </div>
+            <div>
+              <h3>Actions do the work</h3>
+              <p>Hookline creates the contact, posts the message or files the document, and retries a failed step three times before it bothers you.</p>
+            </div>
+            <div>
+              <h3>Tasks are what you pay for</h3>
+              <p>Each action that runs is one task. Triggers and filters are free, so checking often costs you nothing.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="hl-dark hl-ai" aria-labelledby="ai-title">
+        <div class="hl-wrap ai-grid">
+          <div class="ai-copy">
+            <p class="eyebrow eyebrow-dark">AI steps</p>
+            <h2 class="display-title" id="ai-title">Put AI in the middle of any flow</h2>
+            <p>Summarize a ticket, sort an inbox, draft a first reply. AI runs as one step between the apps you already use, and every other step stays exactly the same, every time.</p>
+            <ul class="ai-steps">
+              <li><span class="ai-tag">AI</span> Summarize a long support thread</li>
+              <li><span class="ai-tag">AI</span> Classify leads by company size</li>
+              <li><span class="ai-tag">AI</span> Draft a reply in your team’s voice</li>
+            </ul>
+          </div>
+          <figure class="ai-quote">
+            <blockquote>“We stopped writing one-off scripts. Ops asks the search box first, and half the time the answer is a flow somebody already built.”</blockquote>
+            <figcaption><b>Priya Raman</b>, Head of Operations, Kettle &amp; Pine</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="hl-band hl-pricing" id="pricing" aria-labelledby="pricing-title">
+        <div class="hl-wrap">
+          <p class="eyebrow">Pricing</p>
+          <h2 class="display-title" id="pricing-title">Pay for the work that runs, <span class="accent">not for seats</span></h2>
+          <fieldset class="billing">
+            <legend class="visually-hidden">Billing</legend>
+            <label><input type="radio" name="billing" value="yearly" checked> Pay yearly <span class="billing-save">save 20%</span></label>
+            <label><input type="radio" name="billing" value="monthly"> Pay monthly</label>
+          </fieldset>
+          <div class="plans">
+            <article class="plan" aria-labelledby="plan-free">
+              <h3 id="plan-free">Free</h3>
+              <p class="plan-from">Free forever</p>
+              <p class="plan-price"><span class="plan-amount">$0</span> <span class="plan-per">/month</span></p>
+              <p class="plan-blurb">For trying flows between two apps.</p>
+              <a class="btn btn-dark btn-block" href="#apps" data-focus-search>Start free <span aria-hidden="true">→</span></a>
+              <ul class="plan-list">
+                <li>100 tasks a month</li>
+                <li>Two-step flows</li>
+                <li>Checks every 15 minutes</li>
+                <li>Run history for 30 days</li>
+              </ul>
+            </article>
+            <article class="plan plan-featured" aria-labelledby="plan-pro">
+              <h3 id="plan-pro">Professional <span class="plan-flag">14-day trial</span></h3>
+              <p class="plan-from">Starting from</p>
+              <p class="plan-price"><span class="plan-amount" data-yearly="$24" data-monthly="$30">$24</span> <span class="plan-per">/month</span></p>
+              <p class="plan-blurb">For one person automating a whole job.</p>
+              <a class="btn btn-orange btn-block" href="#apps" data-focus-search>Try it free <span aria-hidden="true">→</span></a>
+              <ul class="plan-list">
+                <li>1,000 tasks a month</li>
+                <li>Multi-step flows</li>
+                <li>Filters and branches</li>
+                <li>Webhooks and HTTP request</li>
+                <li>Checks every 2 minutes</li>
+              </ul>
+            </article>
+            <article class="plan" aria-labelledby="plan-team">
+              <h3 id="plan-team">Team</h3>
+              <p class="plan-from">Starting from</p>
+              <p class="plan-price"><span class="plan-amount" data-yearly="$80" data-monthly="$100">$80</span> <span class="plan-per">/month</span></p>
+              <p class="plan-blurb">For teams who share flows and connections.</p>
+              <a class="btn btn-dark btn-block" href="#apps" data-focus-search>Try it free <span aria-hidden="true">→</span></a>
+              <ul class="plan-list">
+                <li>5,000 tasks a month</li>
+                <li>Everything in Professional</li>
+                <li>Up to 25 users</li>
+                <li>Single sign-on</li>
+                <li>Run history for a year</li>
+              </ul>
+            </article>
+            <article class="plan" id="enterprise" aria-labelledby="plan-enterprise">
+              <h3 id="plan-enterprise">Enterprise</h3>
+              <p class="plan-from">For the whole company</p>
+              <p class="plan-price"><span class="plan-amount plan-amount-text">Let’s talk</span></p>
+              <p class="plan-blurb">Custom task volume, US or EU data, and help rolling out.</p>
+              <button type="button" class="btn btn-dark btn-block" data-prefill="Hi, I’d like to talk to sales about Enterprise.">Contact sales <span aria-hidden="true">→</span></button>
+              <ul class="plan-list">
+                <li>Custom task volume</li>
+                <li>US or EU data region</li>
+                <li>SOC 2 Type II reports</li>
+                <li>Custom run history</li>
+              </ul>
+            </article>
+          </div>
+          <p class="plans-note">A task is one action that runs; triggers and filters are free. Prices are per month, billed yearly; monthly billing costs 25% more. <button type="button" class="inline-link" data-prefill="Which plan fits a team of 8 running about 3,000 tasks a month?">Not sure which plan fits? Ask the search box.</button></p>
+        </div>
+      </section>
+
+      <section class="hl-dark hl-cta" aria-labelledby="cta-title">
+        <div class="hl-wrap">
+          <h2 class="display-title" id="cta-title">Start with two apps. <span class="accent">Keep going.</span></h2>
+          <p>Free for 100 tasks a month. Upgrade when your flows grow up.</p>
+          <div class="cta-buttons">
+            <a class="btn btn-orange btn-lg" href="#apps" data-focus-search>Start free with email</a>
+            <button type="button" class="btn btn-outline-light btn-lg" data-prefill="I’d like to talk to sales about Hookline for my team.">Talk to sales</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="hl-footer">
+      <div class="hl-wrap">
+        <p class="footer-title" id="az-title">Apps by name</p>
+        <div class="az" data-az role="group" aria-labelledby="az-title"></div>
+        <div class="footer-cols">
+          <div>
+            <p class="footer-h">Popular apps</p>
+            <ul data-footer-apps="pipewell formlane chatterbox gridwell ledgerly shopwright"></ul>
+          </div>
+          <div>
+            <p class="footer-h">Built-in tools</p>
+            <ul data-footer-apps="webhooks http timer filter branches code"></ul>
+          </div>
+          <div>
+            <p class="footer-h">Popular flows</p>
+            <ul data-footer-flows></ul>
+          </div>
+          <div>
+            <p class="footer-h">Hookline</p>
+            <ul>
+              <li><a href="#tour">How it works</a></li>
+              <li><a href="#pricing">Pricing</a></li>
+              <li><a href="#stack">Your stack</a></li>
+              <li><button type="button" data-prefill="I’d like to request an app: ">Request an app</button></li>
+            </ul>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <a class="hl-logo" href="#top" aria-label="Hookline, back to the top">
+            <svg class="hl-mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#FF4F00"/><g fill="none" stroke="#FFFEFB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="19.5" cy="6.8" r="2.4"/><path d="M19.5 9.2V19.5a5.75 5.75 0 0 1-11.5 0V11.5"/><path d="M8 11.5l3.2 3.2"/></g></svg>
+            <span class="hl-wordmark" aria-hidden="true">hookline</span>
+          </a>
+          <p class="footer-fiction">Hookline is a fictional company. This page demonstrates a custom chat UI on Stand Chat’s Visitor API.</p>
+        </div>
+      </div>
+    </footer>
+
+    <div class="visually-hidden" id="omni-live" aria-live="polite"></div>
+    <div class="visually-hidden" id="omni-status" aria-live="polite"></div>
+  </div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Turn zero-result searches into conversations</h2>
+      <p class="sx-lead">“Does it work with our ERP?” is the question people ask most about a product that lives in their stack, and a “No results” page is where many of them leave. Here the app directory’s search box never dead-ends. When nothing matches, or the query reads like a question, the same box becomes a conversation on Stand’s Visitor API, and the search and the visitor’s stack go along with it.</p>
+      <p>There’s no <code>stand.js</code> on this page. The box, the results, the conversation and the flow cards are plain JavaScript in this folder, with no dependencies.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>On your first visit, the search box types <code>Acme ERP</code>, an app the directory doesn’t have, and the results turn into “No Acme ERP yet”: who answers, and what your question would carry. It’s an example; nothing is sent.</li>
+        <li>Search for the tools you really use. Every app here is invented, so yours won’t match, which is the point. Add a couple of the directory’s apps to your stack on the way.</li>
+        <li>Ask. The answer arrives right under the box, and the apps and flows it mentions come as cards: <strong>Add to stack</strong> on an app, <strong>Try this flow</strong> on a flow, which opens its steps and runs a test.</li>
+        <li>Open an app’s card and use <strong>Missing a trigger or action? Ask</strong>, or type a question like <code>how do I add a filter?</code> and press Enter.</li>
+        <li>Reload mid-conversation: everything comes back where it was. <strong>End conversation</strong> closes it for good.</li>
+      </ol>
+
+      <div class="sx-note">Conversations here use Stand Chat’s shared <code>demo</code> site, which answers on any domain through Stand Chat’s demo Stand-in. It follows this page’s prompt, so it answers as Hookline, but Hookline is made up. With your own Site ID, your own Stand-ins and team answer.</div>
+
+      <h3>1. Search first, ask when search runs out</h3>
+      <p>The directory search is local and instant: 106 invented apps, matched on names, keywords, categories, and trigger and action names, with typo tolerance for names only. Two things turn a search into a question. A query can read like one, and then “Ask: …” becomes the top result. Or a query can match nothing and sit still for 450 milliseconds, so a half-typed name never flashes a question at you.</p>
+      <pre class="sx-code" data-file="search.js"><code class="language-js">export function isQuestion(query) {
+  const text = String(query).trim();
+  if (/\?\s*$/.test(text)) return true;
+  const words = normalize(text).split(' ').filter(Boolean);
+  // "can I sync…", "how do I…", "is there…"
+  if (words.length &gt;= 3 &amp;&amp; QUESTION_START.test(words.join(' '))) return true;
+  return words.length &gt;= 6; // a sentence, not an app name
+}</code></pre>
+
+      <h3>2. The same box becomes the conversation</h3>
+      <p>The results area has five views: idle, results, the “no match” starter, an app’s card, and the conversation. They share one container that animates its height between them, and the input never moves: it’s the search field, the question field and, once a conversation starts, the reply field. The newest exchange sits right under it, like the top search result, with earlier ones folded below.</p>
+      <pre class="sx-code" data-file="omnibox.js, condensed"><code class="language-js">function currentView() {
+  if (appId) return 'app';
+  if (inChat()) return 'chat'; // a conversation is going: the box is its composer
+  if (ask) return 'starter'; // about an app, a flow, or a search that found nothing
+  const q = query.trim();
+  if (!q) return 'idle';
+  // A question: "Ask: …" on top, then any apps it names.
+  if (isQuestion(q)) return mentionedApps(q).length ? 'results' : 'starter';
+  const result = search(q); // the whole directory, whatever the filter
+  if (!result.good &amp;&amp; settled) return 'starter'; // "No Acme ERP yet"
+  return 'results';
+}</code></pre>
+      <p>The magnifier in the box turns into a speech bubble whenever Enter will send to the team rather than open an app, and the button next to it says <em>Ask</em> or <em>Send</em>. Nothing is created until one of them is pressed.</p>
+
+      <h3>3. Context rides along with each message</h3>
+      <p>Each message starts with a short context prefix: what was searched, whether it matched, the closest apps, the app or flow it’s about, and the visitor’s stack when it changed. The team reads it in Stand, the AI Stand-in uses it, and this page parses it back into the chips under each question, so a reload restores them from the transcript itself. Here is what your next question would carry right now:</p>
+      <div class="hl-live" data-live-context aria-live="off"><p class="hl-live-file">Your next message</p><pre><code></code></pre></div>
+      <pre class="sx-code" data-file="conversation.js"><code class="language-js">buildPrefix({ search: 'Acme ERP', noMatch: true, stack: ['Formlane', 'Pipewell'] });
+// '(searching “Acme ERP” · no match · stack: Formlane, Pipewell) '
+
+parsePrefix('(stack: Pipewell) And then?');
+// { context: { stack: ['Pipewell'] }, text: 'And then?' }
+
+// Only known segments count, so a visitor's own brackets stay put:
+parsePrefix('(just curious) Does it work?'); // { context: null, … }</code></pre>
+
+      <h3>4. The prompt</h3>
+      <p>The first message starts the conversation with a private prompt: who Hookline is, the facts visitors ask about, how the prefix works, and the names replies may point at. It’s the same for everyone and stays under Stand’s 2,000-character limit (this one is <span data-prompt-length>1,995</span> characters); what each visitor searched travels in the messages instead.</p>
+      <pre class="sx-code" data-file="prompt.js" data-wrap><code data-prompt>You are answering visitors on the website of Hookline, a fictional app-automation platform (a demo page on examples.stand.chat; Hookline is invented). Speak as Hookline's team. Keep replies short: 1–3 sentences unless asked for detail. If a fact isn't below, say you're not sure and offer to bring in someone from the team. Don't invent prices, limits, features or apps.
+
+Facts: Free $0: 100 tasks/mo, 2-step flows. Professional $24/mo yearly or $30 monthly: 1,000 tasks, multi-step flows, filters, branches, Webhooks, HTTP request. Team $80/mo yearly or $100 monthly: 5,000 tasks, 25 users, SSO. Enterprise: custom. A task is one action that runs; triggers and filters are free. Instant triggers fire in seconds; others check every 15 min (Free) or 2 min. Failed steps retry 3 times. Cloud only, US or EU data. 14-day Professional trial. App requests: reply within a day; new apps ship in 4–8 weeks. SOC 2 Type II; run history kept 30 days (Free) to 1 year (Team).
+
+This page: visitors search the app directory; searches with no match become questions to you. Messages may start with context in parentheses, like (searching “Acme ERP” · no match · stack: Formlane, Pipewell). Use it; don't repeat it. A no-match app isn't on Hookline yet: say so, suggest Webhooks or HTTP request, and ask what they'd connect it to.
+
+When an app or flow helps, write its exact name in double square brackets: [[App: Webhooks]], [[Flow: New form entry → Create CRM contact]]. At most two per reply.
+Apps: Webhooks, HTTP request, Timer, Filter, Branches, Formlane, Pipewell, Mailcrate, Chatterbox, Gridwell, Rowhouse, Taskyard, Slotbook, Ledgerly, Tillpoint, Shopwright, Stockroom, Deskpilot, Errorbeam, Paperstack, Inksign, Textbeam (more on the page).
+Flows: New form entry → Create CRM contact; Deal won → Post in team chat; Invoice paid → Add spreadsheet row; New ticket → Create task; New booking → Send SMS reminder; New order → Update inventory; Caught webhook → Create record; Every morning → Call an API.</code></pre>
+
+      <h3>5. Replies hand over working pieces</h3>
+      <p>The prompt asks the Stand-in to name apps and flows in double square brackets, from a closed list. The page turns a known name into a chip in the text and a card under the reply: an app gets <strong>Add to stack</strong>, a flow gets <strong>Try this flow</strong>, which opens its steps right there. An unknown name stays plain text, and a reference only ever opens or highlights something on this page. The “Caught webhook → Create record” flow takes its target app from the conversation, so an answer about Pipewell opens a flow into Pipewell.</p>
+      <pre class="sx-code" data-file="conversation.js"><code class="language-js">const REF = /\[\[\s*(?:(app|flow)\s*:\s*)?([^[\]\n]{1,100}?)\s*\]\]/gi;
+
+// "Pipewell", "App: Pipewell" and "app:pipewell." all find Pipewell.
+// "->" counts as "→". No match returns null, and the name stays plain text.
+export function lookup(kind, name) {
+  const k = key(name);
+  const type = kind?.toLowerCase();
+  const app = type !== 'flow' &amp;&amp; APP_NAMES.get(k);
+  const flow = type !== 'app' &amp;&amp; FLOW_NAMES.get(k);
+  return app ? { kind: 'app', app } : flow ? { kind: 'flow', flow } : null;
+}</code></pre>
+
+      <h3>6. What the team learns</h3>
+      <p>A conversation that starts here opens, in Stand, with the reason it started: the search that failed, the app that was missing something, or the flow in question, plus the visitor’s stack. The prompt also asks the Stand-in what a missing app should connect to, so the transcript holds the integration and the use case side by side. Read a week of these and you have next quarter’s integration list, in your visitors’ own words. First messages look like this:</p>
+      <pre class="sx-code" data-file="In Stand: first messages from this page (examples)" data-wrap><code>(searching “Acme ERP” · no match · closest: Ledgerly · stack: Formlane, Pipewell) Can I sync invoices from Acme ERP into Pipewell as deals?
+
+(app: Formlane · triggers: New form entry, New partial entry, New payment entry · actions: Create prefilled link, Find entry · missing trigger or action) Can it trigger when someone abandons a form halfway?
+
+(flow: Caught webhook → Create record · steps: Catch hook in Webhooks → Create contact in Pipewell · stack: Webhooks) Can I only let paid invoices through?</code></pre>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>stand-visitor.js</code></strong> is the network client, the same one as in <a href="../stand-inline/">Stand Inline</a>, with its own storage keys. No DOM.</li>
+        <li><strong><code>conversation.js</code></strong> is the conversation model: the context prefix, exchanges, references and safe formatting. No DOM, no network.</li>
+        <li><strong><code>omnibox.js</code></strong> is the box: search results, the starter, app cards and the conversation.</li>
+        <li><strong><code>search.js</code></strong>, <strong><code>catalog.js</code></strong> and <strong><code>icons.js</code></strong> are the directory: ranking, the invented apps and flows, and their icons, drawn from data.</li>
+        <li><strong><code>flows.js</code></strong> is the flow editor: step cards, the “+” between them and the test run.</li>
+        <li><strong><code>prompt.js</code></strong> is the prompt, built from the catalog so its names always match the page. <strong><code>stack.js</code></strong> keeps the visitor’s stack in <code>sessionStorage</code>, <strong><code>dom.js</code></strong> is a template tag that escapes everything it isn’t told is safe, and <strong><code>site.js</code></strong> wires up the rest of the page.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about AI.</strong> The box says who answers, as Stand names them, and whether it’s AI or a person. The badge changes when someone from the team joins.</li>
+        <li><strong>Closing isn’t ending.</strong> Searching again or opening an app keeps the conversation going. Only <em>End conversation</em> ends it in Stand.</li>
+        <li><strong>Nothing starts by accident.</strong> Typing, opening an app or the example search never creates a conversation. Only pressing Ask or Enter on a question does.</li>
+        <li><strong>A reload keeps everything.</strong> The transcript comes back from Stand, the chips from the messages’ prefixes, and the stack and an unsent question from <code>sessionStorage</code>.</li>
+        <li><strong>Nobody around?</strong> Search keeps working, and the Ask button explains that nobody can answer right now, with a way to check again.</li>
+        <li><strong>Keyboard and screen readers.</strong> The box is a combobox: arrows move through results, Enter opens or asks, Escape clears, and <kbd>/</kbd> or <kbd>⌘K</kbd> jumps to it. New replies are read out whole. With reduced motion, the box doesn’t animate and the example appears at once.</li>
+        <li><strong>It’s a beta contract.</strong> The Visitor API can gain fields and events; the client ignores what it doesn’t know.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>This page was made with <strong>Claude Opus 5.5 in Claude Code</strong>. A lead session reworked a list of ideas, wrote this example’s brief and reviewed what came back. A separate Claude agent built the page in its own git worktree: it studied the reference product’s site for layout and voice, drew 106 app icons from data, tuned the prompt in real conversations with Stand’s demo Stand-in, and checked every state in headless Chrome at desktop and phone sizes, including the ones the demo site never produces.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example’s brief</p>
+          <blockquote class="made-prompt">An app-automation platform with a huge app directory. “Does it integrate with X?” is its most-asked question, and “No results” is where those visitors leave.
+
+Make the directory’s search box never dead-end: when nothing matches, or the query reads like a question, the results area morphs into a conversation with the search and the visitor’s stack attached. Offer “Ask: …” as the top result for questions, and “Missing a trigger or action? Ask” on every app card.
+
+Let replies point at apps and flow templates by name, and render them as cards you can add to your stack or try in a mini flow editor. One conversation, with a compact context prefix on each message. Warm off-white, orange, bold type, step cards.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Point the agent at the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a> and start on the <code>demo</code> Site ID, so it can hold real conversations from the first hour.</li>
+            <li>Probe the prompt before building the UI. Here, a first run showed the Stand-in wrongly denying an app’s trigger it couldn’t see, so app-card questions now carry the app’s triggers and actions.</li>
+            <li>Keep the vocabulary closed and forgiving: the Stand-in sometimes writes <code>[[Pipewell]]</code> without “App:”, or <code>-&gt;</code> for an arrow. Normalize, look up, and fall back to plain text.</li>
+            <li>Drive the renderer with fake states, too. Handoffs, follow-up offers and link cards never happen on the demo site, but a test can feed them in through <code>useClient()</code>.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/search-that-talks my-search-that-talks</code></pre>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Feature reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/search-that-talks/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
