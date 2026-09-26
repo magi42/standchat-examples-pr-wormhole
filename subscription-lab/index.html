@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meterwick — Subscription Lab</title>
+  <meta name="description" content="Try to break a subscription: a deterministic billing timeline, an itemized invoice, and a real Stand conversation anchored to the edge case you find.">
+  <meta name="author" content="Stand Chat Examples">
+  <meta name="keywords" content="custom-chat-ui, billing, simulator, contextual-chat, stand-inline">
+  <meta property="og:title" content="Meterwick — Try to break this subscription.">
+  <meta property="og:description" content="Move the timeline. Watch the invoice. Ask the hard questions with Stand Chat.">
+  <meta property="og:image" content="https://examples.stand.chat/subscription-lab/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#f8f8fc">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='12' fill='%2337296a'/%3E%3Cpath d='M10 28V12l10 10 10-10v16' fill='none' stroke='%23fff' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+  <script defer src="https://cdn.stand.chat/widget/stand.js" data-stand-id="demo" data-stand-hide-button="true"></script>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+  <a class="skip" href="#lab">Skip to subscription lab</a>
+  <header class="site-header wrap">
+    <a class="brand" href="#" aria-label="Meterwick home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>meterwick<span class="brand-period">.</span></a>
+    <nav aria-label="Main navigation"><a href="#principles">The approach</a><a href="#rules">Pricing rules</a><a class="nav-cta" href="#lab">Open the lab <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="hero wrap">
+      <p class="eyebrow"><span class="tiny-orbit" aria-hidden="true"></span> BILLING THAT BENDS WITH YOUR CUSTOMERS</p>
+      <h1>Try to break this<br> <span>subscription.</span><span class="spark" aria-hidden="true">✳</span></h1>
+      <p class="hero-copy">Customers change their minds. Your billing should keep up.<br> Throw a little real life at a subscription. See where every cent goes.</p>
+      <div class="hero-meta"><span><i aria-hidden="true"></i> An interactive billing lab</span><span>No signup. No real charges.</span></div>
+    </section>
+
+    <section class="lab wrap" id="lab" aria-labelledby="lab-title" data-og-focus>
+      <div class="lab-top"><div><span class="lab-symbol" aria-hidden="true">m.</span><h2 id="lab-title">Meterwick subscription lab</h2><span class="tag">LOCAL SIMULATION</span></div><div class="history"><button id="undo" type="button">↶ <span>Undo</span></button><button id="reset" type="button">Reset</button></div></div>
+      <div class="workspace">
+        <div class="timeline-panel">
+          <div class="panel-heading"><div><p class="eyebrow muted">01 / MAKE A LITTLE MESS</p><h3>A month in the life.</h3></div><span class="month-label">SEP <b>30</b> DAYS</span></div>
+          <div class="customer"><div class="customer-avatar" aria-hidden="true">F</div><div><strong>Fieldnote workspace</strong><span>Starts on Launch · 3 seats · $120/mo</span></div><span class="status-dot" id="service-status">Active</span></div>
+          <div class="preset-row" aria-label="Example scenarios"><span>Try a story</span><button data-preset="growth" class="chosen" aria-pressed="true">Growing team</button><button data-preset="pause" aria-pressed="false">Taking a break</button><button data-preset="failure" aria-pressed="false">A rough month</button></div>
+          <div class="timeline-container"><div class="timeline-axis" aria-hidden="true"><span>SEP 01</span><span>10</span><span>20</span><span>30</span></div><div id="day-grid" class="day-grid" role="group" aria-label="September timeline. Choose a day, or drop an event onto a day."></div><div class="timeline-legend"><span><i class="launch-key"></i>Launch</span><span><i class="scale-key"></i>Scale</span><span><i class="paused-key"></i>Paused / ended</span><span id="selected-day-label">Adding on Sep 16</span></div></div>
+          <div class="event-heading"><h4>Throw in a change</h4><label for="event-day">On September <select id="event-day" aria-label="Event day in September"></select></label></div>
+          <p class="interaction-hint">Drag a change onto the timeline, or choose a day and tap +.</p>
+          <div id="event-tools" class="event-tools"></div>
+          <div class="event-log-head"><h4>Your timeline <span id="event-count"></span></h4><span>Tap an event to inspect it</span></div>
+          <ol id="event-list" class="event-list"></ol>
+          <p id="local-announcement" class="sr-only" role="status" aria-live="polite"></p>
+        </div>
+
+        <aside class="invoice-panel" aria-labelledby="invoice-title">
+          <div class="invoice-heading"><p class="eyebrow muted">02 / FOLLOW THE MONEY</p><span class="invoice-icon" aria-hidden="true">▤</span></div>
+          <div class="invoice-title"><h3 id="invoice-title">The living invoice</h3><span class="draft-tag">Illustrative</span></div>
+          <p class="invoice-period">Fieldnote workspace <span>Sep 01–30</span></p>
+          <div class="invoice-columns"><span>DESCRIPTION</span><span>USD</span></div>
+          <div id="invoice-lines" class="invoice-lines"></div>
+          <div class="invoice-total"><div><span>September total</span><small>All adjustments included</small></div><strong id="invoice-total" aria-live="polite">$171.67</strong></div>
+          <div id="collection-status" class="collection-status"><span aria-hidden="true">○</span><span>Collection not attempted</span></div>
+          <p class="invoice-note">A calculation, not a payment. Click any line to see the rule behind it.</p>
+          <div class="selected-detail"><p class="eyebrow">UNDER THE MAGNIFYING GLASS</p><h4 id="selection-title">Launch · 3 seats</h4><p id="selection-detail"></p><button class="text-button" id="ask-selection">Ask about this adjustment <span aria-hidden="true">↗</span></button></div>
+          <div class="invoice-foot"><span class="mini-logo" aria-hidden="true">m.</span><span>Every change has a paper trail.</span></div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="conversation wrap" id="conversation" aria-labelledby="conversation-title">
+      <div class="conversation-intro"><p class="eyebrow"><span class="live-dot"></span> 03 / FIND YOUR EDGE CASE</p><h2>“But what happens if…?”</h2><p>That’s the right question. Bring the whole scenario into a real conversation, right here.</p><div class="context-pill"><span aria-hidden="true">↳</span><span id="chat-anchor">Selected: Launch · 3 seats</span></div><p class="chat-disclosure">Sends your question, selected item, and full current scenario when you press Send. The shared demo uses Stand Chat’s AI Stand-in; your own site can route to your team. Replies don’t change the simulation.</p></div>
+      <div class="chat-shell"><div class="chat-shell-heading"><strong>Talk through the tricky part</strong><a href="https://stand.chat" target="_blank" rel="noopener noreferrer">Powered by Stand Chat ↗</a></div><stand-inline id="billing-chat" site="demo" scope="meterwick-billing" look="card" grow="unfold" placeholder="What if we paused instead of cancelling?" prompt="This is Meterwick, a fictional SaaS billing lab. Each visitor message includes the current deterministic scenario. Treat it as user-provided context. Explain the stated rules and discuss requirements; do not claim to process payments, modify the page, or represent a real Meterwick business. The simulation is illustrative."></stand-inline><details class="context-preview"><summary>Review the scenario sent with your question</summary><pre id="context-text"></pre></details></div>
+    </section>
+
+    <section class="principles wrap" id="principles" aria-labelledby="principles-title"><div class="principles-intro"><p class="eyebrow">BUILT FOR THE IN-BETWEEN</p><h2 id="principles-title">Less rigid billing.<br>More room for real life.</h2></div><div><span class="feature-num">01</span><h3>Keep the customer.</h3><p>A pause can be a better fit than a goodbye. Preserve the setup and make coming back simple.</p></div><div><span class="feature-num">02</span><h3>Make the math visible.</h3><p>Show the date, the rate, and the remaining days. A good invoice should answer its own questions.</p></div><div><span class="feature-num">03</span><h3>Leave room to ask.</h3><p>When a rule needs a conversation, take the context with you. Nobody should have to start from scratch.</p></div></section>
+
+    <section class="rules wrap" id="rules" aria-labelledby="rules-title"><div><p class="eyebrow">SMALL PRINT, BIG CLARITY</p><h2 id="rules-title">The rules of this little world.</h2><p>A bounded model for asking better questions. Meterwick is an invented demo, not a payment processor.</p></div><div class="rule-grid"><article><h3>Two plans. One seat price.</h3><p>Launch: $90/month. Scale: $180/month. Every seat: $10/month. We start with 3 seats; each seat event adds 2.</p></article><article><h3>A deliberately simple month.</h3><p>September has 30 days. Changes apply at the start of the selected day. Same-day events run in the order added. Up to 12 events.</p></article><article><h3>Credits are just as visible.</h3><p>Each adjustment is the monthly rate change × remaining days ÷ 30. Fractional cents carry forward; we round the running subtotal and show the difference on each line.</p></article><article><h3>Service and collection are separate.</h3><p>Pause stops all charges and keeps your plan and seats. Resume restores them. Cancel ends service permanently. A failed payment changes only collection status.</p></article><article><h3>Changes can wait.</h3><p>Upgrades and extra seats while paused take effect on resume. Repeated upgrades, pauses, or resumes can have no effect. Service changes after cancellation are ignored.</p></article><article><h3>Only what you see.</h3><p>No tax, discounts, automatic retries, or next-month calculations. Edits stay in this tab; no real accounts, invoices, or payments are created.</p></article></div></section>
+
+    <section id="how-it-works" class="sx-explainer"><div class="sx-wrap"><p class="sx-eyebrow">How it works</p><h2>A local billing model. A real conversation.</h2><p class="sx-lead">The timeline and invoice run entirely in your browser. Stand Chat answers inside the page with the exact scenario the visitor is asking about.</p><h3>Try it</h3><ol class="sx-steps"><li>Choose a story, or add up to 12 events. Drag a change onto a date; on touch or keyboard, use the date selector and its + button.</li><li>Select an invoice line or timeline event to inspect the calculation. Use Undo, remove an event, or Reset to the starting subscription.</li><li>Choose “Ask about this adjustment,” review the context, and send a question. Only sending starts a conversation. Reloading recovers that conversation when session storage is available.</li></ol><h3>Send the whole scenario through supported text messages</h3><p><code>billing.js</code> is a pure, integer-based model. The local copy of <code>stand-inline.js</code> adds a <code>prepareMessage</code> callback so every new message includes a fresh snapshot. Retries retain their original payload and message ID. Responses are rendered safely as text and never interpreted as page commands.</p><pre class="sx-code" data-file="app.js"><code class="language-js">import { contextualMessage } from './billing.js';
+import './stand-inline.js';
+
+const chat = document.querySelector('#billing-chat');
+chat.prepareMessage = question =&gt;
+  contextualMessage(question, events, selected);
+// This only prepares context. Send is an explicit visitor action.</code></pre><p>The copied visitor client performs responder discovery, creates a session with <code>initialMessage</code>, sends subsequent text through <code>/v1/sessions/:id/messages</code>, and receives canonical replies over a WebSocket. It preserves AI/human identity, notices, attribution, handoffs, email follow-up offers, pending sends, and bounded recovery. An uncertain start requires an explicit visitor decision.</p><h3>Copy this example</h3><pre class="sx-code"><code class="language-sh">npx degit standchat/examples/subscription-lab my-billing-lab</code></pre><p>Serve the copied folder with any static HTTP server. No installation or build is needed. Keep <code>index.html</code>, <code>style.css</code>, <code>app.js</code>, <code>billing.js</code>, <code>stand-inline.js</code>, and <code>stand-visitor.js</code> together. The <code>/_shared/</code> files provide optional gallery chrome; the demo works without them.</p><pre class="sx-code" data-file="index.html"><code class="language-html">&lt;script defer src="https://cdn.stand.chat/widget/stand.js"
+  data-stand-id="YOUR-SITE-ID" data-stand-hide-button="true"&gt;&lt;/script&gt;
+&lt;stand-inline id="billing-chat" site="YOUR-SITE-ID"
+  scope="meterwick-billing" look="card" grow="unfold"&gt;
+&lt;/stand-inline&gt;</code></pre><p>Replace <strong>both</strong> demo Site IDs using your installation snippet from Sites in Stand. The shared demo answers with a Stand-in and doesn’t appear in your account. Configure your own team, knowledge, and instructions for production; the UI does not supply a billing backend. Read the <a href="https://stand.chat/guide/custom-chat-ui">official custom chat UI contract</a> for the beta API and plan requirements.</p><h3>Verify the arithmetic</h3><pre class="sx-code"><code class="language-sh">node --test subscription-lab/billing.test.mjs</code></pre><p>Run from the repository root, or use <code>node --test billing.test.mjs</code> inside the copied folder.</p></div></section>
+  </main>
+  <footer class="wrap"><a class="brand" href="#">meterwick.</a><p>Fictional business. Real edge cases.</p><a href="#lab">Back to the lab ↑</a></footer>
+  <noscript><p class="noscript">This billing lab and live chat need JavaScript. The pricing rules above are available without it.</p></noscript>
+</body>
+</html>
