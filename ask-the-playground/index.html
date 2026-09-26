@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>SQL playground that answers back</title>
+  <meta name="description" content="A custom chat UI on Stand's Visitor API inside a real Postgres playground: visitors run queries as different users, watch row-level security at work, and ask the team with the query, role and error attached. SQL in the answer runs with one click.">
+  <meta name="author" content="Stand Chat">
+  <link rel="author" href="https://stand.chat/">
+  <meta name="keywords" content="custom chat UI, Visitor API, PGlite, Postgres, row-level security, developer tools">
+  <meta property="og:title" content="SQL playground that answers back">
+  <meta property="og:description" content="Real Postgres in the browser, and a conversation where developers get stuck: ask why a query failed, with the query, role and error attached, then run the answer's SQL with one click.">
+  <meta property="og:image" content="https://examples.stand.chat/ask-the-playground/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Site chrome: the top bar and "How it works" styles. This example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Source+Code+Pro:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- The playground and its assistant: plain modules, no stand.js. Preloaded together, not one import at a time. -->
+  <script type="module" src="main.js"></script>
+  <link rel="modulepreload" href="stand-visitor.js">
+  <link rel="modulepreload" href="assistant.js">
+  <link rel="modulepreload" href="playground.js">
+  <link rel="modulepreload" href="context.js">
+  <link rel="modulepreload" href="format.js">
+  <link rel="modulepreload" href="sandbox.js">
+  <link rel="modulepreload" href="sql-editor.js">
+  <link rel="modulepreload" href="sql.js">
+  <link rel="modulepreload" href="db.js">
+  <link rel="modulepreload" href="ui.js">
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <svg class="icons" aria-hidden="true" focusable="false">
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M7.5 9.5l3 2.5-3 2.5M12.5 15h4"/></symbol>
+    <symbol id="i-table" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M3 14.5h18M9.5 9.5V20"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7.5 3v5.4c0 4.4-3.1 8.2-7.5 9.6-4.4-1.4-7.5-5.2-7.5-9.6V6L12 3z"/><path d="M9 12l2.2 2.2L15.5 10"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.6a3.5 3.5 0 010 6.8M18 14.9c1.9.7 3.2 2.4 3.5 5.1"/></symbol>
+    <symbol id="i-chat" viewBox="0 0 24 24"><path d="M20 11.5c0 4.1-3.6 7.3-8 7.3-1.2 0-2.3-.2-3.3-.6L4 19.5l1.4-3.8C4.5 14.5 4 13 4 11.5c0-4.1 3.6-7.3 8-7.3s8 3.2 8 7.3z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5L8 5.5z"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 107.5-7.5c-2.2 0-4.1.9-5.5 2.4L4.5 9"/><path d="M4.5 4.5V9H9"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11.5" height="11.5" rx="2"/><path d="M15.5 8.5V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7.5a2 2 0 002 2h2.5"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 017 0v3"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8.5 10.5V7.5a3.5 3.5 0 016.8-1.2"/></symbol>
+    <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l2.5 2.5M13.5 9.5l2 2"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3.5H7.5a2 2 0 00-2 2v13a2 2 0 002 2h9a2 2 0 002-2V8L14 3.5z"/><path d="M14 3.5V8h4.5M9 13h6M9 16.5h4"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M12 18.5v-13M6.5 11L12 5.5l5.5 5.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-branch" viewBox="0 0 24 24"><circle cx="7" cy="5.5" r="2"/><circle cx="7" cy="18.5" r="2"/><circle cx="17" cy="7.5" r="2"/><path d="M7 7.5v9M17 9.5c0 4.5-4 4.5-9.4 7.4"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5h15M6.5 15.5l9.2-9.2a1.8 1.8 0 012.5 2.5L9 18H6.5v-2.5z"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.8l2.5 5.2 5.7.8-4.1 4 1 5.7-5.1-2.7-5.1 2.7 1-5.7-4.1-4 5.7-.8L12 3.8z"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><path d="M12 3l7.5 3.8v10.4L12 21l-7.5-3.8V6.8L12 3z"/><path d="M4.5 6.8L12 10.6l7.5-3.8M12 10.6V21"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M3.5 8L12 3.8 20.5 8 12 12.2 3.5 8z"/><path d="M3.5 12.2L12 16.4l8.5-4.2M3.5 16.4L12 20.6l8.5-4.2"/></symbol>
+    <symbol id="i-braces" viewBox="0 0 24 24"><path d="M8.5 4C6.5 4 5.5 5 5.5 7v2.2c0 1.5-.8 2.4-2 2.8 1.2.4 2 1.3 2 2.8V17c0 2 1 3 3 3M15.5 4c2 0 3 1 3 3v2.2c0 1.5.8 2.4 2 2.8-1.2.4-2 1.3-2 2.8V17c0 2-1 3-3 3"/></symbol>
+    <symbol id="i-waves" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.8"/><path d="M8.2 8.2a5.4 5.4 0 000 7.6M15.8 8.2a5.4 5.4 0 010 7.6M5.3 5.3a9.5 9.5 0 000 13.4M18.7 5.3a9.5 9.5 0 010 13.4"/></symbol>
+    <symbol id="i-nodes" viewBox="0 0 24 24"><circle cx="6" cy="7" r="2"/><circle cx="18" cy="6" r="2"/><circle cx="12" cy="17.5" r="2"/><circle cx="19" cy="16" r="1.5"/><path d="M8 6.8l8-.6M7 8.8l4 6.8M17 7.8l-4 7.8M14 17.2l3.5-.8"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="M8.5 8.5L5 12l3.5 3.5M15.5 8.5L19 12l-3.5 3.5M13.5 5.5l-3 13"/></symbol>
+    <!-- Basalt's mark: a hexagon made of three columns. -->
+    <symbol id="i-mark" viewBox="0 0 32 32">
+      <path fill="#249561" d="M3.9 9L11 4.9v22.2L3.9 23z"/>
+      <path fill="#3ecf8e" d="M13 3.7L16 2l3 1.7v24.6L16 30l-3-1.7z"/>
+      <path fill="#1c7a50" d="M21 4.9L28.1 9v14L21 27.1z"/>
+    </symbol>
+  </svg>
+
+  <div class="site">
+    <header class="nav" data-og-hide>
+      <div class="wrap nav-inner">
+        <a class="logo" href="#top" aria-label="Basalt home"><svg class="logo-mark" aria-hidden="true"><use href="#i-mark"/></svg><span>basalt</span></a>
+        <nav class="nav-links" aria-label="Main">
+          <a href="#product">Product</a>
+          <a href="#playground">Playground</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#open-source">Open source</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="nav-stars" href="#open-source" aria-label="41.2k stars on GitHub"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg>41.2k</a>
+          <a class="btn btn-secondary btn-sm nav-signin" href="#pricing">Sign in</a>
+          <a class="btn btn-primary btn-sm" href="#pricing">Start building</a>
+        </div>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="wrap hero-grid">
+          <div class="hero-main">
+            <a class="hero-pill" href="#playground"><span class="hero-pill-tag">New</span>Ask the team from inside the SQL editor<svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+            <h1>Postgres, with the parts <span>you'd build anyway</span></h1>
+            <div class="hero-cta">
+              <a class="btn btn-primary btn-lg" href="#pricing">Start building</a>
+              <a class="btn btn-secondary btn-lg" href="#playground" data-focus-editor>Try the playground</a>
+            </div>
+          </div>
+          <p class="hero-copy">Each Basalt project gets <b>its own Postgres database</b>, with auth, file storage, realtime and generated APIs around it. <b>The playground below is real Postgres</b>, running in this tab. Break something, then ask us why.</p>
+        </div>
+      </section>
+
+      <!-- The playground: a dashboard around real Postgres, with the conversation beside the editor. -->
+      <section class="play" id="playground" aria-label="SQL playground">
+        <div class="wrap">
+          <div class="dash" data-og-focus data-view="sql">
+            <div class="dash-bar">
+              <span class="dash-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <nav class="dash-crumbs" aria-label="Project">
+                <svg class="dash-crumb-mark" aria-hidden="true"><use href="#i-mark"/></svg>
+                <span class="dash-crumb">acme-agency</span>
+                <span class="dash-slash" aria-hidden="true">/</span>
+                <span class="dash-crumb dash-crumb-project">tally</span>
+                <span class="dash-branch"><svg class="ic" aria-hidden="true"><use href="#i-branch"/></svg>main</span>
+              </nav>
+              <span class="dash-grow"></span>
+              <span class="pg-status" data-status="idle">
+                <i class="pg-dot" aria-hidden="true"></i><span class="pg-status-label">Postgres 18 · starts when you get here</span>
+                <span class="pg-meter" aria-hidden="true"><i></i></span>
+              </span>
+              <button class="btn btn-secondary btn-sm dash-reset" type="button" title="Restore the database to its seed"><svg class="ic" aria-hidden="true"><use href="#i-reset"/></svg><span>Reset</span></button>
+            </div>
+
+            <div class="dash-rail" role="tablist" aria-label="Dashboard views" aria-orientation="vertical">
+              <button class="rail-btn" type="button" role="tab" id="tab-sql" aria-controls="view-sql" aria-selected="true" data-view="sql" title="SQL editor"><svg class="ic" aria-hidden="true"><use href="#i-terminal"/></svg><span>SQL</span></button>
+              <button class="rail-btn" type="button" role="tab" id="tab-tables" aria-controls="view-tables" aria-selected="false" tabindex="-1" data-view="tables" title="Table editor"><svg class="ic" aria-hidden="true"><use href="#i-table"/></svg><span>Tables</span></button>
+              <button class="rail-btn" type="button" role="tab" id="tab-policies" aria-controls="view-policies" aria-selected="false" tabindex="-1" data-view="policies" title="Policies"><svg class="ic" aria-hidden="true"><use href="#i-shield"/></svg><span>Policies</span></button>
+              <button class="rail-btn" type="button" role="tab" id="tab-users" aria-controls="view-users" aria-selected="false" tabindex="-1" data-view="users" title="Users"><svg class="ic" aria-hidden="true"><use href="#i-users"/></svg><span>Users</span></button>
+            </div>
+
+            <div class="dash-side" aria-label="Snippets and tables"></div>
+
+            <div class="dash-main">
+              <!-- SQL editor -->
+              <div class="view view-sql" id="view-sql" role="tabpanel" aria-labelledby="tab-sql">
+                <div class="ed-tabs">
+                  <span class="ed-tab"><svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg><span class="ed-tab-title">Log an invoice</span></span>
+                  <button class="ed-snippets" type="button" aria-haspopup="menu" aria-expanded="false"><svg class="ic" aria-hidden="true"><use href="#i-doc"/></svg>Snippets<svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                </div>
+                <div class="ed" data-editor></div>
+                <div class="ed-bar">
+                  <div class="runas">
+                    <span class="runas-label" id="runas-label">Run as</span>
+                    <button class="runas-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="runas-label runas-value"><span id="runas-value" class="runas-value"><span class="avatar avatar-cy" aria-hidden="true">C</span><span>Cy</span><span class="runas-detail">Member · Globex</span></span><svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></button>
+                  </div>
+                  <div class="runas-chips" role="radiogroup" aria-label="Run as"></div>
+                  <span class="dash-grow"></span>
+                  <button class="btn btn-primary btn-sm run-btn" type="button"><svg class="ic ic-fill" aria-hidden="true"><use href="#i-play"/></svg><span class="run-label">Run</span><kbd class="run-kbd">⌘↵</kbd></button>
+                </div>
+                <div class="res"></div>
+              </div>
+              <!-- Table editor, policies and users render on demand. -->
+              <div class="view view-tables" id="view-tables" role="tabpanel" aria-labelledby="tab-tables" hidden></div>
+              <div class="view view-policies" id="view-policies" role="tabpanel" aria-labelledby="tab-policies" hidden></div>
+              <div class="view view-users" id="view-users" role="tabpanel" aria-labelledby="tab-users" hidden></div>
+            </div>
+
+            <aside class="ask" id="ask" aria-label="Ask Basalt"></aside>
+          </div>
+          <button class="ask-launcher" type="button" aria-controls="ask" aria-expanded="false" hidden>
+            <svg class="ic" aria-hidden="true"><use href="#i-chat"/></svg>
+            <span class="ask-launcher-text"><b>Ask Basalt</b><span class="ask-launcher-who"></span></span>
+            <i class="ask-launcher-dot" hidden></i>
+            <svg class="ic ask-launcher-up" aria-hidden="true"><use href="#i-chevron"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <section class="logos" aria-label="Customers">
+        <div class="wrap">
+          <p class="logos-title">Teams shipping on Basalt</p>
+          <ul class="logos-row">
+            <li class="logo-northloop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 17V9a4 4 0 018 0v6a4 4 0 008 0V7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>Northloop</li>
+            <li class="logo-kiln"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V10l8-6 8 6v10z" fill="currentColor"/><path d="M12 19c-2.2 0-3.4-1.5-3.4-3.3 0-2 1.6-3 2.3-4.9 1.8 1.1 4.5 2.8 4.5 5.1 0 1.8-1.3 3.1-3.4 3.1z" fill="#121212"/></svg>kiln</li>
+            <li class="logo-parcel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 7.5L12 3l8.5 4.5v9L12 21l-8.5-4.5z" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 7.5L12 12l8.5-4.5M12 12v9" fill="none" stroke="currentColor" stroke-width="2"/></svg>Parcelwise</li>
+            <li class="logo-halyard"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5v17M12 3.5l7 13H12zM11 6.5L5 16.5h6z" fill="currentColor"/><path d="M3 20.5h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>HALYARD</li>
+            <li class="logo-fernbank"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 21c0-9 5-15 13-17-1 8-6 13-13 17z" fill="currentColor"/><path d="M6 21c3-5 6-8 10-11" stroke="#121212" stroke-width="1.6" fill="none"/></svg>fernbank</li>
+            <li class="logo-quill"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="4.2" rx="1.2" fill="currentColor"/><rect x="4" y="9.9" width="16" height="4.2" rx="1.2" fill="currentColor" opacity=".7"/><rect x="4" y="15.8" width="16" height="4.2" rx="1.2" fill="currentColor" opacity=".45"/></svg>Quillstack</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="products" id="product" aria-labelledby="products-title">
+        <div class="wrap">
+          <h2 class="section-title" id="products-title">Pick the parts you need. <span>Each one is plain Postgres underneath.</span></h2>
+          <div class="grid">
+            <article class="card card-db">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-db"/></svg>Database</h3>
+              <p>Each project runs on <b>its own Postgres 18 database</b>, not a key-value store in a SQL costume.</p>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Dump it, fork it, move it</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Row-level security on by default</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Backups and point-in-time recovery</li>
+              </ul>
+              <svg class="columns-art" viewBox="0 0 260 200" aria-hidden="true">
+                <g class="col" style="--d: 0s"><path d="M20 118l22-12 22 12v70l-22 12-22-12z"/><path d="M42 130v70M20 118l22 12 22-12"/></g>
+                <g class="col" style="--d: .4s"><path d="M70 78l22-12 22 12v110l-22 12-22-12z"/><path d="M92 90v110M70 78l22 12 22-12"/></g>
+                <g class="col col-lit" style="--d: .8s"><path d="M120 44l22-12 22 12v144l-22 12-22-12z"/><path d="M142 56v144M120 44l22 12 22-12"/></g>
+                <g class="col" style="--d: 1.2s"><path d="M170 94l22-12 22 12v94l-22 12-22-12z"/><path d="M192 106v94M170 94l22 12 22-12"/></g>
+                <g class="col" style="--d: 1.6s"><path d="M220 132l22-12 22 12v56l-22 12-22-12z"/><path d="M242 144v56M220 132l22 12 22-12"/></g>
+              </svg>
+            </article>
+            <article class="card card-auth">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-key"/></svg>Auth</h3>
+              <p><b>Sign-ups and logins</b> that end in a token your policies can read.</p>
+              <ul class="auth-list" aria-hidden="true">
+                <li><span>Email and password</span><i></i></li>
+                <li><span>Magic links</span><i></i></li>
+                <li><span>OAuth providers</span><i></i></li>
+                <li><span>SAML single sign-on</span><em>Team</em></li>
+              </ul>
+            </article>
+            <article class="card card-storage">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-layers"/></svg>Storage</h3>
+              <p><b>Files next to your data</b>, guarded by the same policies.</p>
+              <div class="tiles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            </article>
+            <article class="card">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-braces"/></svg>Functions</h3>
+              <p><b>TypeScript close to your users</b>, deployed in one command.</p>
+              <div class="fn-log" aria-hidden="true"><span>send-receipt</span><span>200</span><span>38 ms</span></div>
+            </article>
+            <article class="card">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-waves"/></svg>Realtime</h3>
+              <p><b>Changes reach every client</b> the moment they commit.</p>
+              <div class="pulse-art" aria-hidden="true"><i></i><i></i><i></i></div>
+            </article>
+            <article class="card">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-nodes"/></svg>Vectors</h3>
+              <p><b>Embeddings in a column</b>, searched with plain SQL.</p>
+              <code class="card-code" aria-hidden="true">order by embedding &lt;=&gt; $1</code>
+            </article>
+            <article class="card">
+              <h3><svg class="ic" aria-hidden="true"><use href="#i-code"/></svg>Generated APIs</h3>
+              <p><b>Every table becomes an endpoint</b> the moment you create it.</p>
+              <code class="card-code" aria-hidden="true">GET /v1/invoices?status=sent</code>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="pricing" id="pricing" aria-labelledby="pricing-title">
+        <div class="wrap">
+          <h2 class="section-title section-title-center" id="pricing-title">Start free. <span>Pay when it's working.</span></h2>
+          <p class="section-sub">Every plan is the same Postgres. Paid plans add headroom, backups and people to call.</p>
+          <div class="plans">
+            <article class="plan">
+              <h3 class="plan-name">Free</h3>
+              <p class="plan-for">For weekend projects and prototypes.</p>
+              <a class="btn btn-primary plan-btn" href="#playground">Start for free</a>
+              <p class="plan-price"><span class="plan-amount">$0</span><span class="plan-unit">/ month</span></p>
+              <p class="plan-lead">Includes:</p>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>2 active projects</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>750 MB database</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>1 GB file storage</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>5 GB egress</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>25,000 monthly active users</li>
+              </ul>
+              <p class="plan-note">Free projects pause after 10 days without activity.</p>
+            </article>
+            <article class="plan plan-pro">
+              <h3 class="plan-name">Pro <span class="plan-badge">Most popular</span></h3>
+              <p class="plan-for">For production apps with real users.</p>
+              <a class="btn btn-primary plan-btn" href="#playground">Get started</a>
+              <p class="plan-price"><span class="plan-from">From</span><span class="plan-amount">$29</span><span class="plan-unit">/ month per project</span></p>
+              <p class="plan-lead">Everything in Free, plus:</p>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>10 GB database</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>100,000 monthly active users</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Daily backups, kept 7 days</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg><span>Point-in-time recovery<small>Add-on, $100 / month</small></span></li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>No pausing, ever</li>
+              </ul>
+            </article>
+            <article class="plan">
+              <h3 class="plan-name">Team</h3>
+              <p class="plan-for">For teams with compliance on the roadmap.</p>
+              <a class="btn btn-primary plan-btn" href="#playground">Get started</a>
+              <p class="plan-price"><span class="plan-from">From</span><span class="plan-amount">$499</span><span class="plan-unit">/ month</span></p>
+              <p class="plan-lead">Everything in Pro, plus:</p>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Single sign-on for the dashboard</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>SOC 2 Type II report</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Daily backups, kept 14 days</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Priority support</li>
+              </ul>
+            </article>
+            <article class="plan">
+              <h3 class="plan-name">Enterprise</h3>
+              <p class="plan-for">For regulated or very large workloads.</p>
+              <a class="btn btn-secondary plan-btn" href="#playground">Talk to us</a>
+              <p class="plan-price"><span class="plan-amount plan-custom">Custom</span></p>
+              <ul class="checks">
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>HIPAA, with a signed agreement</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>99.95% uptime SLA</li>
+                <li><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>A named support engineer</li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="oss" id="open-source" aria-labelledby="oss-title">
+        <div class="wrap oss-grid">
+          <div>
+            <h2 class="section-title" id="oss-title">Open source, <span>from the bedrock up</span></h2>
+            <p class="oss-copy">Basalt is Apache 2.0 on GitHub. Run the whole stack on your own machines with one command, or let us run it for you. Either way, it's your Postgres.</p>
+            <dl class="oss-stats">
+              <div><dt>Stars</dt><dd>41.2k</dd></div>
+              <div><dt>Contributors</dt><dd>612</dd></div>
+              <div><dt>License</dt><dd>Apache 2.0</dd></div>
+            </dl>
+          </div>
+          <pre class="oss-term" aria-label="Terminal"><span class="t-dim">$</span> basalt dev
+<span class="t-dim">  Starting the local stack…</span>
+<span class="t-ok">  ●</span> Postgres    postgres://localhost:7432
+<span class="t-ok">  ●</span> API         http://localhost:7433
+<span class="t-ok">  ●</span> Dashboard   http://localhost:7434
+<span class="t-dim">  Ready in 3.8 s. Press Ctrl+C to stop.</span></pre>
+        </div>
+      </section>
+
+      <section class="cta">
+        <div class="wrap">
+          <h2 class="cta-title">Break it here. <span>Ship it on Friday.</span></h2>
+          <div class="hero-cta hero-cta-center">
+            <a class="btn btn-primary btn-lg" href="#pricing">Start building</a>
+            <a class="btn btn-secondary btn-lg" href="#playground" data-focus-editor>Back to the playground</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-grid">
+        <div class="footer-brand">
+          <a class="logo" href="#top" aria-label="Basalt home"><svg class="logo-mark" aria-hidden="true"><use href="#i-mark"/></svg><span>basalt</span></a>
+          <p>The Postgres platform with the parts you'd build anyway.</p>
+        </div>
+        <nav class="footer-col" aria-label="Product">
+          <h2>Product</h2>
+          <a href="#product">Database</a>
+          <a href="#product">Auth</a>
+          <a href="#product">Storage</a>
+          <a href="#product">Realtime</a>
+        </nav>
+        <nav class="footer-col" aria-label="Developers">
+          <h2>Developers</h2>
+          <a href="#playground">Playground</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#open-source">Open source</a>
+          <a href="#how-it-works">How this demo works</a>
+        </nav>
+      </div>
+      <div class="wrap footer-note">
+        <p>Basalt is a fictional company. This page demonstrates a custom chat UI on Stand Chat's Visitor API: the playground is real Postgres in your browser, and the conversations are real.</p>
+      </div>
+    </footer>
+  </div>
+
+  <div class="sr-only" aria-live="polite" data-announce></div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>Put the conversation where developers get stuck: inside the sandbox</h2>
+      <p class="sx-lead">A developer product's moment of truth is the first query that fails. Here the playground is real Postgres running in the browser, and the question box sits beside the error. One click sends the question to the team with everything they'd otherwise have to ask for: the query, who it ran as, and what Postgres said. SQL in the answer runs back in the same sandbox, and only when the visitor clicks.</p>
+      <p>There's no <code>stand.js</code> on this page. The conversation runs on Stand's Visitor API (beta) through <code>stand-visitor.js</code>, and the database is <a href="https://pglite.dev/">PGlite</a>, Postgres compiled to WebAssembly, loaded from a CDN when the playground comes into view.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>The playground opens on a failing insert: Cy, a member of Globex, can't log an invoice. Click <strong>Ask why this failed</strong>. The question goes out with the query, the role and the error attached.</li>
+        <li>Follow up, for example "How would I let any member create invoices?" When the answer has SQL, click <strong>Run in playground</strong>. Schema changes run as <code>service_role</code>; everything else runs as the user in "Run as".</li>
+        <li>Run Cy's insert again. Click a policy or table name in an answer to see it in the dashboard.</li>
+        <li>Change "Run as" and watch the row counts under <strong>Tables</strong> move, or switch a policy off under <strong>Policies</strong>. Then reload: the conversation, your query and the database's changes all come back.</li>
+      </ol>
+
+      <div class="sx-note">This example uses <code>site: 'demo'</code>, Stand Chat's shared demo site, which works on any domain. Its demo Stand-in answers as Basalt from the facts in the page's prompt. With your own Site ID, your own Stand-ins answer with your knowledge and skills, and your team can take over.</div>
+
+      <h3>1. Real Postgres, with roles and claims</h3>
+      <p>PGlite runs in a worker, so a 5 MB download and a slow query never freeze the page. The seed creates a tiny multi-tenant app (organizations, members, projects, invoices, profiles), three roles, and row-level security policies that read the signed-in user from JWT claims, the way a hosted API would:</p>
+      <pre class="sx-code" data-file="sandbox.js (seed SQL)"><code class="language-sql">create function auth.uid() returns uuid language sql stable as $$
+  select nullif(auth.jwt() -&gt;&gt; 'sub', '')::uuid
+$$;
+
+alter table invoices enable row level security;
+create policy "admins read invoices" on invoices for select
+  to authenticated using (is_admin(org_id));
+create policy "admins create invoices" on invoices for insert
+  to authenticated with check (is_admin(org_id));</code></pre>
+      <p>"Run as" turns each run into an API request in miniature: set the role, set the claims, run, then reset so the next run starts clean.</p>
+      <pre class="sx-code" data-file="db-worker.js" data-wrap><code class="language-js">await db.exec(`set role ${role}; select set_config('request.jwt.claims', ${literal(JSON.stringify(claims))}, false);`);
+const results = await db.exec(sql, { rowMode: 'array' });
+// Then: roll back anything left open, and reset the role and the claims.</code></pre>
+
+      <h3>2. The context travels with the question</h3>
+      <p>Every question starts with a short prefix: who ran the query and what Postgres answered, with the SQL on the next lines. The team reads exactly this in Stand, and after a reload the page reads it back from the transcript to draw the chips, so nothing else needs storing:</p>
+      <pre class="sx-code" data-file="A question from the error panel" data-wrap><code>[as Cy · ERROR 42501: new row violates row-level security policy for table "invoices"] Why did this fail?
+```sql
+insert into invoices (org_id, project_id, number, amount_cents, due_on)
+values (2, 4, 'GX-2003', 480000, '2026-10-31');
+```</code></pre>
+      <p>Here is what your next question would carry, updated as you use the playground above:</p>
+      <pre class="ctx-live" data-file="Your next question, as the team will read it" aria-live="off"><code data-live-context>[as Cy · ERROR 42501: new row violates row-level security policy for table "invoices"] Your question goes here.</code></pre>
+      <p>Sending is one call. The first message also carries the private prompt for whoever answers:</p>
+      <pre class="sx-code" data-file="assistant.js"><code class="language-js">const body = composeMessage(question, playground.contextFor(result));
+await client.send(body, { prompt: PROMPT, analyticsId: 'playground-error' });</code></pre>
+
+      <h3>3. The prompt</h3>
+      <p>Private context for the AI Stand-in and your team, 1,980 of Stand's 2,000 characters: the facts to answer from, the schema and policies, the message format, and the names a reply may point at. It's in the page's source, so it holds nothing secret.</p>
+      <pre class="sx-code" data-file="context.js" data-wrap><code>You are answering visitors on the website of Basalt, a fictional hosted Postgres platform (a demo on examples.stand.chat; Basalt is invented). Speak as Basalt's team. Reply in 1-3 sentences unless asked more. If a fact isn't below, say you're not sure and offer to bring in someone from the team. Don't invent prices, limits or features.
+Basalt: Postgres 18 with auth, storage, realtime, functions, vectors; open source (Apache 2.0). Free $0: 2 projects, 750 MB DB, 1 GB storage, 5 GB egress, 25k MAU, pauses after 10 idle days. Pro from $29/mo per project: 10 GB DB, 100k MAU, 7-day backups, point-in-time recovery +$100/mo. Team from $499/mo: SSO, SOC 2 report, 14-day backups, priority support. Enterprise: custom, HIPAA, 99.95% SLA.
+The playground runs real Postgres in the browser. Tables: organizations(id, name), profiles(id uuid, full_name), members(org_id, user_id, role admin|member), projects(id, org_id, name, status), invoices(id, org_id, project_id, number, amount_cents, status draft|sent|paid, due_on). auth.uid() is the JWT sub; is_member(org_id), is_admin(org_id).
+Users: Ada Moreau, member of Acme (org 1); Bo Lindqvist, admin of Acme; Cy Okafor, member of Globex (org 2); Dee Tanaka, admin of Globex. Roles: anon, authenticated, service_role (bypasses RLS, may change schema).
+Policies for authenticated. SELECT: "members read their orgs", "members read teammates", "teammates read profiles", "members read org projects", "admins read invoices". INSERT: "members create projects", "admins create invoices". UPDATE: "users update own profile". anon has none. 0 rows often means RLS hid them. Invoice DELETEs fail before RLS: no grant.
+Messages start with [as &lt;user&gt; · &lt;result&gt;], then the question and maybe SQL. When SQL helps, write complete, valid Postgres in a ```sql block (to change a policy, drop and recreate it): the visitor can run it with one click. Cite the deciding policy or table by exact name, as [[policy: name]] or [[table: name]], at most two.</code></pre>
+
+      <h3>4. Answers you can run, and point at</h3>
+      <p>Replies are text. The page escapes them and allows a small safe subset: paragraphs, lists, bold, inline code, links, fenced code. A <code>```sql</code> block becomes a block with <strong>Run in playground</strong> and <strong>Copy</strong>. Nothing in a reply ever runs by itself:</p>
+      <ul>
+        <li>A click runs the SQL in this tab's database only, as the user in "Run as". Statements that change the schema run as <code>service_role</code>, and the block says so before you click.</li>
+        <li>The result appears under the block: rows, <code>INSERT 1</code>, or an error with its own <strong>Ask why</strong>.</li>
+        <li>Postgres can't be interrupted inside WebAssembly, so <strong>Stop</strong> restarts the worker and replays your earlier changes. <strong>Reset</strong> goes back to the seed.</li>
+      </ul>
+      <p>Names in double brackets, like <code>[[policy: admins read invoices]]</code>, become chips that open the policy or table and highlight it. The prompt lists the exact names; the page compares them without case or stray punctuation, and anything it doesn't know stays plain text.</p>
+      <pre class="sx-code" data-file="assistant.js, condensed" data-wrap><code class="language-js">if (node.type === 'ref') {
+  const ref = playground.resolve(node.raw); // tables and policies that exist right now
+  return ref ? refChip(ref.kind, ref.name) : node.raw.replace(/^\s*(table|policy)\s*:\s*/i, '');
+}</code></pre>
+
+      <h3>5. What the team learns</h3>
+      <p>Every question arrives in Stand with the role, the error code and the SQL. After a week, the team knows which errors and which policies confuse people, in their own words: the insert that violates a policy, the empty result nobody expected, the grant that isn't a policy. That's the docs page to write next, the error message to improve, the default to change. The analytics ID on the first message tells them which button started the conversation: the error panel, an empty result, a policy card or the composer.</p>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>stand-visitor.js</code></strong> is the part to copy: discovery, one-time creation, idempotent sends, WebSocket receive, recovery, handoffs and follow-ups, with no DOM.</li>
+        <li><strong><code>context.js</code></strong> is the conversation model: the prompt, and the message prefix written and read back. <strong><code>format.js</code></strong> turns replies into a safe tree.</li>
+        <li><strong><code>assistant.js</code></strong> draws the conversation, the attached context, runnable SQL and reference chips, and the phone's bottom sheet.</li>
+        <li><strong><code>playground.js</code></strong> is the dashboard: views, "Run as", results, tables, policies, users, and the change journal. <strong><code>sql-editor.js</code></strong> and <strong><code>sql.js</code></strong> are the editor and a small SQL tokenizer.</li>
+        <li><strong><code>db.js</code></strong> and <strong><code>db-worker.js</code></strong> run PGlite in a worker, with download progress and Stop. <strong><code>sandbox.js</code></strong> is the sample app: seed, users, policies and snippets.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Honest about who answers.</strong> The panel shows the responder's name as Stand gives it, with <em>AI Stand-in</em> or <em>Team member</em>. When someone from the team takes over, a note says so and the label changes.</li>
+        <li><strong>One click, one conversation.</strong> The first question starts the chat; loading the page, opening the panel or attaching a query never does. Later questions join the same conversation.</li>
+        <li><strong>Closing isn't ending.</strong> On phones the sheet closes and the conversation carries on. Only <em>End conversation</em> ends it in Stand.</li>
+        <li><strong>A reload keeps everything.</strong> The transcript comes from Stand; the query, role and view from <code>sessionStorage</code>. Postgres lives in memory, so it starts fresh and replays a journal of your changes. Without storage, it all still works and forgets on reload.</li>
+        <li><strong>Nobody around, nothing lost.</strong> If nobody can answer, the ask buttons say so, and the question waits in the box with its query attached.</li>
+        <li><strong>Heavy parts load late.</strong> Postgres is about 5 MB compressed. It downloads when the playground comes into view or someone touches it, with real progress, while the page shows the example's recorded result.</li>
+        <li><strong>Keyboard and screen readers.</strong> The views are tabs, "Run as" is a listbox, <kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>Enter</kbd> runs, and <kbd>Esc</kbd> then <kbd>Tab</kbd> leaves the editor. Replies are announced whole. Reduced motion turns off the pulses and slides.</li>
+        <li><strong>It's a beta.</strong> The Visitor API can grow new fields and events. The client ignores what it doesn't know.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p><strong>Claude Opus 5.5 in Claude Code</strong> built this page. A lead session reworked a list of ideas, wrote this example's brief and reviewed the result; a separate Claude agent built the example in its own git worktree. It studied the reference product's website and dashboard for tone, checked that roles, JWT claims and row-level security really work in PGlite before writing any UI, tuned the prompt in real conversations with Stand's demo Stand-in until its SQL ran as written, and checked its own work in headless Chrome at desktop and phone sizes.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Given Stand Chat's target audience, find ten products they look up to and would recognize, products that might have the same problems as their own. It could be the market's dominant player. For each, work out how it could embed Stand on its website in an innovative way that pulls visitors in to interact. Not just a chat button, but something novel: something our audience would see and think, "I want that on MY website."
+
+Build each one in a separate session, as its own pull request. Don't use the brand names, but make each website resemble its product in a subtle way.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Do the same again, but raise the quality bar. Feel free to change the ideas.</blockquote>
+
+          <p class="made-label">This example's brief</p>
+          <blockquote class="made-prompt">A SQL playground that answers back. An invented hosted-Postgres platform, in the dark, green look of a well-known open-source backend built on Postgres, runs real Postgres in the browser on its homepage: PGlite, a tiny multi-tenant schema, row-level security policies and a role switcher. Visitors run queries as different users and watch rows appear and vanish. When a query errors or surprises them, one click asks the team with the query, role, error and policies attached, in an assistant panel on the right. SQL in the answer runs in the local sandbox with one click, never automatically, and [[references]] highlight tables and policies. On phones the playground stacks and the assistant becomes a bottom sheet.</blockquote>
+
+          <p class="made-label">If you try this yourself</p>
+          <ul>
+            <li>Link the <a href="https://stand.chat/guide/custom-chat-ui">custom chat UI guide</a> and start on the <code>demo</code> Site ID, so the agent holds real conversations while it builds.</li>
+            <li>Put the schema, the users and the policy names in the prompt, and say the visitor can run the SQL. The Stand-in then writes statements against the real tables. One more line, "to change a policy, drop and recreate it", ended its invalid <code>ALTER POLICY</code> attempts.</li>
+            <li>Group the policies by command in the prompt, and show the reference format with a placeholder, like <code>[[policy: name]]</code>. With a real policy as the example, the Stand-in kept citing that one, even for inserts. On the page side, accept names without case or stray punctuation, even in backticks, which the demo Stand-in likes to add.</li>
+            <li>Test the rare states with a fake Stand: intercept the API in headless Chrome and swap in a fake WebSocket, and handoffs, email offers and failed sends render without a single real chat.</li>
+          </ul>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/ask-the-playground my-playground</code></pre>
+      <p>Then replace <code>site: 'demo'</code> in <code>main.js</code> with your Site ID from <strong>Sites</strong> in Stand, and your own schema, policies and facts in <code>sandbox.js</code> and <code>context.js</code>.</p>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Custom chat UI guide ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/ask-the-playground/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
