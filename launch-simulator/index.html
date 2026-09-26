@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Launchmere — Launch simulator</title>
+  <meta name="description" content="Turn up launch traffic, follow the request path, and explore an illustrative infrastructure bill. Ask Stand Chat about the exact scenario.">
+  <meta name="author" content="Stand Chat Examples">
+  <meta name="keywords" content="custom chat UI, simulator, contextual chat, infrastructure">
+  <meta property="og:title" content="Launchmere — What happens if your launch works?">
+  <meta property="og:description" content="Traffic becomes work. Work becomes a bill. Explore the tradeoffs, then start a real conversation with your scenario attached.">
+  <meta property="og:image" content="https://examples.stand.chat/launch-simulator/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23101216'/%3E%3Cpath d='M9 8v16h15v-5H14V8z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+  <script defer src="https://cdn.stand.chat/widget/stand.js" data-stand-id="demo"></script>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+  <a class="skip" href="#simulator">Skip to simulator</a>
+  <header class="nav wrap">
+    <a class="brand" href="#" aria-label="Launchmere home"><span class="brand-mark" aria-hidden="true"></span>launchmere</a>
+    <nav aria-label="Main navigation"><a href="#principles">Infrastructure</a><a href="#assumptions">The model</a><a class="nav-cta" href="#simulator">Plan your launch <span aria-hidden="true">↗</span></a></nav>
+  </header>
+  <main>
+    <section class="hero wrap">
+      <div class="hero-copy"><p class="eyebrow"><span class="blue-dot"></span> BUILT FOR THE NEXT REQUEST</p>
+      <h1>What happens if<br>your launch <em>works?</em></h1>
+      <p class="intro">Make room for your big moment. Trace the traffic,<br class="desktop-break"> understand the work, and put a number on “what if.”</p></div>
+      <div class="hero-note"><span class="mono">FIELD NOTE / 001</span><p>The best kind of problem<br>deserves a better plan.</p><a href="#simulator">Run a launch scenario <span aria-hidden="true">↓</span></a></div>
+    </section>
+
+    <section id="simulator" data-og-focus class="simulator wrap" aria-labelledby="sim-title">
+      <div class="sim-top"><div><span class="eyebrow">LAUNCHMERE / INTERACTIVE LAB</span><h2 id="sim-title">Your next hour, under load.</h2></div><div class="sim-tools"><span class="local-label"><span></span> LOCAL SIMULATION</span><button id="reset" class="text-button">Reset <span aria-hidden="true">↺</span></button></div></div>
+      <div class="sim-grid">
+        <form id="controls" class="controls" aria-label="Scenario controls">
+          <div class="field"><label for="profile"><span class="step">01</span> Choose your app</label><select id="profile" name="profile"><option value="storefront">Storefront</option><option value="workspace">Team workspace</option><option value="studio">AI studio</option></select><p id="profile-note" class="field-note"></p></div>
+          <div class="field traffic-field"><label for="traffic"><span class="step">02</span> Turn up the traffic</label><div class="traffic-number"><output for="traffic" id="traffic-output">1,200</output><span>req / second</span></div><input id="traffic" name="traffic" type="range" min="10" max="5000" value="1200" step="10" aria-describedby="traffic-help"><div class="range-labels"><span>10</span><span>5,000</span></div><p id="traffic-help" class="field-note">Base requests, sustained for one hour.</p></div>
+          <div class="field"><label for="scenario"><span class="step">03</span> Add a plot twist</label><select id="scenario" name="scenario"><option value="steady">Launch day</option><option value="bots">Bot spike · +200% traffic</option><option value="ai">AI-heavy · every origin request</option></select></div>
+          <div class="switch-row"><label for="cache"><strong>Edge caching</strong><span>Reuse eligible responses</span></label><input id="cache" type="checkbox" checked role="switch"></div>
+          <div class="switch-row"><label for="limit"><strong>Spend guardrail</strong><span>Defer work above a budget</span></label><input id="limit" type="checkbox" role="switch"></div>
+          <div class="budget-field" id="budget-field" hidden><label for="budget">Budget / hour ($)</label><input id="budget" type="number" min="1" max="10000" step="1" value="25"><p class="field-note">Fixed + ingress costs cannot be deferred.</p></div>
+        </form>
+        <div class="visual-panel">
+          <div class="diagram-heading"><span class="mono">REQUEST PATH / 60 MIN</span><button id="motion" class="text-button" aria-pressed="false">Pause motion <span aria-hidden="true">Ⅱ</span></button></div>
+          <div class="request-flow" aria-label="Request path from incoming traffic through the edge to origin resources">
+            <div class="path-stage incoming-stage"><span class="node-symbol" aria-hidden="true">↗</span><strong id="incoming">1,200</strong><span>incoming req/s</span></div>
+            <div class="path-line" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="path-stage edge-stage"><span class="node-symbol edge-symbol" aria-hidden="true">◇</span><strong>Edge</strong><span id="cache-rate">60% cache hits</span></div>
+            <div class="path-line" aria-hidden="true"><i></i><i></i><i></i></div>
+            <button class="path-stage origin-stage" data-focus="Origin compute"><span class="node-symbol" aria-hidden="true">▤</span><strong id="origin">480</strong><span>origin req/s <span aria-hidden="true">↗</span></span></button>
+          </div>
+          <div class="path-breakdown"><span><i class="key cache-key"></i><strong id="cached">720</strong> cached /s</span><span><i class="key origin-key"></i><strong id="admitted">1,200</strong> admitted /s</span><span><i class="key deferred-key"></i><strong id="deferred">0</strong> deferred /s</span></div>
+          <div class="resources"><button class="resource" data-focus="CPU capacity"><span class="resource-title">CPU required <span aria-hidden="true">↗</span></span><span class="resource-value"><strong id="cpu-value">48</strong><span>%</span><small>of 8 cores</small></span><span class="meter" id="cpu-meter" role="meter" aria-label="CPU requirement relative to 8 cores" aria-valuemin="0" aria-valuemax="100"><i></i></span></button><button class="resource" data-focus="Database capacity"><span class="resource-title">Database work <span aria-hidden="true">↗</span></span><span class="resource-value"><strong id="db-value">8</strong><span>%</span><small>of 12k ops/s</small></span><span class="meter" id="db-meter" role="meter" aria-label="Database requirement relative to 12000 operations per second" aria-valuemin="0" aria-valuemax="100"><i></i></span></button></div>
+          <div class="insight"><span class="insight-icon" aria-hidden="true">↳</span><p id="insight"></p><button class="text-button" id="bottleneck" data-focus="Scenario tradeoffs">Discuss <span aria-hidden="true">↗</span></button></div>
+          <p class="diagram-footnote">Animated paths show direction, not measured speed. Capacity is an illustrative reference.</p>
+        </div>
+        <aside class="bill" aria-labelledby="bill-title"><div class="bill-heading"><span class="mono">ILLUSTRATIVE BILL</span><span aria-hidden="true">↗</span></div><h3 id="bill-title">One launch hour</h3><div class="bill-total"><strong id="total">$23.84</strong><span>/ hour</span></div><p class="bill-subtitle">Invented rates. Real tradeoffs.</p><div class="bill-lines" id="bill-lines"></div><div class="bill-bottom"><span>Total for 60 minutes</span><strong id="bill-sum"></strong></div><p id="limit-note" class="limit-note" hidden></p><button class="primary-button" data-focus="Full launch bill">Talk through this bill <span aria-hidden="true">↗</span></button><p class="bill-help">Choose any cost line to ask about it.<br>Your scenario comes with the question.</p></aside>
+      </div>
+      <div class="sim-bottom"><span class="mono">TRY A SCENARIO</span><div class="presets"><button data-preset="launch">01 / The big launch <span>↗</span></button><button data-preset="spike">02 / The bot spike <span>↗</span></button><button data-preset="ai">03 / The AI budget <span>↗</span></button></div><a href="#assumptions">See every assumption ↓</a></div>
+      <p id="simulation-status" class="sr-only" role="status" aria-live="polite"></p>
+      <noscript><p class="no-js">Enable JavaScript to calculate scenarios and use the live chat. This page models fictional infrastructure.</p></noscript>
+    </section>
+
+    <section class="conversation wrap" id="conversation" aria-labelledby="conversation-title" hidden>
+      <div class="context-panel"><p class="eyebrow">FROM “WHAT IF” TO “WHAT NEXT”</p><h2 id="conversation-title">Let’s look at<br><span id="selected-item">your launch.</span></h2><p id="context-summary"></p><p class="context-note" id="context-note">A snapshot is attached to your next question. Changing the simulator will not change this snapshot.</p><div class="context-actions"><button id="update-context" class="text-button">Use current scenario ↻</button><button id="close-chat" class="text-button">Hide conversation ×</button></div><details><summary>Review the attached scenario</summary><pre id="context-preview"></pre></details></div>
+      <div class="chat-panel"><p class="live-label"><span class="blue-dot"></span> LIVE CONVERSATION · POWERED BY <a href="https://stand.chat/" target="_blank" rel="noopener noreferrer">STAND CHAT</a></p><p class="chat-disclosure">Launchmere is a fictional demo. Send your question to talk with Stand Chat’s demo AI. Your question and attached scenario are shared only when you send. Replies do not control the simulator.</p><div id="chat-mount"></div><p id="chat-load-error" role="alert" hidden>Chat could not load. Reload the page to try again; the local simulator still works.</p></div>
+    </section>
+
+    <section id="principles" class="principles wrap"><div class="section-heading"><p class="eyebrow">INFRASTRUCTURE, WITH THE LIGHTS ON</p><h2>More visibility.<br>Fewer launch-day surprises.</h2><p>Launchmere is an imagined home for ambitious apps.<br>Our point of view: understand the work before you scale it.</p></div><div class="principle-grid"><article><span class="mono">01 / TRACE IT</span><h3>A request is just the start.</h3><p>A cached product page and an AI generation arrive the same way. Their appetite for compute is very different.</p></article><article><span class="mono">02 / SHAPE IT</span><h3>Every guardrail has a tradeoff.</h3><p>Caching avoids repeated work. A spending limit defers requests. Neither makes incoming traffic disappear.</p></article><article><span class="mono">03 / TALK IT THROUGH</span><h3>Bring the useful details.</h3><p>Ask about a line on the bill or a resource under pressure. The conversation starts with the scenario already in view.</p></article></div></section>
+
+    <section id="assumptions" class="assumptions wrap"><div><p class="eyebrow">THE FINE PRINT, IN PLAIN SIGHT</p><h2>A model you can<br>take apart.</h2><p>This is a teaching tool, not a capacity test or a hosting offer. No infrastructure is provisioned and no bill is charged.</p><a href="./model.js">Read the calculation source ↗</a></div><div class="assumption-details"><details open><summary>What does one hour mean?</summary><p>The chosen base request rate lasts exactly 3,600 seconds. A bot spike adds twice that rate, with the same request mix. There is no burst curve or bot detection. Every admitted response transfers its profile’s assumed size, including cache hits.</p></details><details><summary>What work does each app do?</summary><div class="table-scroll"><table><caption>Per-origin work and per-admitted response size</caption><thead><tr><th>Profile</th><th>CPU</th><th>DB ops</th><th>Size</th><th>Cacheable</th><th>AI share</th></tr></thead><tbody><tr><th>Storefront</th><td>8 ms</td><td>2</td><td>60 KB</td><td>75%</td><td>0%</td></tr><tr><th>Workspace</th><td>18 ms</td><td>4</td><td>24 KB</td><td>35%</td><td>0%</td></tr><tr><th>AI studio</th><td>35 ms</td><td>2</td><td>12 KB</td><td>10%</td><td>25%</td></tr></tbody></table></div><p>Caching hits 80% of cacheable requests; the rest reach origin. AI-heavy makes every origin request an AI call at three times the normal invented rate. It does not change the CPU or database assumptions.</p></details><details><summary>Where does the bill come from?</summary><p>All rates are fictional USD: $2/hour base, $0.08 per million incoming requests, $0.024 per CPU core-minute, $0.12 per million database operations, $0.06 per decimal GB transferred, and $0.002 per AI call ($0.006 in AI-heavy mode). One GB is 1,000,000 KB.</p><p>CPU core-minutes = origin requests/second × CPU milliseconds/1,000 × 60. Other usage totals multiply the per-second rate by 3,600. Only display values are rounded; rounded line items can differ from the total by a cent.</p></details><details><summary>What do capacity and spending limits mean?</summary><p>Resource percentages divide required work by 8 CPU cores or 12,000 database operations/second. Values above 100% flag a mismatch, not a prediction of latency or failure. No automatic scaling, retries, queues, or resource-based dropping are modeled.</p><p>A guardrail proportionally admits requests before caching and origin work. The admitted fraction is (budget − base − ingress) ÷ uncapped variable cost, clamped to 0–100%. Deferred requests do no further work. Base and ingress always accrue, so an unusually low budget can still be exceeded. This is a local model, not a real enforcement guarantee.</p></details></div></section>
+
+    <section id="how-it-works" class="how-it-works wrap"><p class="eyebrow">BUILD SOMETHING LIKE THIS</p><h2>How it works</h2><p class="section-lead">The simulator runs in your browser. Stand Chat carries the conversation, with the selected scenario attached.</p><div class="how-grid"><article><h3>1. Try the full loop</h3><p>Choose an app, move the traffic slider, then try the bot or AI preset. Toggle caching or a spending limit. Click a cost or resource to review its frozen scenario. Write a question and press Send to start a real Stand conversation.</p><p>Native controls work with touch and keyboard. Use arrow keys on the traffic slider. Pause the diagram or use your system’s reduced-motion setting.</p></article><article><h3>2. Copy the folder</h3><pre class="sx-code"><code>npx degit standchat/examples/launch-simulator my-launch-simulator</code></pre><p>Serve it over HTTP with any static server. No installation or build is needed. Keep <code>index.html</code>, <code>style.css</code>, <code>app.js</code>, <code>model.js</code>, <code>stand-inline.js</code>, and <code>stand-visitor.js</code> together. The repository’s <code>/_shared/</code> files only add example chrome; remove those two head references in your own copy.</p></article></div><div class="how-grid"><article><h3>3. Connect your site</h3><pre class="sx-code"><code class="language-js">// app.js — use your registered Site ID
+const SITE_ID = 'demo';
+const chat = document.createElement('stand-inline');
+chat.setAttribute('site', SITE_ID);
+chat.setAttribute('scope', 'launchmere-v1');
+chat.setAttribute('grow', 'unfold');</code></pre><p>Replace <code>demo</code> in <code>app.js</code> and the Stand script’s <code>data-stand-id</code> with your Site ID from Sites in Stand. Register your actual domain and configure your responders. The shared demo uses Stand Chat’s demo AI and does not write to your account.</p></article><article><h3>4. Send context on purpose</h3><pre class="sx-code"><code class="language-js">const snapshot = calculate(state);
+const context = scenarioContext(snapshot, selectedItem);
+chat.setAttribute('prompt', context); // first-session context
+chat.quote = context; // attached to the next visitor message
+// The visitor reviews the snapshot, writes, and chooses Send.</code></pre><p>The copied inline element raises its quote limit to 2,000 characters for this complete snapshot. The prompt uses Stand’s supported session context; quotes travel as ordinary message text, including when the visitor selects a new scenario mid-conversation. Follow-up messages stay unmodified.</p></article></div><p class="how-note">The local client preserves notices, attribution, AI/human identity, handoff cards, email follow-up offers, safe message rendering, reconnects, and explicit retry decisions. Session recovery uses this tab’s session storage when available. No responder text executes as code or edits the simulator. See the <a href="https://stand.chat/guide/custom-chat-ui" target="_blank" rel="noopener noreferrer">official custom chat UI contract (beta)</a>.</p></section>
+  </main>
+  <footer class="footer wrap"><a class="brand" href="#"><span class="brand-mark" aria-hidden="true"></span>launchmere</a><p>Fictional infrastructure. A real conversation.</p><a href="https://stand.chat/" target="_blank" rel="noopener noreferrer">Made with Stand Chat ↗</a></footer>
+</body>
+</html>
