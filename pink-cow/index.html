@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Pink cow</title>
+  <meta name="description" content="A low-poly pink cow with a question mark on its side walks across the page when a visitor lingers. Click it and a chat unfolds out of the cow. A reusable attention-grabber on Stand's Visitor API, with the timing under your control.">
+  <meta name="author" content="Joonas Lehtinen">
+  <link rel="author" href="https://jole.fi/">
+  <meta name="keywords" content="custom chat UI, Visitor API, three.js, attention, Purple Cow">
+  <meta property="og:title" content="Pink cow">
+  <meta property="og:description" content="A low-poly pink cow with a question mark on its side walks across the page when a visitor lingers. Click it and a chat unfolds out of the cow. A reusable attention-grabber on Stand's Visitor API, with the timing under your control.">
+  <meta property="og:image" content="https://examples.stand.chat/pink-cow/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- The cow: three.js from a CDN, loaded only when the cow is about to walk on. The import map must precede every module script. -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+      }
+    }
+  </script>
+
+  <!-- Site chrome: the top bar and "How it works" styles. The example works without them. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <!-- The Remark, the made-up newsletter the cow walks across, and the chat card's fonts (PT Sans). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=PT+Sans+Caption:wght@700&family=PT+Sans:wght@400;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="site.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <div class="remark">
+    <header class="nav">
+      <a class="wordmark" href="#top">The Remark</a>
+      <nav aria-label="The Remark">
+        <a href="#letter">Letters</a>
+        <a href="#book">Reading</a>
+        <a href="#try">Subscribe</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero" id="hero">
+        <p class="eyebrow">Letter 14 · On attention</p>
+        <h1>Nobody stops for a <em>brown cow.</em></h1>
+        <p class="lede">Drive past a field of cows and you don’t see cows. You see field. This letter is about the one thing a visitor can’t help noticing: the thing that doesn’t fit.</p>
+        <div class="hero-actions">
+          <a class="button" href="#letter">Read the letter</a>
+          <p class="hint" id="hero-hint" aria-live="polite">Keep reading. Something pink is on its way.</p>
+        </div>
+      </section>
+
+      <article class="letter" id="letter">
+        <section class="chapter">
+          <h2>Attention is a reflex, not a resource.</h2>
+          <p>We talk about attention as if it were money: spent, saved, stolen. It behaves more like a reflex. Eyes go to what changed. Brains file the familiar under <em>seen it</em> and move on, before you have decided anything at all.</p>
+          <p>That filing is a mercy. Without it a walk down the street would be unbearable. But it means the ordinary is not merely overlooked. It is deleted, quietly, a few hundred times a day.</p>
+          <blockquote class="pull"><p>A field of brown cows is a landscape. One pink cow is an event.</p></blockquote>
+          <p>Nothing about the pink cow is louder. It is simply the wrong colour for a cow, and the reflex that deletes cows has no file for it.</p>
+        </section>
+
+        <section class="chapter">
+          <h2>Safe is the risky choice.</h2>
+          <p>Most pages are built by asking what everyone else does and doing that, a little more neatly. The result is competent. It is also invisible, because the visitor’s reflex has already seen it a hundred times today, on a hundred other sites.</p>
+          <p>Being noticed has a cost: somebody will find the pink cow silly. Being ignored has a bigger one, and nobody writes to tell you about it.</p>
+          <p>The trick is not to shout. A cow does not shout. It refuses to be the colour a cow is supposed to be, and then it lets you come to it.</p>
+        </section>
+
+        <section class="chapter book" id="book">
+          <div class="cover" aria-hidden="true">
+            <span class="cover-title">Purple<br>Cow</span>
+            <span class="cover-author">Seth Godin</span>
+          </div>
+          <div class="book-copy">
+            <p class="eyebrow">Read this one</p>
+            <h2><cite>Purple Cow</cite></h2>
+            <p class="book-meta">Seth Godin · 2003 · about 150 pages</p>
+            <p>Godin’s argument fits on a postcard: in a world full of brown cows, the only marketing left that works is being remarkable, in the literal sense of worth making a remark about. The book is short, opinionated and more than twenty years old, and it still describes most websites.</p>
+            <p>Read it in an afternoon. Then open your own front page and ask which cow it is.</p>
+            <p class="book-links"><a href="https://en.wikipedia.org/wiki/Purple_Cow:_Transform_Your_Business_by_Being_Remarkable" target="_blank" rel="noopener noreferrer">About the book ↗</a> <span class="book-note">No affiliate link. We just keep lending our copy out.</span></p>
+          </div>
+        </section>
+
+        <section class="chapter try" id="try" data-og-focus>
+          <p class="eyebrow">Try it</p>
+          <h2>Meet the pink cow.</h2>
+          <p>The cow on this page is a real chat, built on <a href="https://stand.chat/guide/custom-chat-ui" target="_blank" rel="noopener">Stand’s Visitor API</a>. It walks on <span id="wait-words">15 seconds</span> after the top of this letter scrolls out of view, stops to see whether you’re curious, and walks off if you’re not. Click it, and a chat unfolds out of its side.</p>
+          <form class="controls" id="controls" aria-label="Cow settings">
+            <fieldset class="wait">
+              <legend>Wait before the cow comes</legend>
+              <div class="options">
+                <label><input type="radio" name="wait" value="5000"><span>5 s</span></label>
+                <label><input type="radio" name="wait" value="15000" checked><span>15 s</span></label>
+                <label><input type="radio" name="wait" value="30000"><span>30 s</span></label>
+                <label><input type="radio" name="wait" value="60000"><span>60 s</span></label>
+              </div>
+            </fieldset>
+            <button class="button" type="button" id="summon">Summon the cow now</button>
+          </form>
+          <p class="cow-status" id="cow-status" role="status" aria-live="polite">The cow is waiting for you to scroll past the top of the letter.</p>
+          <div class="note">
+            <p><strong>On a real site, the cow comes once.</strong> A cookie remembers the visit, and a visitor who has already started a chat never sees it at all. On this page it comes every time, as often as you like, so you can watch it again.</p>
+          </div>
+        </section>
+      </article>
+    </main>
+
+    <footer class="foot">
+      <span class="wordmark">The Remark</span>
+      <span>A fictional newsletter, made up for this Stand Chat example. The cow is real, in a sense.</span>
+    </footer>
+  </div>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>A cow that walks in, and a chat that walks out of it</h2>
+      <p class="sx-lead">Stand’s widget is optional. The pink cow is a reusable attention-grabber for any page: a procedural low-poly cow that walks along the bottom of the screen when a visitor lingers, and a complete Stand chat that unfolds out of its flank when clicked. One import, one call, and the timing is yours.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Scroll past the top of the letter and wait. The countdown in <a href="#try">Try it</a> shows when the cow is due; pick a shorter wait, or summon it.</li>
+        <li>The cow walks in from the right, stops, looks at you, and something knocks on its hatch. Hover, and it stops to watch your pointer.</li>
+        <li>Click the cow. The hatch swings open, a folded card flies out and unfolds into the chat, exactly where the live chat fades in.</li>
+        <li>Ask something, or press a suggestion. The cow chews while a reply is on its way. Replies stream in as the Stand-in writes them.</li>
+        <li>Close the chat with the ×, <kbd>Esc</kbd> or a click outside. The card folds back into the cow, the hatch shuts, and the cow bucks and gallops off.</li>
+      </ol>
+
+      <div class="sx-note">This page uses <code>siteId: 'demo'</code>, Stand Chat’s shared demo site, which works on any domain. Its demo Stand-in follows the cow’s greeting and prompt. With your own Site ID, your own Stand-ins and team answer.</div>
+
+      <h3>1. Put the cow on your page</h3>
+      <p>Copy the folder, add the three.js import map, and start the cow. Everything else, three.js included, loads only when the cow is about to walk on.</p>
+      <pre class="sx-code" data-file="index.html"><code class="language-html">&lt;script type="importmap"&gt;
+  { "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.min.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+  } }
+&lt;/script&gt;
+&lt;script type="module"&gt;
+  import { PinkCow } from './pink-cow/pink-cow.js';
+
+  const cow = new PinkCow({
+    siteId: 'demo',      // your Site ID from Sites in Stand
+    hero: '#hero',       // the wait starts when this scrolls out of view
+    delay: 30_000,       // 30 seconds of visible time
+    once: true,          // a cookie remembers the visit
+  });
+  cow.start();
+&lt;/script&gt;</code></pre>
+
+      <h3>2. When it comes, and when it doesn’t</h3>
+      <p>The wait counts visible time after the hero scrolls away; a hidden tab does not bring the cow closer. It never comes to a visitor who has already started a chat, and it waits while a modal or an open chat panel would cover it. Everything is an option, and the page can take over.</p>
+      <pre class="sx-code" data-file="site.js"><code class="language-js">const cow = new PinkCow({ siteId: 'demo', hero: '#hero', delay: 15_000, once: false });
+cow.start();
+
+cow.setDelay(5_000);       // takes effect on the running countdown
+cow.summon();              // now, wait or no wait
+cow.dueIn;                 // milliseconds until the cow is due, or null
+cow.addEventListener('shown', () =&gt; { /* it's on the page */ });
+cow.addEventListener('chat-started', ({ detail }) =&gt; console.log(detail.suggestion));
+cow.addEventListener('left', () =&gt; { /* gone; with once: false the wait starts over */ });</code></pre>
+
+      <h3>3. The chat is Stand’s Visitor API</h3>
+      <p>Nothing talks to Stand until the cow is clicked. Then the chat asks Stand who can answer, reports the activation, and creates the conversation with the visitor’s first message. The cow’s greeting goes along as the opening line, and <code>prompt</code> gives the responder its context: what the visitor just clicked, why the cow is pink, and what custom chat UIs are. Sends go over HTTP, replies arrive on a WebSocket, and the conversation ends when the cow leaves.</p>
+      <pre class="sx-code" data-file="stand-client.js"><code class="language-js">const session = await post('/v1/sessions', {
+  siteId, page: location.href,
+  standinProfileId: offer.standinProfileId,       // or repId for a person
+  initialMessage: text,
+  includeOpeningGreeting: true, openingMessage: greeting,
+  prompt,                                          // context, not a secret
+  activationId, activationAnalyticsId: 'pink-cow', // ties the chat to the cow in Stand's analytics
+  showId: offer.showId,
+});</code></pre>
+
+      <h3>4. The cow itself</h3>
+      <p>There is no model file. <code>cow-model.js</code> lofts the body, neck and head from cross-sections, tints every facet a slightly different pink, and projects the spots and the question-mark hatch onto the flank as decals. <code>cow-motion.js</code> walks it: each hoof is planted in world space while it bears weight, so feet never slide, and swinging hooves land where the body will be. The legs are solved with inverse kinematics every frame; the hind legs fold at the hock like a real cow’s. The head turns to the pointer, the eyes blink, the ears flick, the tail swishes and the bell swings on its own little pendulum.</p>
+      <p>The chat card is paper. <code>cow-stage.js</code> draws the card’s first state onto a canvas texture, folds it into three strips inside the hatch, and unfolds it along a curve to the exact rectangle where the HTML card sits, which then fades in over it. Closing plays the same film backwards.</p>
+      <pre class="sx-code" data-file="cow-stage.js"><code class="language-js">// Two hinges, folded shut inside the hatch, then sprung open on the way up.
+card.setFold([1, 1]);
+await stage.animate(0.95, (t) =&gt; {
+  card.setFold([1 - easeOutBack(window01(t, 0.22, 0.72)), 1 - easeOutBack(window01(t, 0.4, 0.95))]);
+});</code></pre>
+
+      <h3>The files</h3>
+      <ul>
+        <li><strong><code>pink-cow.js</code></strong> is the component: options, the wait, the cookie, the clickable cow, the “Curious?” bubble, and the choreography from click to gallop.</li>
+        <li><strong><code>cow-chat.js</code></strong> and <strong><code>pink-cow.css</code></strong> are the chat card: an accessible dialog with the transcript, streamed replies, suggestions, follow-up form and attribution.</li>
+        <li><strong><code>stand-client.js</code></strong> is the Stand part to copy anywhere: discovery, one-time creation, idempotent sends, WebSocket receive, recovery, handoffs and typing. It is the <a href="/vintage-terminal/">vintage terminal</a>’s client.</li>
+        <li><strong><code>cow-model.js</code></strong>, <strong><code>cow-motion.js</code></strong> and <strong><code>cow-stage.js</code></strong> are the cow, its gait, and the stage with the folding card. <code>cow-glyph.js</code> is the question mark both the hatch and the card use.</li>
+        <li><strong><code>site.js</code></strong> and <strong><code>style.css</code></strong> are The Remark: the demo page and its controls. Not part of the cow.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>The prompt is context, not a secret.</strong> It lives in the page and Stand stores it with the conversation. It tells the responder what the visitor clicked and asks for short, warm replies with at most one cow pun each.</li>
+        <li><strong>One cookie, no identifier.</strong> With <code>once: true</code> the cookie holds only <code>seen</code> or <code>engaged</code>, like a dismissed banner. Set <code>cookie</code> to rename it, or <code>once: false</code> to do without.</li>
+        <li><strong>Nothing loads until it matters.</strong> The page carries the component (a few kilobytes). three.js and the cow load when the cow is due; while the chat is open the cow idles at 30 fps, and when it leaves the GPU context is released.</li>
+        <li><strong>It respects reduced motion.</strong> A still cow fades in, waits, and fades out; the chat opens without the unfolding. Without WebGL there is no cow at all.</li>
+        <li><strong>It is a real dialog.</strong> The cow is a button with a label; the chat traps focus, closes on <kbd>Esc</kbd>, and announces replies to screen readers.</li>
+        <li><strong>Keep the attribution.</strong> The card shows the notices and the Powered by Stand link that discovery returns, like the widget does.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p>The cow first walked across <a href="https://stand.chat/">stand.chat</a>’s own front page. <strong>Claude Opus 5.5, in Claude Code</strong>, built it there from the prompt below: the procedural model, the gait, the unfolding card and the trigger rules, checking its own work in a browser as it went. A second prompt turned it into this reusable component and wrote The Remark around it.</p>
+          <p>A chat that belongs to your site’s world is a prompt away. Stand’s Visitor API keeps the conversation, the AI Stand-in and your team behind it.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Create an animated pink 3D cow. Low poly. Realistic animation. This is a reference to the book Purple Cow.
+
+On the Stand Chat front page, if a visitor does not engage with chat but lingers around for over 30 seconds after scrolling away from the hero video, let’s have the pink cow walk through the screen, right to left. The side of the cow should have a big question mark.
+
+If the user clicks the cow, open a custom chat that unfolds (in 3D) from the cow. Basically happening inside the cow. The cow chat should introduce a custom prompt explaining, in a smart subtle way, that this is a reference to Purple Cow. The cow should only appear once per visitor (record it in a cookie). The chat should be easy to dismiss, and the cow should run from the screen in a fun way. The cow should not appear if the visitor otherwise engages with chat.
+
+The purpose is to encourage people to create custom chat experiences and communicate that they are possible. Include in the prompt an explanation of custom chat UIs, with a link to examples.stand.chat.
+
+Think this through hard. The outcome should feel like a high-end design agency came up with it. Feel free to improve or change anything above.</blockquote>
+
+          <p class="made-label">The follow-up</p>
+          <blockquote class="made-prompt">Create a PR to github.com/standchat/examples for the pink cow. Turn it into a reusable component that is not specific to the stand.chat website. Make the timing configurable. Generate a simple, stylish example website that discusses attention and recommends the book Purple Cow, and that uses the cow. Add a control for the cow’s timing and a button for summoning it immediately. Explain that on a real site one could only see the cow once, but on this demo page it comes out every time.</blockquote>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/pink-cow my-cow</code></pre>
+
+      <ul class="sx-links">
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Guide: build a custom chat UI ↗</a></li>
+        <li><a href="https://stand.chat/features/custom-chat-ui">Custom chat UI reference ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/pink-cow/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+</body>
+</html>
