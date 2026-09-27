@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" fill="none">
+<defs>
+<linearGradient id="hull" x1="200" y1="100" x2="600" y2="520" gradientUnits="userSpaceOnUse"><stop stop-color="#8c9ba3"/><stop offset=".35" stop-color="#445967"/><stop offset=".65" stop-color="#20333f"/><stop offset="1" stop-color="#0e1b26"/></linearGradient>
+<linearGradient id="rim" x2="0" y2="1"><stop stop-color="#708591"/><stop offset="1" stop-color="#152432"/></linearGradient>
+<linearGradient id="engine"><stop stop-color="#a8f6ff"/><stop offset=".35" stop-color="#3fbad9"/><stop offset="1" stop-color="#12364c"/></linearGradient>
+<radialGradient id="glow"><stop stop-color="#a9f6ff" stop-opacity=".8"/><stop offset=".2" stop-color="#3cc9ff" stop-opacity=".4"/><stop offset="1" stop-color="#218ae1" stop-opacity="0"/></radialGradient>
+<pattern id="panels" width="35" height="28" patternUnits="userSpaceOnUse"><path d="M0 0H35V28" stroke="#b0c4cd" stroke-opacity=".11"/></pattern>
+</defs>
+<ellipse cx="279" cy="468" rx="150" ry="100" fill="url(#glow)"/><ellipse cx="727" cy="464" rx="150" ry="100" fill="url(#glow)"/>
+<path d="M410 296L262 391L270 431L457 372M586 296L739 390L729 430L541 372" fill="url(#hull)" stroke="#6d8695" stroke-width="2"/>
+<path d="M448 205L426 423Q499 484 574 423L551 205Z" fill="url(#hull)" stroke="#6c8190" stroke-width="2"/>
+<path d="M472 277L453 421L498 448L548 421L526 277" fill="#162c3b" stroke="#607a89"/><path d="M498 281V438" stroke="#9cb7bf" stroke-opacity=".4"/>
+<path d="M234 231Q257 208 285 231L316 452Q279 488 244 451Z" fill="url(#hull)" stroke="#6d8594" stroke-width="2"/>
+<path d="M708 231Q731 208 758 231L757 452Q724 487 690 452Z" fill="url(#hull)" stroke="#6d8594" stroke-width="2"/>
+<path d="M250 252L259 431L275 441L268 247Z" fill="url(#engine)"/><path d="M733 247L719 434L735 442L750 253Z" fill="url(#engine)"/>
+<path d="M253 447Q279 463 304 447L303 460Q279 478 254 460Z" fill="#a2eeff"/><path d="M700 447Q725 463 749 447L747 460Q725 478 702 460Z" fill="#a2eeff"/>
+<ellipse cx="498" cy="221" rx="284" ry="134" fill="#0e1c28" stroke="#526675" stroke-width="3"/>
+<ellipse cx="498" cy="204" rx="285" ry="131" fill="url(#hull)" stroke="#9baeb3" stroke-width="2"/>
+<ellipse cx="498" cy="201" rx="268" ry="119" fill="url(#panels)" stroke="#122c3b" stroke-width="3"/>
+<ellipse cx="498" cy="197" rx="235" ry="103" stroke="#afbdc3" stroke-opacity=".28"/>
+<ellipse cx="498" cy="197" rx="196" ry="86" stroke="#172f3f" stroke-width="3"/>
+<ellipse cx="498" cy="197" rx="125" ry="56" stroke="#a3b8c3" stroke-opacity=".26"/>
+<path d="M233 204H370M625 204H762M498 80V142M498 253V330M295 120L409 169M585 229L692 288M694 120L585 168M406 229L301 289" stroke="#142d3e" stroke-width="2"/>
+<path d="M271 252Q495 379 728 251" stroke="#9fb9c6" stroke-width="3" stroke-dasharray="3 10"/>
+<path d="M270 258Q495 386 727 256" stroke="#d5b68b" stroke-width="2" stroke-dasharray="2 16"/>
+<ellipse cx="498" cy="194" rx="72" ry="36" fill="url(#rim)" stroke="#8ba3b0"/>
+<path d="M447 189L462 166Q498 146 536 165L551 190Q498 223 447 189Z" fill="url(#hull)" stroke="#89a2b2"/>
+<path d="M462 177Q498 197 536 177" stroke="#b4e1e5" stroke-width="4"/>
+<path d="M475 166Q498 153 521 165" stroke="#dea76b" stroke-width="3"/>
+<text x="500" y="126" fill="#c9d2d3" font-family="sans-serif" font-size="12" letter-spacing="7" text-anchor="middle" transform="rotate(-1 500 126)">A S T E R I O N</text>
+<text x="498" y="284" fill="#a4b6c0" font-family="monospace" font-size="10" letter-spacing="3" text-anchor="middle">U.S.V. — 007</text>
+<circle cx="217" cy="199" r="3" fill="#e89167"/><circle cx="779" cy="199" r="3" fill="#9cdbcf"/>
+</svg>

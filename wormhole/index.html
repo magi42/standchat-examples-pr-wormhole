@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080b10">
+  <title>Wormhole · Messages beyond the horizon</title>
+  <meta name="description" content="Step onto a starship bridge. Send messages through a gravitationally lensed wormhole and watch replies return to your console. A cinematic custom Stand Chat UI.">
+  <meta name="author" content="Wormhole contributors">
+  <meta name="keywords" content="Visitor API, custom chat UI, wormhole, WebGL, cinematic">
+  <meta property="og:title" content="Wormhole · Messages beyond the horizon">
+  <meta property="og:description" content="A conversation across spacetime. An interactive starship bridge with animated transmissions and a real Stand Chat connection.">
+  <meta property="og:image" content="https://examples.stand.chat/wormhole/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <!-- Optional site chrome; the example also works when copied on its own. -->
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="https://cdn.stand.chat/widget/stand.js" data-stand-id="demo"></script>
+  <script>addEventListener('DOMContentLoaded', () => window.StandChat?.initiallyHideChatButton());</script>
+  <script type="module" src="app.js"></script>
+</head>
+<body class="arriving">
+  <sx-example-bar></sx-example-bar>
+  <main id="bridge" data-og-focus aria-label="Asterion starship bridge" inert>
+    <div class="viewport" aria-hidden="true"><canvas id="space"></canvas><div class="fallback-wormhole"></div></div>
+    <div class="window-frame" aria-hidden="true"><div class="beam beam-left"></div><div class="beam beam-right"></div></div>
+    <header class="bridge-header">
+      <a class="identity" href="#bridge"><span class="insignia" aria-hidden="true">⟡</span><span>ASTERION<small>DEEP SPACE EXPLORATION / 07</small></span></a>
+      <div class="mission"><span class="live-dot"></span> HORIZON-09 <span class="muted">/ COMMUNICATIONS</span></div>
+      <nav aria-label="Scene controls"><button id="motion" aria-pressed="false" title="Pause animation">Ⅱ <span>Motion</span></button><button id="sound" aria-pressed="false" aria-label="Enable sound">♫ <span>Sound off</span></button><button id="replay" aria-label="Replay approach" title="Replay approach">↻ <span>Intro</span></button></nav>
+    </header>
+    <section class="view-label"><p class="eyebrow">EINSTEIN–ROSEN BRIDGE</p><h1>Someone is<br>on the other side.</h1><p>One message. Two sides of the universe.</p></section>
+    <div class="target" aria-hidden="true"><span>WH — 09</span><i></i><small>STABLE CONNECTION</small></div>
+    <aside class="telemetry" aria-label="Fictional navigation telemetry"><span class="eyebrow">NAV / 0042</span><dl><dt>DISTANCE</dt><dd>0.014 <small>AU</small></dd><dt>CURVATURE</dt><dd>98.7 <small>%</small></dd><dt>HEADING</dt><dd>279.04 <small>°</small></dd></dl><div class="wave"></div><span class="muted">SIMULATED TELEMETRY</span></aside>
+    <div class="crew crew-left" aria-hidden="true"><div class="crew-screen"><i></i><i></i><i></i><i></i></div><div class="person"><div class="head"></div><div class="body"></div><div class="chair"></div></div><span>NAVIGATION</span></div>
+    <div class="crew crew-right" aria-hidden="true"><div class="crew-screen"><i></i><i></i><i></i><i></i></div><div class="person"><div class="head"></div><div class="body"></div><div class="chair"></div></div><span>SCIENCE / 02</span></div>
+    <div class="deck" aria-hidden="true"></div>
+    <section class="console" aria-labelledby="console-title">
+      <div class="console-rail"><span>COMMS ARRAY / 01</span><div class="rail-bars"><i></i><i></i><i></i><i></i><i></i></div><span>QUANTUM RELAY</span></div>
+      <div class="console-top"><div><span class="eyebrow">SUBSPACE CHANNEL</span><h2 id="console-title">Beyond the horizon<span class="channel-number"> / 09</span></h2></div><div class="channel-state"><span class="live-dot"></span><span id="connection">FINDING SIGNAL</span></div></div>
+      <div class="channel-meta"><span id="host">Connecting to Stand…</span><span id="flight-status" role="status">TRANSMITTER READY</span></div>
+      <div id="transcript" role="log" aria-label="Conversation" aria-live="polite" aria-relevant="additions text"><div class="empty-state"><span aria-hidden="true">⌁</span><p>Every conversation is a leap into the unknown.<small>Send your first message. See who answers.</small></p></div></div>
+      <div id="typing" role="status"></div>
+      <div id="recovery" hidden><span id="error" role="status"></span><button id="retry">Reconnect</button></div>
+      <form id="compose"><label class="sr-only" for="message">Message to the other side</label><span class="prompt-mark" aria-hidden="true">›</span><textarea id="message" rows="1" maxlength="4000" placeholder="Send a message to the other side…" enterkeyhint="send"></textarea><button id="send" type="submit" disabled>SEND <span aria-hidden="true">↗</span></button></form>
+      <form id="followup" hidden><label for="email">Email for a follow-up</label><input id="email" type="email" autocomplete="email" required><button type="submit">Send</button></form>
+      <p id="notice"></p>
+      <footer class="console-footer"><span><kbd>ENTER</kbd> send <span class="newline-hint">· <kbd>SHIFT + ENTER</kbd> new line</span></span><button id="end" hidden>End chat</button><a id="attribution" href="https://stand.chat/" target="_blank" rel="noopener noreferrer">Powered by Stand ↗</a></footer>
+    </section>
+    <footer class="bridge-footer"><span>U.S.V. ASTERION <b>·</b> SECTOR 07 / UNKNOWN SPACE</span><a href="#how-it-works">How it works ↗</a><span class="coordinates">RA 23h 18m 04s / DEC −08° 42′</span></footer>
+  </main>
+  <canvas id="letters" aria-hidden="true"></canvas>
+  <section id="intro" data-og-hide aria-label="Approaching the Asterion">
+    <div class="intro-stars"></div><div class="intro-planet"></div><div class="intro-horizon"></div>
+    <img class="ship" src="ship.svg" alt="The Asterion exploration vessel, its engines glowing blue against the stars">
+    <div class="intro-top"><span>ASTERION / FLIGHT RECORD 007</span><span>EXTERIOR CAMERA</span></div>
+    <div class="intro-copy"><span class="eyebrow">SOMEWHERE AT THE EDGE OF THE KNOWN UNIVERSE</span><h2>You are not alone.</h2><p>A connection begins on the other side.</p></div>
+    <div class="intro-bottom"><div><span id="intro-stage">APPROACHING VESSEL</span><div class="intro-progress"><i></i></div></div><button id="skip">Enter the bridge <span aria-hidden="true">→</span></button></div>
+  </section>
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>A conversation across spacetime</h2>
+      <p class="sx-lead">Wormhole turns a Stand conversation into a transmission from a starship. Your message leaves the console one letter at a time, spirals through a gravitational lens, and reaches a responder on the other side. Their reply travels back into the same readable transcript.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Watch the ten-second approach, or choose <strong>Enter the bridge</strong> to skip it.</li>
+        <li>Type a message and press <strong>Enter</strong>. Watch the letters spiral into the wormhole, then follow the reply back to the console. <strong>Shift + Enter</strong> adds a new line.</li>
+        <li>Use <strong>Motion</strong> to pause the effects, <strong>Sound</strong> for the optional synthesized audio, and <strong>Intro</strong> to replay the approach. Reduced-motion preferences skip the intro and letter flights automatically.</li>
+      </ol>
+
+      <h3>The conversation is Stand</h3>
+      <p><code>stand-client.js</code> adapts the Visitor API client used by the other custom chat examples. It discovers a responder using the shared demo Site ID, creates a conversation on your first message, sends over HTTP, and receives replies over a WebSocket. The console identifies AI Stand-ins and human team members, restores conversations after reloads, and offers recovery when a connection fails.</p>
+      <pre class="sx-code" data-file="app.js"><code class="language-js">const client = new StandClient({
+  siteId: 'demo',
+  storage,
+  analyticsId: 'wormhole-bridge',
+  greeting,
+  prompt: 'You are Horizon, a friendly AI communications officer…',
+});
+
+client.subscribe(state => {
+  // Render the canonical transcript; animate newly received messages.
+});
+client.mount();
+
+// A session is created only when the visitor sends a message.
+client.setDraft(input.value);
+await client.send();</code></pre>
+
+      <h3>The flight is presentation</h3>
+      <p><code>scene.js</code> draws a procedural starfield and spherical gravitational lens with WebGL. Canvas 2D moves the message glyphs along curved paths. Incoming replies wait for the outgoing flight, then settle into ordinary selectable HTML. Long messages use a short visual excerpt while their full text stays in the transcript. Pausing motion reveals pending replies immediately; a CSS lens remains visible when WebGL is unavailable.</p>
+      <p>The exterior approach is an original SVG spacecraft animated with CSS, not a video download. The ship, crew silhouettes, and telemetry are fictional. Audio starts only when enabled and pauses when the page is hidden.</p>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/wormhole my-wormhole</code></pre>
+      <p>Serve the folder over HTTP, then replace <code>siteId: 'demo'</code> in <code>app.js</code> and the Stand installation snippet in <code>index.html</code> with your own Site ID. The shared <code>/_shared/</code> files only provide the gallery navigation, explanation styles, and site analytics; the bridge and chat work without them.</p>
+      <ul>
+        <li><a href="https://stand.chat/guide/custom-chat-ui">Guide: build a custom chat UI ↗</a></li>
+        <li><a href="https://github.com/standchat/examples/tree/main/wormhole/">Source on GitHub ↗</a></li>
+      </ul>
+    </div>
+  </section>
+  <noscript><p class="no-script">Enable JavaScript to explore the wormhole and use the communications console.</p></noscript>
+</body>
+</html>
