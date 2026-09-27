@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+  <title>Holocene</title>
+  <meta name="description" content="A chat that plays like a film: a time-lapse of Earth's climate from the ice age to 2100, cut to an original minimalist score. The narrator is a Stand conversation that asks your name, asks for your choices at three moments in history, and writes your ending.">
+  <meta name="author" content="Hannu Salonen">
+  <link rel="author" href="https://0c.design/">
+  <meta name="keywords" content="Visitor API, custom chat UI, WebSocket, Web Audio, WebGL, film">
+  <meta property="og:title" content="Holocene">
+  <meta property="og:description" content="A chat that plays like a film: a time-lapse of Earth's climate from the ice age to 2100, cut to an original minimalist score. The narrator is a Stand conversation that asks your name, asks for your choices, and writes your ending.">
+  <meta property="og:image" content="https://examples.stand.chat/holocene/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="stylesheet" href="/_shared/example.css">
+  <script type="module" src="/_shared/example.js"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Six+Caps&family=Jost:ital,wght@0,300;0,400;0,500;1,300&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap">
+  <link rel="stylesheet" href="film.css">
+
+  <!-- The film: no stand.js. film.js talks to Stand's Visitor API directly. -->
+  <script type="module" src="film.js"></script>
+</head>
+<body>
+  <sx-example-bar></sx-example-bar>
+
+  <section class="holo" data-film data-stand-id="demo" aria-label="Holocene, an interactive film">
+    <div class="holo-top">
+      <div class="holo-counter" hidden aria-hidden="true">
+        <span class="holo-place"></span>
+        <span class="holo-year"></span>
+        <span class="holo-co2"></span>
+        <span class="holo-temp"></span>
+        <span class="holo-scenario"></span>
+      </div>
+      <p class="holo-chapter" aria-live="polite"></p>
+      <div class="holo-controls">
+        <span class="holo-status" data-phase="loading">Finding the narrator</span>
+        <button class="holo-sound" type="button" aria-pressed="true">Sound on</button>
+        <button class="holo-pause" type="button" aria-pressed="false">Pause</button>
+        <button class="holo-full" type="button" aria-label="Full screen">Full screen</button>
+      </div>
+    </div>
+
+    <div class="holo-frame" data-og-focus>
+      <canvas class="holo-canvas" aria-hidden="true"></canvas>
+      <div class="holo-grain" aria-hidden="true"></div>
+
+      <!-- Before the film: the poster and the play button. -->
+      <div class="holo-poster">
+        <p class="holo-poster-kicker">A time-lapse of the climate, with you in it</p>
+        <p class="holo-poster-title" aria-hidden="true">HOLOCENE</p>
+        <button class="holo-play" type="button">
+          <span class="holo-play-icon" aria-hidden="true"></span>
+          <span>Play the film</span>
+        </button>
+        <p class="holo-poster-note">About 10 minutes · sound on · a narrator will ask you four questions</p>
+      </div>
+
+      <!-- Titles, the definition and the credits play over the picture. -->
+      <div class="holo-card" aria-live="polite"></div>
+      <div class="holo-credits" hidden></div>
+
+      <!-- After the credits: the conversation, as a screenplay. -->
+      <div class="holo-screenplay" hidden>
+        <div class="holo-screenplay-text"></div>
+        <button class="holo-again" type="button">Play the film again</button>
+      </div>
+
+      <!-- 2026: the viewer's answers, their weight, and the 2100 they add up to. -->
+      <div class="holo-ledger" hidden aria-live="polite"></div>
+      <div class="holo-hold-meter" aria-hidden="true"><i></i></div>
+    </div>
+
+    <div class="holo-bottom">
+      <p class="holo-line"><span class="holo-speaker"></span><span class="holo-text"></span></p>
+      <div class="holo-ask" hidden>
+        <div class="holo-choices"></div>
+        <form class="holo-form" autocomplete="off">
+          <input class="holo-input" type="text" maxlength="400" enterkeyhint="send" spellcheck="false">
+          <button class="holo-send" type="submit" aria-label="Send">↵</button>
+        </form>
+        <button class="holo-skip" type="button" hidden>Watch without a name</button>
+        <p class="holo-note" hidden></p>
+      </div>
+      <button class="holo-hold" type="button" hidden aria-pressed="false">Press and hold</button>
+    </div>
+
+    <p class="holo-live" aria-live="polite"></p>
+  </section>
+
+  <section id="how-it-works" class="sx-explainer">
+    <div class="sx-wrap">
+      <p class="sx-eyebrow">How it works</p>
+      <h2>A chat that plays like a film</h2>
+      <p class="sx-lead">Holocene is a ten-minute time-lapse of Earth's climate, from the last ice age to 2026 and one possible 2100, cut to an original score in the style of Philip Glass's <i>Koyaanisqatsi</i>. There is no chat box. The film's narrator is a Stand conversation: its greeting asks your name, your answers at four moments in history are messages, and its replies are the subtitles. What you choose decides the ending.</p>
+
+      <h3>Try it</h3>
+      <ol class="sx-steps">
+        <li>Press <strong>Play the film</strong>, with sound on. After the titles, the narrator asks your name, then where you're watching from. At points in the film it tells you what the climate was like there.</li>
+        <li>At 8000 BCE, 1900, 1979 and 1988 the film waits for you. Pick an answer, or type your own, like “only half of it”. The picture shows that much: half the forest cleared, half the coal burned. The narrator replies in the subtitles.</li>
+        <li>In 2026 your answers line up as a ledger and add up to your 2100. Press and hold the picture (or the space bar) to bring that number down; let go and it creeps back. How far you can bring it depends on what you chose before.</li>
+        <li>After the film's last line, the narrator invites you to talk about design. Leave your email, or say no thank you, and the credits roll.</li>
+        <li>Your ending is one of five IPCC scenarios for 2100. After the credits, the conversation appears as a screenplay, and you can keep talking to the narrator.</li>
+      </ol>
+
+      <h3>The music is the clock</h3>
+      <p>Every cut, title and tick of the year counter lands on a beat. <code>timeline.js</code> describes the film as sections of bars at a tempo. <code>score.js</code> plays them in Web Audio and reports its position as the listener hears it, and everything on screen reads that position each frame. The waiting moments are loops: the music repeats a two-bar phrase until you answer, then moves on at the end of a phrase.</p>
+      <pre class="sx-code" data-file="timeline.js"><code class="language-js">// 1950 to 1988: the great acceleration. Tempo rises bar by bar, cuts get faster.
+grid: { bpm: 120, bpmEnd: 168, bars: 24, scene: 'grid', next: 'warning', cuts: 'grid' },
+// 1988: the warning. A sudden hush. Choice 3. Waits.
+warning: { bpm: 72, bars: 2, scene: 'warning', loop: true },</code></pre>
+
+      <h3>The narrator is a Stand conversation</h3>
+      <p><code>stand-client.js</code> is the Visitor API client from the other fully custom examples. <code>film.js</code> gives it the film's own greeting and a private <code>prompt</code> that tells the AI Stand-in it narrates this film. Your answers are sent as ordinary messages, with the moment in front, so the transcript reads well on its own and the Stand-in knows where you are.</p>
+      <pre class="sx-code" data-file="film.js"><code class="language-js">const client = new StandClient({
+  siteId: 'demo',
+  greeting: 'Before the film begins: what is your name?',
+  prompt: PROMPT, // "You are the narrator of HOLOCENE… replies appear as subtitles…"
+});
+
+// An answer at a waiting moment:
+say(`${CHOICES[kind].moment}: ${words}.`); // "1900, the coal: burn it all."</code></pre>
+      <h3>A hidden tag carries what the narrator understood</h3>
+      <p>Stand's Visitor API sends and receives text. So the prompt asks the Stand-in to end some replies with a tag in double braces, which <code>film.js</code> reads and removes before anything is shown, even while a reply is still streaming. The reply to your place carries lines about its climate in each age. The reply to an answer in your own words carries how much you meant.</p>
+      <pre class="sx-code" data-file="a reply, as Stand sends it"><code class="language-text">Hannu, clearing half the forest changed the wild land of your ancestors for good.
+
+{{amount=50}}</code></pre>
+      <p>The tags stay in the conversation your team sees in Stand. Buttons carry their own amounts, and without Stand the page estimates one from your words: “half”, “30%”, “ten years”.</p>
+
+      <h3>An invitation, not a form</h3>
+      <p>Between the last line and the credits, the film holds on the dusk and the narrator makes one offer: to talk. The email goes to your team as a message in the conversation, with the rest of it: the viewer's name, place and choices. Set your own words on the film's element; without anyone at Stand to receive it, only the line is shown.</p>
+      <pre class="sx-code" data-file="index.html"><code class="language-html">&lt;section data-film
+  data-coda-line="The climate turns on small decisions, made by the right people, at the right time."
+  data-coda-offer="If you'd like to talk about design, and the decisions it shapes, leave your email."&gt;</code></pre>
+
+      <p>Replies stream in as subtitles while they are written. The film moves on when you have answered and the reply has been on screen long enough to read, or after a while if no reply comes. If someone from the team joins the conversation, their lines are subtitles too, with their name. Without Stand, the narrator's lines are written into <code>film.js</code> and the film plays the same.</p>
+
+      <div class="sx-note">Chats here use <code>data-stand-id="demo"</code>, Stand Chat's shared demo site, which works on any domain. Its demo Stand-in follows the page's prompt. With your own Site ID, your own Stand-ins narrate, and your team can join the film.</div>
+
+      <h3>Choices change the ending, not history</h3>
+      <p>The years, CO₂ and temperatures on screen are measured values: ice cores before 1958, Mauna Loa after, and the HadCRUT5, Berkeley Earth and Copernicus temperature records. Each of your four answers adds or takes away a few tenths of a degree, and together they set where your 2100 starts. Holding in 2026 brings it down, to a floor your answers set: after careful answers, +1.4 °C is within reach; after reckless ones, not. The number you reach picks the nearest of five IPCC scenarios for 2100: SSP1-1.9 (+1.4 °C), SSP1-2.6 (+1.8), SSP2-4.5 (+2.7), SSP3-7.0 (+3.6) or SSP5-8.5 (+4.4). The weights are an illustration within the IPCC's range, not a climate model, and the page says so.</p>
+
+      <h3>The pictures</h3>
+      <p>Nothing is filmed. Each scene is a small module that draws a frame from the music's position: the beat, the shot, and the film's state. Scenes keep no state between frames, so a dissolve can draw two shots at once and a paused film holds still. Skies, fire and water are GLSL shaders; silhouettes, streaks and grids are canvas 2D. With reduced motion, fast cuts become slow dissolves.</p>
+
+      <h3>Files</h3>
+      <ul>
+        <li><code>film.js</code>: the director. Cues on beats, the narrator, the questions, the hold, the counter, the credits and the screenplay.</li>
+        <li><code>score.js</code>: the original score, synthesised in Web Audio, and the clock.</li>
+        <li><code>timeline.js</code>: sections, tempos, cuts, and the climate data.</li>
+        <li><code>projector.js</code>: the canvas, shaders, cuts and dissolves.</li>
+        <li><code>scenes-early.js</code>, <code>scenes-industry.js</code>, <code>scenes-future.js</code>: the pictures.</li>
+        <li><code>stand-client.js</code>: Stand's Visitor API client.</li>
+      </ul>
+
+      <h3>Good to know</h3>
+      <ul>
+        <li><strong>Sound starts with Play.</strong> Browsers allow no sound before a click, so the film begins with one. Sound off is remembered; the picture keeps time either way. A hidden tab pauses the film.</li>
+        <li><strong>No flashing.</strong> The fastest cuts in the grid come every two beats, under three a second, and consecutive shots keep a similar brightness. With reduced motion, cuts become dissolves.</li>
+        <li><strong>Every film is a new conversation.</strong> The client keeps no storage, so a reload starts over. The screenplay after the credits is where the conversation carries on.</li>
+        <li><strong>For working on a scene</strong>, <code>?from=grid</code> starts at a section, and <code>?offline</code> plays without Stand.</li>
+      </ul>
+
+      <details class="made">
+        <summary>How this was made</summary>
+        <div class="made-body">
+          <p><strong>Claude Opus 5.5, in Claude Code</strong>, built it in one session from the prompt below. It wrote the timeline, the projector and the director itself, and gave the score and the three sets of scenes to four sub-agents working in parallel, each checking its own work in headless Chromium: stills and contact sheets for the pictures, offline audio renders and spectrograms for the music. Three more sub-agents then reviewed the code, played the film through at desktop and phone sizes, and audited the pictures for flashing and cost. The narrator's prompt was tested in real conversations with Stand's demo site.</p>
+
+          <p class="made-label">The prompt, lightly edited</p>
+          <blockquote class="made-prompt">Build a custom chat experience for my website. My idea:
+
+Climate change history timelapse. Journey from the pre-historic times through industrialization etc., all the way up to current point in time. Strong filmographic, direction, visual and musical style: Philip Glass Koyaanisqatsi the movie, and the soundtrack. The website plays like a movie, from the titles, all the way to end credits. In the beginning, the Stand chat agent asks for the viewer's name, and takes the viewer for a journey through climate history. Then it plays out the climate history like Koyaanisqatsi the movie, with similar visual style and storytelling. At suitable spots Stand agent asks viewer for input, which will then change the outcome a bit, maybe offer the user an opportunity to interact with the movie a bit. Then, in the end, all users choices either make the end result worse or better. Blend in the Stand chat moments into the movielike experience, so that it's not a chatbox hovering on top of the page. Important aspect: this is a music video style, so music needs to be synced with visual effects, cuts etc.
+
+Look through this repo for examples how to customize stand. Build and review everything in one go. Spread work for subagents where practical.</blockquote>
+        </div>
+      </details>
+
+      <h3>Copy this example</h3>
+      <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/holocene my-film</code></pre>
+    </div>
+  </section>
+</body>
+</html>
