@@ -55,6 +55,11 @@ function startPostHog({ cookieless }) {
       session_recording: { blockSelector: '.ph-no-capture', maskAllInputs: true },
       ...(cookieless && { cookieless_mode: 'always' }),
     });
+    // Back and Forward can restore a page from the browser's cache without rerunning
+    // its scripts, so PostHog wouldn't count that view. Going back to the gallery does this.
+    addEventListener('pageshow', (event) => {
+      if (event.persisted) window.posthog.capture('$pageview');
+    });
   });
   document.head.append(script);
 }
