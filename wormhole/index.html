@@ -28,7 +28,7 @@
     <header class="bridge-header">
       <a class="identity" href="#bridge"><span class="insignia" aria-hidden="true">⟡</span><span>ASTERION<small>DEEP SPACE EXPLORATION / 07</small></span></a>
       <div class="mission"><span class="live-dot"></span> HORIZON-09 <span class="muted">/ COMMUNICATIONS</span></div>
-      <nav aria-label="Scene controls"><button id="motion" aria-pressed="false" title="Pause animation">Ⅱ <span>Motion</span></button><button id="sound" aria-pressed="false" aria-label="Enable sound">♫ <span>Sound off</span></button><button id="replay" aria-label="Replay approach" title="Replay approach">↻ <span>Intro</span></button></nav>
+      <nav aria-label="Scene controls"><button id="motion" aria-pressed="false" title="Pause animation">Ⅱ <span>Motion</span></button><button id="sound" data-sound aria-pressed="true" aria-label="Mute sound">♫ <span>Sound on</span></button><button id="replay" aria-label="Replay approach" title="Replay approach">↻ <span>Intro</span></button></nav>
     </header>
     <section class="view-label"><p class="eyebrow">EINSTEIN–ROSEN BRIDGE</p><h1>Someone is<br>on the other side.</h1><p>One message. Two sides of the universe.</p></section>
     <div class="target" aria-hidden="true"><span>WH — 09</span><i></i><small>STABLE CONNECTION</small></div>
@@ -56,6 +56,7 @@
     <img class="ship" src="ship.svg" alt="The Asterion exploration vessel, its engines glowing blue against the stars">
     <div class="intro-top"><span>ASTERION / FLIGHT RECORD 007</span><span>EXTERIOR CAMERA</span></div>
     <div class="intro-copy"><span class="eyebrow">SOMEWHERE AT THE EDGE OF THE KNOWN UNIVERSE</span><h2>You are not alone.</h2><p>A connection begins on the other side.</p></div>
+    <div class="intro-audio"><button id="intro-sound" data-sound aria-pressed="true" aria-label="Mute sound">♫ <span>Sound on</span></button><span id="sound-hint" hidden>Click anywhere or press a key to start sound.</span></div>
     <div class="intro-bottom"><div><span id="intro-stage">APPROACHING VESSEL</span><div class="intro-progress"><i></i></div></div><button id="skip">Enter the bridge <span aria-hidden="true">→</span></button></div>
   </section>
   <section id="how-it-works" class="sx-explainer">
@@ -68,7 +69,7 @@
       <ol class="sx-steps">
         <li>Watch the ten-second approach, or choose <strong>Enter the bridge</strong> to skip it.</li>
         <li>Type a message and press <strong>Enter</strong>. Watch the letters spiral into the wormhole, then follow the reply back to the console. <strong>Shift + Enter</strong> adds a new line.</li>
-        <li>Use <strong>Motion</strong> to pause the effects, <strong>Sound</strong> for the optional synthesized audio, and <strong>Intro</strong> to replay the approach. Reduced-motion preferences skip the intro and letter flights automatically.</li>
+        <li>Use <strong>Motion</strong> to pause the effects, <strong>Sound</strong> to mute or enable the synthesized audio, and <strong>Intro</strong> to replay the approach. Reduced-motion preferences skip the intro and letter flights automatically.</li>
       </ol>
 
       <h3>The conversation is Stand</h3>
@@ -92,7 +93,7 @@ await client.send();</code></pre>
 
       <h3>The flight is presentation</h3>
       <p><code>scene.js</code> draws a procedural starfield and spherical gravitational lens with WebGL. Canvas 2D moves the message glyphs along curved paths. Incoming replies wait for the outgoing flight, then settle into ordinary selectable HTML. Long messages use a short visual excerpt while their full text stays in the transcript. Pausing motion reveals pending replies immediately; a CSS lens remains visible when WebGL is unavailable.</p>
-      <p>The exterior approach is an original SVG spacecraft animated with CSS, not a video download. The ship, crew silhouettes, and telemetry are fictional. Audio starts only when enabled and pauses when the page is hidden.</p>
+      <p>The exterior approach is an original SVG spacecraft animated with CSS, not a video download. The ship, crew silhouettes, and telemetry are fictional. An original space-adventure score is synthesized in JavaScript: warm brass, layered strings, bell arpeggios, and an engine flyby. Sound is enabled by default; if the browser blocks autoplay, the first click or key press starts it. The score fades over six seconds as you enter the bridge, leaving a quiet engine hum. Both the intro and bridge have a sound control, and audio pauses when the page is hidden.</p>
 
       <h3>Copy this example</h3>
       <pre class="sx-code"><code class="language-sh">npx degit standchat/examples/wormhole my-wormhole</code></pre>

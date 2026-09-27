@@ -8,13 +8,14 @@ Run the repository with `npm start`, then open **http://localhost:3000/wormhole/
 
 - `index.html`, `style.css`: semantic chat console, responsive bridge, crew silhouettes, accessible controls, and cinematic intro.
 - `ship.svg`: original vector spacecraft. The intro is a real-time CSS/SVG camera sequence, not a prerecorded video.
-- `scene.js`: procedural WebGL starfield and spherical lens, Canvas 2D glyph trajectories, opt-in synthesized audio. A CSS lens remains visible if WebGL is unavailable.
+- `scene.js`: procedural WebGL starfield and spherical lens, Canvas 2D glyph trajectories. A CSS lens remains visible if WebGL is unavailable.
+- `sound.js`: original Web Audio score (synthesized strings, brass and bells), engine flyby, bridge hum, and transmission tones. No audio files, sampled instruments, or third-party compositions.
 - `app.js`: presentation and message sequencing. Incoming messages wait for outgoing flights, then arrive before their final text is shown. Full messages remain selectable in the DOM; long flights use a 160-character visual excerpt.
 - `stand-client.js`: local copy of the repository's Stand Visitor API client, with a separate `stand-wormhole` session-storage namespace. Handles discovery, authenticated HTTP sends, WebSocket replies, retry IDs, reconnect, transcript restoration, handoffs, and follow-up email offers.
 
 The shared `demo` Site ID supplies a real Stand conversation. Network errors are displayed with retry controls; no fake AI replies are substituted. Replace `siteId: 'demo'` in `app.js` and the widget's `data-stand-id` in `index.html` to use your own Stand site. The standard widget is initially hidden: the bridge renders the chat through the Visitor API. The persona is fictional and the responder is identified as AI or human. Telemetry is decorative fiction.
 
-The intro can be skipped or replayed. The motion control stops effects and settles pending messages immediately. `prefers-reduced-motion` skips the intro and glyph motion automatically. Audio is off by default, opt-in, and suspended when the page is hidden. Enter sends, Shift+Enter adds a line, and IME composition is respected. Session restoration does not replay old messages. Remote text is rendered as text nodes; only HTTP(S) links become clickable.
+The intro can be skipped or replayed. The motion control stops effects and settles pending messages immediately. `prefers-reduced-motion` skips the intro and glyph motion automatically. Sound is enabled by default. Browsers that block autoplay need a first click or key press; the intro displays a Start sound button and a hint while waiting. The score joins the current camera position when unlocked late and fades out over six seconds on entering the bridge, leaving a quiet engine hum. Sound can be muted during both the intro and the chat, stays muted on replay, and is suspended when the page is hidden. Enter sends, Shift+Enter adds a line, and IME composition is respected. Session restoration does not replay old messages. Remote text is rendered as text nodes; only HTTP(S) links become clickable.
 
 The example is self-contained and can be copied as a folder. Fonts have system fallbacks. All scene graphics are original code/vector artwork; no movie or franchise assets are included.
 

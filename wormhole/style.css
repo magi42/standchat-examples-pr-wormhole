@@ -1140,3 +1140,19 @@ kbd {
 :where(#how-it-works) p, :where(#how-it-works) li { line-height: 1.7; }
 :where(#how-it-works) h3 { margin-top: 32px; }
 :where(#how-it-works) pre { overflow-x: auto; padding: 20px; border: 1px solid var(--line); }
+
+.intro-audio {
+  position: absolute;
+  left: 5%;
+  bottom: 18%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #a5b4bf;
+  font: 9px var(--mono);
+}
+.intro-audio button { background: #121c2699; }
+@media (max-width: 760px) {
+  .intro-audio { right: 5%; bottom: 19%; align-items: flex-start; }
+  #sound-hint { max-width: 190px; line-height: 1.6; }
+}

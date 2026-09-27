@@ -1,12 +1,34 @@
 import { StandClient, safeUrl } from './stand-client.js';
-import { SpaceScene, Transmissions, Sound } from './scene.js';
+import { SpaceScene, Transmissions } from './scene.js';
+import { Sound } from './sound.js';
 
 const $ = selector => document.querySelector(selector);
 const input = $('#message'), transcript = $('#transcript');
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const scene = new SpaceScene($('#space'));
 const flights = new Transmissions($('#letters'), scene, text => { $('#flight-status').textContent = text; });
-const sound = new Sound();
+const sound = new Sound(updateSound);
+function updateSound() {
+  for (const button of document.querySelectorAll('[data-sound]')) {
+    button.disabled = !sound.available;
+    button.setAttribute('aria-pressed', String(sound.enabled));
+    button.setAttribute('aria-label', !sound.available ? 'Sound unavailable' : sound.waiting ? 'Start sound' : sound.enabled ? 'Mute sound' : 'Enable sound');
+    button.innerHTML = `♫ <span>${!sound.available ? 'Sound unavailable' : sound.waiting ? 'Start sound' : sound.enabled ? 'Sound on' : 'Sound off'}</span>`;
+  }
+  $('#sound-hint').hidden = !sound.waiting;
+}
+for (const button of document.querySelectorAll('[data-sound]')) button.addEventListener('click', () => sound.toggle());
+function unlockSound(event) {
+  if (event.target.closest?.('[data-sound]')) return;
+  if (event.type === 'keydown' && (event.repeat || ['Shift', 'Control', 'Alt', 'Meta'].includes(event.key))) return;
+  // Retry only while blocked, so typing cannot restart the music's fade.
+  if (sound.waiting) sound.unlock();
+}
+addEventListener('pointerdown', unlockSound, { capture: true });
+// Touch browsers grant activation on release rather than pointerdown.
+addEventListener('pointerup', unlockSound, { capture: true });
+addEventListener('keydown', unlockSound, { capture: true });
+updateSound();
 let storage;
 try { storage = sessionStorage; } catch { /* In-memory chat still works when storage is blocked. */ }
 const greeting = 'Asterion, this is Horizon. Your signal is reaching us from the other side of spacetime. What would you like to know?';
@@ -33,13 +55,10 @@ function setMotion(value) {
 $('#motion').addEventListener('click', () => setMotion(!paused));
 reduced.addEventListener('change', e => { setMotion(e.matches); if (e.matches) endIntro(false); });
 setMotion(paused);
-$('#sound').addEventListener('click', async () => {
-  try { const on = await sound.toggle(); $('#sound').setAttribute('aria-pressed', String(on)); $('#sound').setAttribute('aria-label', on ? 'Mute sound' : 'Enable sound'); $('#sound').innerHTML = `♫ <span>Sound ${on ? 'on' : 'off'}</span>`; }
-  catch { $('#sound').textContent = 'Sound unavailable'; }
-});
 
 function endIntro(focus = true, immediately = false) {
   clearTimeout(introTimer); clearTimeout(introStageTimer);
+  sound.enterBridge();
   $('#intro').classList.add('leaving'); $('#intro').inert = true;
   document.body.classList.remove('arriving'); $('#bridge').inert = false; bridgeReady = true;
   scene.resize();
@@ -50,6 +69,7 @@ function endIntro(focus = true, immediately = false) {
 }
 function startIntro() {
   if (paused) { endIntro(false); return; }
+  sound.startIntro();
   flights.finish(); bridgeReady = false; $('#bridge').inert = true;
   document.body.classList.add('arriving');
   const intro = $('#intro'); intro.hidden = false; intro.inert = false; intro.classList.remove('leaving');
@@ -184,4 +204,8 @@ function frame(now) {
   requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-document.addEventListener('visibilitychange',()=>{if(document.hidden){flights.finish();if(sound.enabled)void sound.context.suspend();}else{previous=performance.now();lastDraw=previous;if(sound.enabled)void sound.context.resume();}});
+document.addEventListener('visibilitychange', () => {
+  sound.setHidden(document.hidden);
+  if (document.hidden) flights.finish();
+  else { previous = performance.now(); lastDraw = previous; }
+});

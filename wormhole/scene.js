@@ -121,22 +121,3 @@ export class Transmissions {
     if (had && !this.flights.length) this.onStatus('TRANSMITTER READY');
   }
 }
-
-export class Sound {
-  constructor() { this.enabled = false; }
-  async toggle() {
-    if (this.enabled) { await this.context.suspend(); this.enabled = false; return false; }
-    if (!this.context) {
-      const Audio = window.AudioContext || window.webkitAudioContext; if (!Audio) return false;
-      this.context = new Audio(); const gain = this.context.createGain(); gain.gain.value = .023; gain.connect(this.context.destination);
-      for (const f of [46,69,92]) { const o = this.context.createOscillator(); o.type='sine';o.frequency.value=f;o.connect(gain);o.start(); }
-    }
-    await this.context.resume(); this.enabled = true; return true;
-  }
-  ping(incoming) {
-    if (!this.enabled) return;
-    const c=this.context, o=c.createOscillator(), g=c.createGain();o.connect(g);g.connect(c.destination);
-    o.frequency.setValueAtTime(incoming?280:650,c.currentTime);o.frequency.exponentialRampToValueAtTime(incoming?700:130,c.currentTime+.6);
-    g.gain.setValueAtTime(.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.055,c.currentTime+.04);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+.7);o.start();o.stop(c.currentTime+.72);
-  }
-}
