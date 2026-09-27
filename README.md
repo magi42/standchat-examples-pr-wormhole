@@ -39,6 +39,7 @@ Then replace its Stand `<script>` tag with the installation snippet from **Sites
 
 - `index.html` is the front page. Its gallery lists `examples.json`, which `build.mjs` generates from each example's `<head>`. Short browsing descriptions in `index.html` highlight the reusable chat UX; new contributions use their own metadata automatically. The `ORDER` list in `build.mjs` puts the most interesting examples first; any others follow alphabetically. The introduction uses the examples' social images in a collage inspired by `_shared/og.png`.
 - `_shared/` holds the example pages' top bar and "How it works" styles. The examples work without it.
+- `_shared/analytics.js` sends visits to stand.chat's PostHog project, on examples.stand.chat only: never on localhost, previews or copied examples. There's no cookie banner: PostHog uses cookies only where stand.chat would (the visitor accepted there, or stand.chat wouldn't ask), and counts everyone else without cookies. The front page and `example.js` load it.
 - `_template/` is the starting point for a new example. See [CONTRIBUTING.md](CONTRIBUTING.md).
 - Social images (`og.png`) are committed. The build only checks that they are 1200×630; it never regenerates them. To recapture with Chrome, run `npm run og` for all of them or `npm run og -- <folder>` for one (`og.mjs`).
 - Vercel runs `node build.mjs` and serves the repository as it is (`vercel.json`).

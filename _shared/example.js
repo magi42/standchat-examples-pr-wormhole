@@ -1,6 +1,7 @@
 // Site chrome for example pages: the top bar, a note when the chat is missing,
-// and the code blocks in the "How it works" section. Presentation only. Every
-// example must also work without this file, for example after copying its folder.
+// the code blocks in the "How it works" section, and the site's analytics
+// (analytics.js). Every example must also work without this file, for example
+// after copying its folder.
 
 // Third-party marks load from a CDN: this repository is public domain.
 const GITHUB_MARK = 'https://cdn.jsdelivr.net/npm/simple-icons@15/icons/github.svg';
@@ -249,3 +250,5 @@ if (!document.querySelector('link[rel~="icon"]')) {
 renderBar();
 enhanceCodeBlocks();
 if (previewing) forcePreview();
+// Imported on its own, so a blocker that stops it leaves the bar alone.
+import('./analytics.js').catch(() => {});
